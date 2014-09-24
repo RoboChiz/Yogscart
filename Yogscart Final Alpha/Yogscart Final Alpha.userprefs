@@ -1,10 +1,15 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Beardbotnik's Shader\Walk Script.js">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Menus\Character_Select.js">
     <Files>
-      <File FileName="Assets\Beardbotnik's Shader\IBLswitcher.cs" Line="4" Column="1" />
-      <File FileName="Assets\Scripts\Menus\LobbyAI.js" Line="26" Column="12" />
-      <File FileName="Assets\Beardbotnik's Shader\Walk Script.js" Line="15" Column="63" />
+      <File FileName="Assets\Scripts\Menus\Character_Select.js" Line="412" Column="1" />
+      <File FileName="Assets\Scripts\Character Scripts\QA.js" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Menus\MainMenu.js" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Menus\Level_Select.js" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Menus\Character_Select.js" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Networking\Host_Script.js" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Networking\Client_Script.js" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Networking\Countdown.js" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

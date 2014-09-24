@@ -66,6 +66,7 @@ var LevelHolder : Texture2D = Resources.Load("UI Textures/Level Selection/LevelH
 var Selected : Texture2D = Resources.Load("UI Textures/Level Selection/Selected",Texture2D);
 var Tab : Texture2D = Resources.Load("UI Textures/Level Selection/Tab",Texture2D);
 var SelectedTab : Texture2D = Resources.Load("UI Textures/Level Selection/SelectedTab",Texture2D);
+var levelTab : Texture2D = Resources.Load("UI Textures/Level Selection/level_label",Texture2D);
 //Get Width/Ratio/Height of Level Holder
 var Width : float = Screen.width-150;
 var Ratio : float = Width/LevelHolder.width;
@@ -77,6 +78,7 @@ var OverallRect : Rect = Rect(75 + ((j+1)*14.5f*Ratio) + (j*238f*Ratio),Screen.h
 
 GUI.DrawTexture(OverallRect,gd.Tournaments[currentCup].Tracks[j].Logo);
 
+//GUI.DrawTexture(OverallRect,levelTab);
 if(TypeSelecion && currentTrack == j)
 GUI.DrawTexture(OverallRect,Selected);
 
