@@ -8,6 +8,8 @@ var Scale : float = 1;
 
 var TrackName : String;
 
+var backgroundMusic : AudioClip;
+
 var LoopedTrack : boolean = true;
 var Laps : int = 3;
 
@@ -32,6 +34,7 @@ public class CameraPoint{
  var EndRotation : Vector3;
  var TravelTime : float;
  }
+ 
  
  function Update(){
  
@@ -79,6 +82,21 @@ if(LoopedTrack == true && i > 0 && i < PositionPoints.Length && PositionPoints[i
  PositionPoints[PositionPoints.Length -1].rep.gameObject.AddComponent(LapPointHandler);
  }
  
+ 
+ }
+ 
+ //render finish Line
+ if(PositionPoints.Length > 3){
+ var Position1 : Vector3 = PositionPoints[1].rep.position;
+ var Position2 : Vector3 = PositionPoints[PositionPoints.Length -1].rep.position;
+ 
+ var cross : Vector3 = (Position1 + Position2)/2f;
+ 
+ var rot : Quaternion = Quaternion.Euler(0,90,0);
+ var dir : Vector3 = (Position1-Position2).normalized;
+ 
+ Debug.DrawRay(cross,rot*dir * 9f,Color.yellow);
+ Debug.DrawRay(cross,rot*dir * -9f,Color.yellow);
  
  }
  

@@ -6,6 +6,7 @@ var Distance : float = 1.6f;
 var Height : float = 0.6f;
 var PlayerHeight : float = 0.6f;
 var Angle : float;
+var sideAmount : float;
 
 var smoothTime : float = 0.1;
 var rotsmoothTime : float = 5;
@@ -27,7 +28,7 @@ var pos = Target.position + For + (Vector3.up * Height);
 
 transform.position = Vector3.SmoothDamp(transform.position, pos,velocity, smoothTime);
 
-var lookDir : Vector3 = Target.position - (transform.position-(Vector3.up*PlayerHeight));
+var lookDir : Vector3 = Target.position - (transform.position-(Vector3.up*PlayerHeight) + (transform.right * sideAmount));
 
 transform.rotation = Quaternion.Lerp(transform.rotation,Quaternion.LookRotation(lookDir),Time.deltaTime*rotsmoothTime);
 

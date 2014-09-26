@@ -27,14 +27,17 @@ private var loadedCharacterModel : Transform;
 private var loadedHatModel : Transform;
 private var loadedKartModel : Transform;
 
-var Wheels : Transform[];
+private var Wheels : Transform[];
 
 var SpawnPosition : Transform;
 
-private var controlLock : boolean;
-private var fireLock : boolean;
+private var controlLock : boolean = false;
+@HideInInspector
+var fireLock : boolean = true;
 
 var rotSpeed : float = 15;
+
+var spawnCharinKart : boolean;
 
 function Awake(){
 
@@ -53,16 +56,22 @@ GUI.skin = Resources.Load("GUISkins/Main Menu", GUISkin);
 var yint : int;
 var iconWidth : float = (Screen.width/2)/5f;
 
-if(Input.GetAxis("Fire1") == 0 && Input.GetAxis("Submit") == 0 && Input.GetAxis("Cancel") == 0)
+if(Input.GetAxis("Submit") == 0 && Input.GetAxis("Cancel") == 0)
 fireLock = false;
 
-var width : int = Screen.width/6f;
-var backRect : Rect = Rect(Screen.width-width-10,Screen.height-10- width/3f,width,width/3f);
+if(State == 0){
+if(Input.GetAxis("Cancel") != 0 && fireLock == false){
+
+transform.GetComponent(Main_Menu).Return();
+
+fireLock = true;
+this.enabled = false;
+}
+}
 
 if(State > 0){
-GUI.Box(backRect,"Back");
 
-if((Input.GetAxis("Cancel") != 0 || (Input.GetAxis("Fire1") != 0 && WithinBounds(backRect))) && fireLock == false){
+if(Input.GetAxis("Cancel") != 0 && fireLock == false){
 State -= 1;
 if(State < 0)
 State = 0;
@@ -73,6 +82,11 @@ loadedKart = -1;
 fireLock = true;
 }
 }
+
+var BoardTexture = Resources.Load("UI Textures/GrandPrix Positions/Backing2",Texture2D);
+var BoardRect = Rect(10,10,iconWidth*5f + 10,iconWidth*6f + 10);
+
+GUI.DrawTexture(BoardRect,BoardTexture);
 
 ///////////////////////////////////////////CHARACTER SELECT///////////////////////////////////////////
 if(State == 0){
@@ -91,14 +105,8 @@ yint += 1;
 var TextureRect : Rect = Rect(20 + ((i%5)*iconWidth),20 + (yint*(Screen.width/2)/5f),iconWidth,iconWidth);
 GUI.DrawTexture(TextureRect,gd.Characters[i].Icon);
 
-//Detect where the mouse is hovered
-if(WithinBounds(TextureRect)){
-CharacterSelection = Vector2(i%5,yint);
-}
-
-
 //Get Input
-if((Input.GetAxis("Fire1") > 0 || Input.GetAxis("Submit") != 0) && fireLock == false && gd.Characters[loadedCharacter].Unlocked == true){
+if(Input.GetAxis("Submit") != 0 && fireLock == false && gd.Characters[loadedCharacter].Unlocked == true){
 State = 1;
 fireLock = true;
 }
@@ -186,14 +194,8 @@ yint += 1;
 TextureRect = Rect(20 + ((i%5)*iconWidth),20 + (yint*(Screen.width/2)/5f),iconWidth,iconWidth);
 GUI.DrawTexture(TextureRect,gd.Hats[i].Icon);
 
-//Detect where the mouse is hovered
-if(WithinBounds(TextureRect)){
-HatSelection = Vector2((i%5),yint);
-}
-
-
 //Get Input
-if((Input.GetAxis("Fire1") != 0 || Input.GetAxis("Submit") != 0) && fireLock == false && gd.Hats[loadedHat].Unlocked == true){
+if(Input.GetAxis("Submit") != 0 && fireLock == false && gd.Hats[loadedHat].Unlocked == true){
 State = 2;
 fireLock = true;
 }
@@ -249,6 +251,10 @@ CursorTexture = Resources.Load("UI Textures/Cursors/Cursor_Blue",Texture2D);
 GUI.DrawTexture(CursorRect,CursorTexture);
 
 //Load Character
+if(loadedCharacterModel == null){
+loadedCharacterModel = Instantiate(gd.Characters[loadedCharacter].CharacterModel_Standing,SpawnPosition.position,Quaternion.identity);
+}
+
 if(loadedHatModel == null || loadedHat != lastLoadedHat){
 
 if(loadedHatModel != null)
@@ -277,11 +283,15 @@ loadedCharacterModel.Rotate(Vector3.up,-Input.GetAxis("Rotate") * Time.fixedDelt
 if(State == 2){ //Kart Select
 
 //Get rid of Character
+if(!spawnCharinKart){
 if(loadedCharacterModel.GetComponent(LobbyAI) == null){
 loadedCharacterModel.gameObject.AddComponent(LobbyAI);
 loadedCharacterModel.GetComponent(LobbyAI).locked = true;
 loadedCharacterModel.GetComponent(LobbyAI).TraveltoPos = SpawnPosition.position + Vector3(-2,0,1.5f);
 }
+}else
+if(loadedCharacterModel != null)
+Destroy(loadedCharacterModel.gameObject);
 
 //Render Kart Icon
 var KartIcon : Texture2D = gd.Karts[KartSelection.x].Icon;
@@ -321,7 +331,7 @@ ButtonWait();
 controlLock = true;
 }
 
-if(Mathf.Abs(Input.GetAxis("Horizontal")) > .5f && controlLock == false){
+if(Input.GetAxis("Horizontal") != 0 && controlLock == false){
 VAction = Mathf.Sign(Input.GetAxis("Horizontal"));
 
 kartSelect = !kartSelect;
@@ -330,33 +340,6 @@ ButtonWait();
 controlLock = true;
 }
 
-if(controlLock == false){
-if(Input.GetAxis("Fire1") != 0 && WithinBounds(upArrow1)){
-KartSelection.x += 1;
-ButtonWait();
-controlLock = true;
-}
-
-if(Input.GetAxis("Fire1") != 0  && WithinBounds(downArrow1)){
-KartSelection.x -= 1;
-ButtonWait();
-controlLock = true;
-}
-
-
-if(Input.GetAxis("Fire1") != 0  && WithinBounds(upArrow2)){
-KartSelection.y += 1;
-ButtonWait();
-controlLock = true;
-}
-
-if(Input.GetAxis("Fire1") != 0  && WithinBounds(downArrow2)){
-KartSelection.y -= 1;
-ButtonWait();
-controlLock = true;
-}
-
-}
 
 if(KartSelection.x < 0)
 KartSelection.x = gd.Karts.Length-1;
@@ -397,10 +380,39 @@ if(loadedKart != lastLoadedKart){
 if(loadedKartModel != null)
 Destroy(loadedKartModel.gameObject);
 
+var toSpawn : Transform;
+if(spawnCharinKart)
+toSpawn = gd.Karts[loadedKart].Models[loadedCharacter];
+else
+toSpawn = gd.Karts[loadedKart].Model;
+
 if(gd.Karts[loadedKart].Unlocked == true)
-loadedKartModel = Instantiate(gd.Karts[loadedKart].Model,SpawnPosition.position + Vector3.up,Quaternion.identity);
+loadedKartModel = Instantiate(toSpawn,SpawnPosition.position + Vector3.up,Quaternion.Euler(0,30,0));
 
 loadedKartModel.localScale = Vector3(3,3,3);
+
+if(spawnCharinKart){
+//Delete Component
+Destroy(loadedKartModel.GetComponent(kartScript));
+Destroy(loadedKartModel.GetComponent(AudioSource));
+Destroy(loadedKartModel.networkView);
+loadedKartModel.rigidbody.isKinematic = true;
+Destroy(loadedKartModel.GetComponent(Position_Finding));
+Destroy(loadedKartModel.GetComponent(DeathCatch));
+Destroy(loadedKartModel.GetComponent(NetworkUpdate));
+
+//Change Hat
+if(gd.Hats[loadedHat].Model != null){
+var HatObject = Instantiate(gd.Hats[loadedHat].Model,loadedKartModel.position,Quaternion.identity);
+
+if(loadedKartModel.GetComponent(QA).objects[0] != null){
+HatObject.position = loadedKartModel.GetComponent(QA).objects[0].position;
+HatObject.rotation = loadedKartModel.GetComponent(QA).objects[0].rotation;
+HatObject.parent = loadedKartModel.GetComponent(QA).objects[0];
+}
+}
+
+}
 
 lastLoadedKart = loadedKart;
 
@@ -409,7 +421,7 @@ lastLoadedKart = loadedKart;
 var Wheels = new Transform[4];
 
 for(var j : int = 0; j < Wheels.Length;j++){
-Wheels[j] = loadedKartModel.GetComponent(QA).objects[j];
+Wheels[j] = loadedKartModel.GetComponent(QA).objects[j+1];
 
 var nWheel : Transform = Instantiate(gd.Wheels[loadedWheel].Models[j],Wheels[j].position,Wheels[j].rotation);
 nWheel.parent = Wheels[j].parent;
@@ -418,7 +430,7 @@ nWheel.localScale = Wheels[j].localScale;
 
 Destroy(Wheels[j].gameObject);
 
-loadedKartModel.GetComponent(QA).objects[j] = nWheel;
+loadedKartModel.GetComponent(QA).objects[j+1] = nWheel;
 
 }
 
@@ -429,19 +441,12 @@ lastLoadedWheel = loadedWheel;
 loadedKartModel.Rotate(Vector3.up,-Input.GetAxis("Rotate") * Time.fixedDeltaTime * rotSpeed);
 
 //Finish Character Select
-if(((Input.GetAxis("Fire1") != 0 && WithinBounds(OverallClickrect))  || Input.GetAxis("Submit") != 0) && fireLock == false && gd.Karts[loadedKart].Unlocked == true && gd.Wheels[loadedWheel].Unlocked == true){
+if(Input.GetAxis("Submit") != 0 && fireLock == false && gd.Karts[loadedKart].Unlocked == true && gd.Wheels[loadedWheel].Unlocked == true){
 
 gd.currentCharacter = loadedCharacter;
 gd.currentHat = loadedHat;
 gd.currentKart = loadedKart;
 gd.currentWheel = loadedWheel;
-
-GameObject.Find("Lobby Holder").GetComponent(LobbyHandler).currentRoom = 1;
-GameObject.Find("GameData").networkView.RPC("ImHere",RPCMode.Others,gd.currentCharacter,gd.currentHat);
-
-loadedCharacterModel.GetComponent(LobbyAI).locked = false;
-loadedCharacterModel.GetComponent(LobbyAI).TraveltoPos = Vector3(-48,0,-20);
-loadedCharacterModel.gameObject.layer = 0;
 
 this.enabled = false;
 
@@ -465,7 +470,7 @@ return false;
 }
 
 function ButtonWait(){
-yield WaitForSeconds(0.5);
+yield WaitForSeconds(0.2);
 controlLock = false;
 }
 

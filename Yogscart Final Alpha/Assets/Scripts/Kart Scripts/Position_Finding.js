@@ -1,5 +1,7 @@
 ﻿#pragma strict
 
+var MyPosition : int;
+
 var Lap : int;
 var currentPos : int;
 var currentTotal : int;
@@ -28,39 +30,12 @@ currentDistance = Vector3.Distance(transform.position,tm.PositionPoints[NumClamp
 var hit : RaycastHit;
 if(currentTotal > (Lap+1)*tm.PositionPoints.Length-1){
 
-var nKartStartRotation = tm.PositionPoints[0].rep.rotation * Quaternion.Euler(Vector3(180,0,0));
-
-if((Physics.Raycast(tm.PositionPoints[0].rep.position,nKartStartRotation*Vector3.forward,hit,tm.Scale * 5f) && hit.transform == transform)||
-(Physics.Raycast(tm.PositionPoints[0].rep.position,nKartStartRotation*-Vector3.forward,hit,tm.Scale * 5f) && hit.transform == transform))
+if(currentPos == 0 && Mathf.Abs(Vector3.Distance(transform.position,tm.PositionPoints[1].rep.position) - Vector3.Distance(transform.position,tm.PositionPoints[tm.PositionPoints.Length-1].rep.position)) < 0.5)
 Lap += 1;
 
 }
 
-if(locked){
-StopCoroutine("UpdatePos");
 }
-
-}
-
-function Awake(){
-StartCoroutine("UpdatePos");
-}
-
-function UpdatePos(){
-if(GameObject.Find("GameData") != null)
-while(true){
-
-if(Network.isClient == false)
-if(transform.GetComponent(Racer_AI) != null){
-GameObject.Find("GameData").GetComponent(Host_Script).MyPositionisAI(transform.name,currentTotal,currentDistance);
-}else
-GameObject.Find("GameData").GetComponent(Host_Script).MyPositionisServer(currentTotal,currentDistance);
-
-yield WaitForSeconds(0.4);
-
-}
-}
-
 
 function CheckForward(closestDistance : float){
 for(var i : int = 1; i < 3; i++){

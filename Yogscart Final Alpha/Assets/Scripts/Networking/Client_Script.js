@@ -8,12 +8,6 @@ var LevelSelection : boolean;
 private var gd : CurrentGameData;
 private var LoadedCharacters : NetworkPlayer[];
 
-function StartConnectionStuff(){
-
-networkView.RPC ("WhatsOcurring", RPCMode.Server);
-
-}
-
 function Awake(){
 gd = GameObject.Find("GameData").GetComponent(CurrentGameData);
 }
@@ -63,6 +57,7 @@ transform.GetComponent(RaceScript).Position = pos;
 
 @RPC
 function LoadNetworkLevel(level : String, levelPrefix : int){
+
 gd.BlackOut = true;
 
 LoadedCharacters = new NetworkPlayer[0];
@@ -125,8 +120,18 @@ var obj = new GameObject();
 obj.AddComponent(Camera);
 obj.AddComponent(AudioListener);
 obj.AddComponent(SpectatorCam);
+
+obj.AddComponent(Kart_Camera);
+
+obj.GetComponent(Kart_Camera).Distance = 7;
+obj.GetComponent(Kart_Camera).Height = 1;
+obj.GetComponent(Kart_Camera).PlayerHeight = 1;
+obj.GetComponent(Kart_Camera).smoothTime = 0;
+obj.GetComponent(Kart_Camera).rotsmoothTime = 100;
+
 obj.camera.depth = -5;
 obj.transform.name = "SpectatorCam";
+
 }
 
 if(level == "Lobby" && gd.currentCharacter != -1 && gd.currentHat != -1)
@@ -140,7 +145,7 @@ gd.BlackOut = false;
 
 function OnDisconnectedFromServer(info : NetworkDisconnection) {
 
-Application.LoadLevel("Main Menu");
+Application.LoadLevel("Main MenuV2");
 Destroy(this.gameObject);
 
 }
@@ -264,3 +269,48 @@ Destroy(GameObject.Find("LoadedCharacter" + ToDelete));
 Debug.Log("Deleted Lobby Player");
 }
 }
+
+@RPC
+function ImRacing(viewID : NetworkViewID, character : int, hat : int, kart : int, wheel : int,info : NetworkMessageInfo){
+
+while(gd.BlackOut)
+yield;
+
+var clone : Transform;
+clone = Instantiate(gd.Karts[kart].Models[character],Vector3(0,0,0),Quaternion.identity);
+clone.tag = "Spectated";
+clone.networkView.viewID = viewID;
+
+if(gd.Hats[hat].Model != null){
+var HatObject = Instantiate(gd.Hats[hat].Model,clone.position,Quaternion.identity);
+
+if(clone.GetComponent(QA).objects[0] != null){
+HatObject.position = clone.GetComponent(QA).objects[0].position;
+HatObject.rotation = clone.GetComponent(QA).objects[0].rotation;
+HatObject.parent = clone.GetComponent(QA).objects[0];
+}
+}
+
+var Wheels = new Transform[4];
+
+for(var j : int = 0; j < Wheels.Length;j++){
+Wheels[j] = clone.GetComponent(QA).objects[j+1];
+
+var nWheel : Transform = Instantiate(gd.Wheels[wheel].Models[j],Wheels[j].position,Wheels[j].rotation);
+nWheel.parent = Wheels[j].parent;
+nWheel.name = Wheels[j].name;
+nWheel.localScale = Wheels[j].localScale;
+
+clone.GetComponent(kartScript).MeshWheels[j] = nWheel;
+
+Destroy(Wheels[j].gameObject);
+
+clone.GetComponent(QA).objects[j+1] = nWheel;
+
+}
+
+Destroy(clone.GetComponent(kartItem));
+clone.GetComponent(kartScript).locked = false;
+clone.GetComponent(NetworkUpdate).enabled = true;
+}
+

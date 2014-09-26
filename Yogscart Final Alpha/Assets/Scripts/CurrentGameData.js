@@ -1,6 +1,5 @@
 ﻿#pragma strict
 
-var PUC : Transform;
 var Cams : Transform; 
 
 //Tracks 
@@ -20,6 +19,9 @@ var currentPosition : int = 0;
 var Ingame : Transform;
 
 var Tournaments : Tournament[];
+
+@HideInInspector
+var unlockedInsane : boolean;
 
 //Characters 
 var Characters : Character[];
@@ -52,12 +54,17 @@ private var ColourAlpha : Color = Color.black;
 	function Awake () {
 		DontDestroyOnLoad (transform.gameObject);
 		
+		var unlockInsane : boolean = true;
+		
 		for(var n = 0; n < Tournaments.Length; n++){
 		Tournaments[n].LastRank = new String[4];
 		Tournaments[n].LastRank[0] = PlayerPrefs.GetString(Tournaments[n].Name+"[50cc]","No Rank");
 		Tournaments[n].LastRank[1] = PlayerPrefs.GetString(Tournaments[n].Name+"[100cc]","No Rank");
 		Tournaments[n].LastRank[2] = PlayerPrefs.GetString(Tournaments[n].Name+"[150cc]","No Rank");
 		Tournaments[n].LastRank[3] = PlayerPrefs.GetString(Tournaments[n].Name+"[Insane]","No Rank");
+		
+		if(Tournaments[n].LastRank[2] == "No Rank")
+		unlockInsane = false;
 		
 		for(var k = 0; k < Tournaments[n].Tracks.Length; k++){
 		var TimeString = PlayerPrefs.GetString(Tournaments[n].Tracks[k].Name,"0:0:0");
@@ -67,6 +74,8 @@ private var ColourAlpha : Color = Color.black;
 		Tournaments[n].Tracks[k].BestTrackTime.milliSecond = System.Int32.Parse(words[2]);
 		}
 		}
+		
+		unlockedInsane = unlockInsane;
 		
 		for(n = 0; n < Characters.Length; n++){
 		var foo = true;
@@ -126,16 +135,18 @@ public class Track
     var SceneID : String;
  }
  
+enum ItemType{UsableAsShield,AffectsPlayer,AffectsOther,MultipleUses}; 
+ 
 public class PowerUp
  {
     var Name : String;
+    var Icon : Texture2D;
     var Model : Transform;
-    var DisplayModel : Transform;
     
-    var CanHoldBehindKart : boolean;
-    var ItemEffect : boolean;
-    var MinimumPosition : int = -1; //eg 2nd
-    var MaximumPosition : int = -1;// 7th
+    var type : ItemType;
+    
+	var likelihood : int[];
+
  }
 
 public class Tournament
@@ -176,9 +187,19 @@ public class Timer
 	var foo2 = Second;
 	var foo3 = milliSecond;
 
-	var TimeString = foo1.ToString("00") + ":" + foo2.ToString("00") + ":" + foo3.ToString("00");
+	var TimeString : String = foo1.ToString("00") + ":" + foo2.ToString("00") + ":" + (foo3/10).ToString("00");
 	return TimeString;
     }
   
+}
+
+function Exit(){
+BlackOut = true;
+
+transform.name = "OldGameData";
+
+yield WaitForSeconds(1);
+Application.LoadLevel(1);
+Destroy(this.gameObject);
 }
  

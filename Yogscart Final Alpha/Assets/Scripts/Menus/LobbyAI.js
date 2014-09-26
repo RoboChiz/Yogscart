@@ -2,6 +2,7 @@
 
 private var ExplorableAreaPos : Vector2;
 var locked : boolean;
+var cantRun : boolean;
 
 var TraveltoPos : Vector3;
 var WalkDir : Vector3;
@@ -36,9 +37,9 @@ WalkDir = (nTraveltoPos - ntransformposition).normalized;
 
 Debug.DrawRay(transform.position,WalkDir,Color.red);
 
-if(Vector3.Distance(nTraveltoPos,ntransformposition) > 10){
-rigidbody.velocity.x = WalkDir.x * 250 * Time.deltaTime;
-rigidbody.velocity.z = WalkDir.z * 250 * Time.deltaTime;
+if(Vector3.Distance(nTraveltoPos,ntransformposition) > 10 && !cantRun){
+rigidbody.velocity.x = WalkDir.x * 300 * Time.deltaTime;
+rigidbody.velocity.z = WalkDir.z * 300 * Time.deltaTime;
 transform.rotation = Quaternion.Lerp(transform.rotation,Quaternion.LookRotation(WalkDir,Vector3.up),Time.deltaTime*5f);
 transform.GetComponent(Animator).SetFloat("Speed",2);
 }else if(Vector3.Distance(nTraveltoPos,ntransformposition) > 0.1){

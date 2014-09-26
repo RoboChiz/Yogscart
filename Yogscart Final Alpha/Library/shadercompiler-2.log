@@ -1,42 +1,26 @@
-Base path: G:/Editor/Data
-Pipe name: \\.\pipe\UnityShaderCompiler-2-4908
+Base path: C:/Program Files (x86)/Unity/Editor/Data
+Pipe name: \\.\pipe\UnityShaderCompiler-2-6552
 Cmd: getPlatforms
 Cmd: compileSnippet
-  api=5 type=0 insize=4213 outsize=3677 kw=DIRECTIONAL SHADOWS_OFF LIGHTMAP_ON DIRLIGHTMAP_ON ok=1
+  api=0 type=0 insize=4213 outsize=1112 kw=DIRECTIONAL SHADOWS_OFF LIGHTMAP_OFF DIRLIGHTMAP_OFF ok=1
 Cmd: compileSnippet
-  api=5 type=0 insize=4213 outsize=4454 kw=DIRECTIONAL SHADOWS_SCREEN LIGHTMAP_ON DIRLIGHTMAP_ON ok=1
+  api=0 type=1 insize=4213 outsize=1599 kw=DIRECTIONAL SHADOWS_SCREEN LIGHTMAP_OFF DIRLIGHTMAP_OFF ok=1
 Cmd: compileSnippet
-  api=9 type=0 insize=4213 outsize=3711 kw=DIRECTIONAL SHADOWS_OFF LIGHTMAP_OFF DIRLIGHTMAP_OFF VERTEXLIGHT_ON ok=1
+  api=0 type=0 insize=3768 outsize=1187 kw=POINT_COOKIE SHADOWS_OFF ok=1
 Cmd: compileSnippet
-  api=5 type=0 insize=4213 outsize=4356 kw=DIRECTIONAL SHADOWS_SCREEN SHADOWS_NATIVE LIGHTMAP_OFF DIRLIGHTMAP_OFF VERTEXLIGHT_ON ok=1
+  api=0 type=0 insize=3768 outsize=1227 kw=POINT_COOKIE SHADOWS_CUBE ok=1
 Cmd: compileSnippet
-  api=5 type=1 insize=4213 outsize=6 kw=DIRECTIONAL SHADOWS_OFF LIGHTMAP_ON DIRLIGHTMAP_ON ok=1
+  api=0 type=1 insize=3768 outsize=1426 kw=SPOT SHADOWS_OFF ok=1
 Cmd: compileSnippet
-  api=9 type=1 insize=4213 outsize=7 kw=DIRECTIONAL SHADOWS_SCREEN LIGHTMAP_ON DIRLIGHTMAP_OFF ok=1
+  api=0 type=1 insize=3768 outsize=1267 kw=DIRECTIONAL_COOKIE SHADOWS_SCREEN ok=1
 Cmd: compileSnippet
-  api=9 type=0 insize=3768 outsize=2937 kw=DIRECTIONAL SHADOWS_OFF ok=1
+  api=0 type=1 insize=3768 outsize=2017 kw=SPOT SHADOWS_DEPTH SHADOWS_SOFT SHADOWS_NATIVE ok=1
 Cmd: compileSnippet
-  api=9 type=0 insize=3768 outsize=4248 kw=SPOT SHADOWS_DEPTH ok=1
+  api=0 type=0 insize=1564 outsize=1076 kw=SHADOWS_NATIVE ok=1
 Cmd: compileSnippet
-  api=9 type=0 insize=3768 outsize=3994 kw=DIRECTIONAL_COOKIE SHADOWS_SCREEN ok=1
+  api=0 type=1 insize=1564 outsize=1225 kw=SHADOWS_SPLIT_SPHERES SHADOWS_NONATIVE ok=1
 Cmd: compileSnippet
-  api=9 type=0 insize=3768 outsize=4956 kw=SPOT SHADOWS_DEPTH SHADOWS_SOFT SHADOWS_NATIVE ok=1
-Cmd: compileSnippet
-  api=5 type=1 insize=3768 outsize=6 kw=DIRECTIONAL SHADOWS_OFF ok=1
-Cmd: compileSnippet
-  api=5 type=1 insize=3768 outsize=6 kw=DIRECTIONAL SHADOWS_SCREEN ok=1
-Cmd: compileSnippet
-  api=5 type=1 insize=3768 outsize=6 kw=SPOT SHADOWS_DEPTH SHADOWS_SOFT ok=1
-Cmd: compileSnippet
-  api=5 type=0 insize=1564 outsize=3141 kw=SHADOWS_NONATIVE ok=1
-Cmd: compileSnippet
-  api=5 type=1 insize=1564 outsize=6 kw=SHADOWS_SPLIT_SPHERES SHADOWS_NATIVE ok=1
-Cmd: compileSnippet
-  api=9 type=0 insize=1740 outsize=695 kw= ok=1
-Cmd: compileSnippet
-  api=5 type=1 insize=1747 outsize=6 kw= ok=1
-Cmd: compileSnippet
-  api=5 type=0 insize=1135 outsize=1189 kw= ok=1
+  api=0 type=1 insize=1135 outsize=333 kw= ok=1
 Unhandled exception: Readfile from pipe failed. GLE=The pipe has been ended.
 
 

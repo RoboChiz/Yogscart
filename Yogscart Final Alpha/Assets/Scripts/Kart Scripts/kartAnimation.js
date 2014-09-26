@@ -11,4 +11,11 @@ if(ks != null && ani != null){
 ani.SetBool("Drift",ks.drift);
 ani.SetFloat("Steer",ks.steer);
 }
+
+var ki = transform.GetComponent(kartItem); 
+if(ki.heldPowerUp == -1)
+ani.SetBool("Item",false);
+else
+ani.SetBool("Item",true);
+
 }

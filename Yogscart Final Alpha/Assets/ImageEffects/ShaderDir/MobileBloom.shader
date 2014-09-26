@@ -1,8 +1,8 @@
-
 Shader "Hidden/FastBloom" {
 	Properties {
 		_MainTex ("Base (RGB)", 2D) = "white" {}
 		_Bloom ("Bloom (RGB)", 2D) = "black" {}
+		_Intensity ("Intensity(alpha)", float) = 0.5
 	}
 	
 	CGINCLUDE
@@ -69,7 +69,7 @@ Shader "Hidden/FastBloom" {
 			return o; 
 		}					
 						
-		fixed4 fragBloom ( v2f_simple i ) : SV_Target
+		fixed4 fragBloom ( v2f_simple i ) : COLOR
 		{	
         	#if UNITY_UV_STARTS_AT_TOP
 			
@@ -84,7 +84,7 @@ Shader "Hidden/FastBloom" {
 			#endif
 		} 
 		
-		fixed4 fragDownsample ( v2f_tap i ) : SV_Target
+		fixed4 fragDownsample ( v2f_tap i ) : COLOR
 		{				
 			fixed4 color = tex2D (_MainTex, i.uv20);
 			color += tex2D (_MainTex, i.uv21);
@@ -136,7 +136,7 @@ Shader "Hidden/FastBloom" {
 			return o; 
 		}	
 
-		half4 fragBlur8 ( v2f_withBlurCoords8 i ) : SV_Target
+		half4 fragBlur8 ( v2f_withBlurCoords8 i ) : COLOR
 		{
 			half2 uv = i.uv.xy; 
 			half2 netFilterWidth = i.offs;  
@@ -189,7 +189,7 @@ Shader "Hidden/FastBloom" {
 			return o; 
 		}	
 
-		half4 fragBlurSGX ( v2f_withBlurCoordsSGX i ) : SV_Target
+		half4 fragBlurSGX ( v2f_withBlurCoordsSGX i ) : COLOR
 		{
 			half2 uv = i.uv.xy;
 			
@@ -209,12 +209,11 @@ Shader "Hidden/FastBloom" {
 	ENDCG
 	
 	SubShader {
-	  ZTest Off Cull Off ZWrite Off Blend Off
+	  ZTest Always Cull Off
 	  Fog { Mode off }  
 	  
 	// 0
 	Pass {
-	
 		CGPROGRAM
 		#pragma vertex vertBloom
 		#pragma fragment fragBloom
@@ -226,7 +225,6 @@ Shader "Hidden/FastBloom" {
 
 	// 1
 	Pass { 
-	
 		CGPROGRAM
 		
 		#pragma vertex vert4Tap
@@ -241,7 +239,6 @@ Shader "Hidden/FastBloom" {
 	Pass {
 		ZTest Always
 		Cull Off
-		
 		CGPROGRAM 
 		
 		#pragma vertex vertBlurVertical
@@ -255,7 +252,6 @@ Shader "Hidden/FastBloom" {
 	Pass {		
 		ZTest Always
 		Cull Off
-				
 		CGPROGRAM
 		
 		#pragma vertex vertBlurHorizontal
@@ -270,7 +266,7 @@ Shader "Hidden/FastBloom" {
 	Pass {
 		ZTest Always
 		Cull Off
-		
+		Blend OneMinusDstColor SrcColor
 		CGPROGRAM 
 		
 		#pragma vertex vertBlurVerticalSGX
@@ -284,7 +280,7 @@ Shader "Hidden/FastBloom" {
 	Pass {		
 		ZTest Always
 		Cull Off
-				
+		Blend OneMinusDstColor SrcColor
 		CGPROGRAM
 		
 		#pragma vertex vertBlurHorizontalSGX
@@ -292,7 +288,7 @@ Shader "Hidden/FastBloom" {
 		#pragma fragmentoption ARB_precision_hint_fastest 
 		
 		ENDCG
-		}	
+		}
 	}	
 
 	FallBack Off

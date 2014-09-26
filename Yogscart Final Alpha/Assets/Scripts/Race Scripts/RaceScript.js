@@ -73,9 +73,15 @@ SpawnPosition = tm.PositionPoints[0].rep.position + x2 + y2;
 
 }
 
-if(Network.isClient == true || Network.isServer == true)
-KartObject = Network.Instantiate(gd.Karts[gd.currentKart].Models[gd.currentCharacter],SpawnPosition,tm.PositionPoints[0].rep.rotation * Quaternion.Euler(0,-90,0),0);
-else
+if(Network.isClient == true || Network.isServer == true){
+KartObject = Instantiate(gd.Karts[gd.currentKart].Models[gd.currentCharacter],SpawnPosition,tm.PositionPoints[0].rep.rotation * Quaternion.Euler(0,-90,0));
+
+var nviewID = Network.AllocateViewID();
+KartObject.networkView.viewID = nviewID;
+
+networkView.RPC("ImRacing",RPCMode.OthersBuffered,nviewID,gd.currentCharacter,gd.currentHat,gd.currentKart,gd.currentWheel);
+
+}else
 KartObject = Instantiate(gd.Karts[gd.currentKart].Models[gd.currentCharacter],SpawnPosition,tm.PositionPoints[0].rep.rotation * Quaternion.Euler(0,-90,0));
 
 KartObject.tag = "Kart";
@@ -108,20 +114,19 @@ KartObject.GetComponent(QA).objects[j+1] = nWheel;
 
 }
 
-var obj = Instantiate(gd.PUC,Vector3(0,-1000,0),Quaternion.identity);
-KartObject.GetComponent(Item_Kart).ItemCrate = obj.FindChild("Item_Crate");
-
 #if UNITY_ANDROID
 KartObject.gameObject.AddComponent(mobileInput);
 #else
 KartObject.gameObject.AddComponent(kartInput);
 #endif
 
-KartObject.networkView.RPC("LoadObjects",RPCMode.Others,gd.currentHat,gd.currentWheel);
-
 if(Network.isClient == true){
 transform.GetComponent(Client_Script).Representation = KartObject;
 transform.GetComponent(Client_Script).StartCoroutine("UpdatePos");
+}
+
+if(Network.isServer == true){
+transform.GetComponent(Client_Script).Representation = KartObject;
 }
 
 yield WaitForSeconds(0.2);
@@ -131,7 +136,7 @@ for(var i : int = 0; i < objs.Length; i++)
 if((objs[i].GetComponent(kartInput) || objs[i].GetComponent(mobileInput)) && objs[i].GetComponent(kartScript) != null){
 Destroy(objs[i].GetComponent(kartScript));
 Destroy(objs[i].GetComponent(Position_Finding));
-Destroy(objs[i].GetComponent(Item_Kart));
+Destroy(objs[i].GetComponent(kartItem));
 }
 
 }
@@ -141,8 +146,6 @@ function PlayCutscene() {
 var CutsceneCam = new GameObject();
 CutsceneCam.AddComponent(Camera);
 
-CutsceneCam.transform.position = tm.IntroPans[0].StartPoint;
-CutsceneCam.transform.rotation = Quaternion.Euler(tm.IntroPans[0].StartRotation);
 CutsceneCam.AddComponent(AudioSource);
 CutsceneCam.AddComponent(AudioListener);
 CutsceneCam.GetComponent(AudioSource).audio.clip = Resources.Load("Music & Sounds/RaceStart",AudioClip);
@@ -166,7 +169,7 @@ yield WaitForSeconds(0.5);
 Destroy(CutsceneCam);
 
 //Spawn Ingame Camera
-IngameCam = Instantiate(gd.Cams,tm.IntroPans[0].StartPoint,Quaternion.Euler(tm.IntroPans[0].StartRotation));
+IngameCam = Instantiate(gd.Cams,tm.IntroPans[0].StartPoint,Quaternion.identity);
 IngameCam.name = "InGame Cams";
 IngameCam.GetComponent(Camera_Control).Locked = true;
 IngameCam.GetChild(0).GetComponent(Kart_Camera).Target = KartObject;
@@ -175,24 +178,31 @@ IngameCam.GetChild(1).GetComponent(Kart_Camera).Target = KartObject;
 yield WaitForSeconds(0.5);
 gd.BlackOut = false;
 
+if(Network.isClient || Network.isServer){
 if(Network.isClient == true)
 networkView.RPC ("ReadytoStart", RPCMode.Server);
 else
 transform.GetComponent(Host_Script).ReadytoStart();
+}else{
+
+}
 
 }
 
 function Play (cam : Transform,Clip : CameraPoint) {
-var t : float = 0;
-cam.position = Clip.StartPoint;
-cam.rotation = Quaternion.Euler(Clip.StartRotation);
 
-while(t < Clip.TravelTime){
-cam.position = Vector3.Lerp(cam.position,Clip.EndPoint,Time.deltaTime/Clip.TravelTime);
-cam.rotation = Quaternion.Euler(Vector3.Lerp(cam.rotation.eulerAngles,Clip.EndRotation,Time.deltaTime/Clip.TravelTime));
-t += Time.deltaTime/Clip.TravelTime;
+Debug.Log(Clip.TravelTime);
+
+var startTime = Time.realtimeSinceStartup;
+
+while((Time.realtimeSinceStartup-startTime) < Clip.TravelTime){
+cam.position = Vector3.Lerp(Clip.StartPoint,Clip.EndPoint,(Time.realtimeSinceStartup-startTime)/Clip.TravelTime);
+cam.rotation = Quaternion.Slerp(Quaternion.Euler(Clip.StartRotation),Quaternion.Euler(Clip.EndRotation),(Time.realtimeSinceStartup-startTime)/Clip.TravelTime);
 yield;
 }
+
+Debug.Log(Time.realtimeSinceStartup-startTime);
+
 }
 
 
@@ -200,30 +210,11 @@ yield;
 @RPC
 function PlayCountdown() {
 
-var objs = GameObject.FindObjectsOfType(GameObject);
-
-if(Network.isClient == true){
-for(var i : int = 0; i < objs.Length; i++){
-if(objs[i] != KartObject){
-if(objs[i].GetComponent(Racer_AI) == true)
-Destroy(objs[i].GetComponent(Racer_AI));
-if(objs[i].GetComponent(kartScript) == true)
-Destroy(objs[i].GetComponent(kartScript));
-if(objs[i].GetComponent(kartInput) == true)
-Destroy(objs[i].GetComponent(kartInput));
-if(objs[i].GetComponent(Position_Finding) == true)
-Destroy(objs[i].GetComponent(Position_Finding));
-if(objs[i].GetComponent(Item_Kart) == true)
-Destroy(objs[i].GetComponent(Item_Kart));
-}
-}
-}
-
 gameObject.AddComponent(AudioSource);
 transform.GetComponent(AudioSource).audio.clip = Resources.Load("Music & Sounds/CountDown",AudioClip);
 transform.GetComponent(AudioSource).audio.Play ();
 
-for(i = 3; i >= 0; i--){
+for(var i : int = 3; i >= 0; i--){
 
 CountdownText = i;
 yield WaitForSeconds(1);
@@ -235,12 +226,10 @@ CountdownText = -1;
 
 @RPC
 function UnlockKart(){
-var objs = GameObject.FindObjectsOfType(GameObject);
 
-for(var i : int = 0; i < objs.Length; i++){
-if(objs[i].GetComponent(kartScript) != null)
-objs[i].GetComponent(kartScript).locked = false;
-}
+var cs = transform.GetComponent(Client_Script);
+
+cs.Representation.GetComponent(kartScript).locked = false;
 
 if(Network.isServer == false || (Network.isServer == true && transform.GetComponent(Host_Script).conscious == true))
 KartObject.GetComponent(Position_Finding).enabled = true;
@@ -370,9 +359,18 @@ yield;
 
 if(Network.isClient == true)
 transform.GetComponent(Client_Script).Finished();
-
-if(Network.isServer == true)
+else if(Network.isServer == true)
 transform.GetComponent(Host_Script).PlayerFinished();
 
 }
 
+class Racer {
+
+var Human : boolean;
+var access : NetworkPlayer;
+var rep : Transform;
+var id : String;
+var TotalDistance : int;
+var NextDistance : float;
+
+}	

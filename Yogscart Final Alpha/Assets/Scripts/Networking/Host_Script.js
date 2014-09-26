@@ -119,23 +119,6 @@ i = ConnectedRacers.Length;
 
 }
 
-
-@RPC
-function WhatsOcurring(info : NetworkMessageInfo){
-if(ServerState < 2){
-networkView.RPC ("LoadNetworkLevel", info.sender, "Lobby",lastLevelPrefix);
-
-if(ServerState == 1){
-networkView.RPC ("LoadNetworkLevel", info.sender, "Lobby",lastLevelPrefix);
-networkView.RPC ("SelectaLevel", info.sender);
-networkView.RPC ("Countdowner", info.sender,transform.GetComponent(Countdown).cdTime);
-}
-
-
-}else
-networkView.RPC ("LoadNetworkLevel", info.sender, Application.loadedLevelName,lastLevelPrefix);
-}
-
 @RPC
 function LevelChoose(cup : int, track : int){
 
@@ -169,11 +152,12 @@ private var StartSelect : boolean;
 
 function OnGUI () {
 
-if(Application.loadedLevel == 1 && conscious == true && (gd.currentKart == -1 || gd.currentCharacter == -1 || gd.currentHat == -1 || gd.currentWheel == -1)){
+if(Application.loadedLevel == 2 ){
+if(conscious == true && (gd.currentKart == -1 || gd.currentCharacter == -1 || gd.currentHat == -1 || gd.currentWheel == -1)){
 GameObject.Find("Lobby Holder").GetComponent(Character_Select).enabled = true;
 }else{
-if(GameObject.Find("Lobby Holder") != null)
 GameObject.Find("Lobby Holder").GetComponent(LobbyHandler).currentRoom = 1;
+}
 }
 
 if(transform.GetComponent(Level_Select) != null)
@@ -216,8 +200,8 @@ Timer5();
 
 if(ServerState == 0 && Automatic == false && (Input.GetAxis("Submit") != 0  || Input.touchCount > 0) && ControlLock == false && StartSelect == false && gd.currentKart != -1 && gd.currentCharacter != -1 && gd.currentHat != -1 && gd.currentWheel != -1){
 if(HumanCount >= MinPlayers){
-networkView.RPC ("Countdowner", RPCMode.All,5);
 StartSelect = true;
+networkView.RPC ("Countdowner", RPCMode.All,5);
 Timer5();
 }
 }
@@ -276,7 +260,8 @@ track  = Random.Range(0,gd.Tournaments[cup].Tracks.Length);
 
 yield WaitForSeconds(5.1);
 
-networkView.RPC ("LoadNetworkLevel", RPCMode.All, gd.Tournaments[cup].Tracks[track].SceneID,lastLevelPrefix);
+Network.RemoveRPCs(networkView.owner);
+networkView.RPC ("LoadNetworkLevel", RPCMode.AllBuffered, gd.Tournaments[cup].Tracks[track].SceneID,lastLevelPrefix);
 ServerState = 2;
 
 for(var x : int = 0; x < ConnectedRacers.Length; x++){
@@ -427,25 +412,23 @@ EndRace();
 
 }
 
+private var ended : boolean;
+
 function EndRace(){
+if(ended == false){
+ended = true;
+
 networkView.RPC ("StopRacing", RPCMode.All);
 networkView.RPC ("Countdowner", RPCMode.All,10);
-yield WaitForSeconds(10);
+yield WaitForSeconds(10.1);
+
 //Reset Server
 StopCoroutine("SortArray");
-networkView.RPC ("LoadNetworkLevel",RPCMode.All, "Lobby",lastLevelPrefix);
+Network.RemoveRPCs(networkView.owner);
+networkView.RPC ("LoadNetworkLevel",RPCMode.AllBuffered, "Lobby",lastLevelPrefix);
 StartSelect = false;
 
 ResetVotes();
 
 }
-
-class Racer {
-
-var Human : boolean;
-var access : NetworkPlayer;
-var id : String;
-var TotalDistance : int;
-var NextDistance : float;
-
-}	
+}

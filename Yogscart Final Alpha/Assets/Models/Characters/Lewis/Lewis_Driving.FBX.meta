@@ -132,6 +132,7 @@ ModelImporter:
     7400012: Left_Left
     7400014: Left_Right
     7400016: Left_Straight
+    7400018: Item Hold
     9500000: //RootNode
     13700000: Badge
     13700002: Lewis_Model
@@ -1755,6 +1756,205 @@ ModelImporter:
       loop: 0
       loopTime: 1
       loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Badge
+        weight: 0
+      - path: Lewis Rig|hips
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|neck
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|neck/Lewis
+          Rig|head
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|neck/Lewis
+          Rig|head/Eyes.L
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|neck/Lewis
+          Rig|head/Eyes.R
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.L
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.L/Lewis
+          Rig|upperarm.L
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.L/Lewis
+          Rig|upperarm.L/Lewis Rig|lowerarm.L
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.L/Lewis
+          Rig|upperarm.L/Lewis Rig|lowerarm.L/Lewis Rig|hand.L
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.L/Lewis
+          Rig|upperarm.L/Lewis Rig|lowerarm.L/Lewis Rig|hand.L/Lewis Rig|indexfingerbase.L
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.L/Lewis
+          Rig|upperarm.L/Lewis Rig|lowerarm.L/Lewis Rig|hand.L/Lewis Rig|indexfingerbase.L/Lewis
+          Rig|indexfingermiddle.L
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.L/Lewis
+          Rig|upperarm.L/Lewis Rig|lowerarm.L/Lewis Rig|hand.L/Lewis Rig|indexfingerbase.L/Lewis
+          Rig|indexfingermiddle.L/Lewis Rig|indexfingertip.L
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.L/Lewis
+          Rig|upperarm.L/Lewis Rig|lowerarm.L/Lewis Rig|hand.L/Lewis Rig|middlefingerbase.L
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.L/Lewis
+          Rig|upperarm.L/Lewis Rig|lowerarm.L/Lewis Rig|hand.L/Lewis Rig|middlefingerbase.L/Lewis
+          Rig|middlefingermiddle.L
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.L/Lewis
+          Rig|upperarm.L/Lewis Rig|lowerarm.L/Lewis Rig|hand.L/Lewis Rig|middlefingerbase.L/Lewis
+          Rig|middlefingermiddle.L/Lewis Rig|middlefingertip.L
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.L/Lewis
+          Rig|upperarm.L/Lewis Rig|lowerarm.L/Lewis Rig|hand.L/Lewis Rig|pinkyfingerbase.L
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.L/Lewis
+          Rig|upperarm.L/Lewis Rig|lowerarm.L/Lewis Rig|hand.L/Lewis Rig|pinkyfingerbase.L/Lewis
+          Rig|pinkyfingermiddle.L
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.L/Lewis
+          Rig|upperarm.L/Lewis Rig|lowerarm.L/Lewis Rig|hand.L/Lewis Rig|pinkyfingerbase.L/Lewis
+          Rig|pinkyfingermiddle.L/Lewis Rig|pinkyfingertip.L
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.L/Lewis
+          Rig|upperarm.L/Lewis Rig|lowerarm.L/Lewis Rig|hand.L/Lewis Rig|ringfingerbase.L
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.L/Lewis
+          Rig|upperarm.L/Lewis Rig|lowerarm.L/Lewis Rig|hand.L/Lewis Rig|ringfingerbase.L/Lewis
+          Rig|ringfingermiddle.L
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.L/Lewis
+          Rig|upperarm.L/Lewis Rig|lowerarm.L/Lewis Rig|hand.L/Lewis Rig|ringfingerbase.L/Lewis
+          Rig|ringfingermiddle.L/Lewis Rig|ringfingertip.L
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.L/Lewis
+          Rig|upperarm.L/Lewis Rig|lowerarm.L/Lewis Rig|hand.L/Lewis Rig|thumbbase.L
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.L/Lewis
+          Rig|upperarm.L/Lewis Rig|lowerarm.L/Lewis Rig|hand.L/Lewis Rig|thumbbase.L/Lewis
+          Rig|thumbmiddle.L
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.L/Lewis
+          Rig|upperarm.L/Lewis Rig|lowerarm.L/Lewis Rig|hand.L/Lewis Rig|thumbbase.L/Lewis
+          Rig|thumbmiddle.L/Lewis Rig|thumbtip.L
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.R
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.R/Lewis
+          Rig|upperarm.R
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.R/Lewis
+          Rig|upperarm.R/Lewis Rig|lowerarm.R
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.R/Lewis
+          Rig|upperarm.R/Lewis Rig|lowerarm.R/Lewis Rig|hand.R
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.R/Lewis
+          Rig|upperarm.R/Lewis Rig|lowerarm.R/Lewis Rig|hand.R/Lewis Rig|indexfingerbase.R
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.R/Lewis
+          Rig|upperarm.R/Lewis Rig|lowerarm.R/Lewis Rig|hand.R/Lewis Rig|indexfingerbase.R/Lewis
+          Rig|indexfingermiddle.R
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.R/Lewis
+          Rig|upperarm.R/Lewis Rig|lowerarm.R/Lewis Rig|hand.R/Lewis Rig|indexfingerbase.R/Lewis
+          Rig|indexfingermiddle.R/Lewis Rig|indexfingertip.R
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.R/Lewis
+          Rig|upperarm.R/Lewis Rig|lowerarm.R/Lewis Rig|hand.R/Lewis Rig|middlefingerbase.R
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.R/Lewis
+          Rig|upperarm.R/Lewis Rig|lowerarm.R/Lewis Rig|hand.R/Lewis Rig|middlefingerbase.R/Lewis
+          Rig|middlefingermiddle.R
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.R/Lewis
+          Rig|upperarm.R/Lewis Rig|lowerarm.R/Lewis Rig|hand.R/Lewis Rig|middlefingerbase.R/Lewis
+          Rig|middlefingermiddle.R/Lewis Rig|middlefingertip.R
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.R/Lewis
+          Rig|upperarm.R/Lewis Rig|lowerarm.R/Lewis Rig|hand.R/Lewis Rig|pinkyfingerbase.R
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.R/Lewis
+          Rig|upperarm.R/Lewis Rig|lowerarm.R/Lewis Rig|hand.R/Lewis Rig|pinkyfingerbase.R/Lewis
+          Rig|pinkyfingermiddle.R
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.R/Lewis
+          Rig|upperarm.R/Lewis Rig|lowerarm.R/Lewis Rig|hand.R/Lewis Rig|pinkyfingerbase.R/Lewis
+          Rig|pinkyfingermiddle.R/Lewis Rig|pinkyfingertip.R
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.R/Lewis
+          Rig|upperarm.R/Lewis Rig|lowerarm.R/Lewis Rig|hand.R/Lewis Rig|ringfingerbase.R
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.R/Lewis
+          Rig|upperarm.R/Lewis Rig|lowerarm.R/Lewis Rig|hand.R/Lewis Rig|ringfingerbase.R/Lewis
+          Rig|ringfingermiddle.R
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.R/Lewis
+          Rig|upperarm.R/Lewis Rig|lowerarm.R/Lewis Rig|hand.R/Lewis Rig|ringfingerbase.R/Lewis
+          Rig|ringfingermiddle.R/Lewis Rig|ringfingertip.R
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.R/Lewis
+          Rig|upperarm.R/Lewis Rig|lowerarm.R/Lewis Rig|hand.R/Lewis Rig|thumbbase.R
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.R/Lewis
+          Rig|upperarm.R/Lewis Rig|lowerarm.R/Lewis Rig|hand.R/Lewis Rig|thumbbase.R/Lewis
+          Rig|thumbmiddle.R
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|stomach/Lewis Rig|chest/Lewis Rig|shoulder.R/Lewis
+          Rig|upperarm.R/Lewis Rig|lowerarm.R/Lewis Rig|hand.R/Lewis Rig|thumbbase.R/Lewis
+          Rig|thumbmiddle.R/Lewis Rig|thumbtip.R
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|upperleg.L
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|upperleg.L/Lewis Rig|lowerleg.L
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|upperleg.L/Lewis Rig|lowerleg.L/Lewis Rig|foot.L
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|upperleg.L/Lewis Rig|lowerleg.L/Lewis Rig|foot.L/Lewis
+          Rig|toe.L
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|upperleg.R
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|upperleg.R/Lewis Rig|lowerleg.R
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|upperleg.R/Lewis Rig|lowerleg.R/Lewis Rig|foot.R
+        weight: 1
+      - path: Lewis Rig|hips/Lewis Rig|upperleg.R/Lewis Rig|lowerleg.R/Lewis Rig|foot.R/Lewis
+          Rig|toe.R
+        weight: 1
+      - path: Lewis_Model
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Item Hold
+      takeName: Take 001
+      firstFrame: 165
+      lastFrame: 185
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
       loopBlendPositionXZ: 0

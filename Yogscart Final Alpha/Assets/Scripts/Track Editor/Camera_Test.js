@@ -26,21 +26,20 @@ yield WaitForSeconds(TestPan.TravelTime);
 }
 
 function Play () {
-t = 0;
-transform.position = TestPan.StartPoint;
-transform.rotation = Quaternion.Euler(TestPan.StartRotation);
 
-Debug.Log("Pan Started!");
-while(t < TestPan.TravelTime){
-transform.position = Vector3.Lerp(transform.position,TestPan.EndPoint,Time.deltaTime/TestPan.TravelTime);
-transform.rotation = Quaternion.Euler(Vector3.Lerp(transform.rotation.eulerAngles,TestPan.EndRotation,Time.deltaTime/TestPan.TravelTime));
-t += Time.deltaTime/TestPan.TravelTime;
+Debug.Log(TestPan.TravelTime);
+
+var startTime = Time.realtimeSinceStartup;
+
+while((Time.realtimeSinceStartup-startTime) < TestPan.TravelTime){
+transform.position = Vector3.Lerp(TestPan.StartPoint,TestPan.EndPoint,(Time.realtimeSinceStartup-startTime)/TestPan.TravelTime);
+transform.rotation = Quaternion.Slerp(Quaternion.Euler(TestPan.StartRotation),Quaternion.Euler(TestPan.EndRotation),(Time.realtimeSinceStartup-startTime)/TestPan.TravelTime);
 yield;
 }
-Debug.Log("Done!");
+
+Debug.Log(Time.realtimeSinceStartup-startTime);
+
 }
-
-
  //var StartPoint : Vector3;
  //var EndPoint : Vector3;
  //var StartRotation : Vector3;

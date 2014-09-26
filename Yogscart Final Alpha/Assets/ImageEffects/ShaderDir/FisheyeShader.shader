@@ -1,4 +1,4 @@
-Shader "Hidden/FisheyeShader" {
+Shader "IndieEffects/FisheyeShader" {
 	Properties {
 		_MainTex ("Base (RGB)", 2D) = "" {}
 	}
@@ -9,7 +9,7 @@ Shader "Hidden/FisheyeShader" {
 	#include "UnityCG.cginc"
 	
 	struct v2f {
-		float4 pos : SV_POSITION;
+		float4 pos : POSITION;
 		float2 uv : TEXCOORD0;
 	};
 	
@@ -25,7 +25,7 @@ Shader "Hidden/FisheyeShader" {
 		return o;
 	} 
 	
-	half4 frag(v2f i) : SV_Target 
+	half4 frag(v2f i) : COLOR 
 	{
 		half2 coords = i.uv;
 		coords = (coords - 0.5) * 2.0;		

@@ -1,15 +1,11 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Menus\Character_Select.js">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\New Race Scripts\Race_Master.js">
     <Files>
-      <File FileName="Assets\Scripts\Menus\Character_Select.js" Line="412" Column="1" />
-      <File FileName="Assets\Scripts\Character Scripts\QA.js" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\Menus\MainMenu.js" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\Menus\Level_Select.js" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\Menus\Character_Select.js" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\Networking\Host_Script.js" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\Networking\Client_Script.js" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\Networking\Countdown.js" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Menus\Character_Select.js" Line="334" Column="62" />
+      <File FileName="Assets\Scripts\Menus\Level_Select.js" Line="52" Column="17" />
+      <File FileName="Assets\Scripts\New Race Scripts\Race_Master.js" Line="326" Column="26" />
+      <File FileName="Assets\Scripts\New Race Scripts\Ending_CutScene.js" Line="71" Column="28" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

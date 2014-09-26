@@ -209,7 +209,8 @@ State = 2;
 }
 
 if(MultiButton(Rect(GUIPos.x,GUIPos.y + 10 + GUISize.y,GUISize.x,GUISize.y),"Multiplayer",1)){
-State = 3;
+//State = 3;
+FlashRed();
 }
 
 if(MultiButton(Rect(GUIPos.x,GUIPos.y + 20 + (2*GUISize.y),GUISize.x,GUISize.y),"Options",2)){
@@ -237,21 +238,24 @@ largestcontrol = 5;
 gd.RaceState = -1;
 
 if(MultiButton(Rect(GUIPos.x,GUIPos.y,GUISize.x,GUISize.y),"Grand Prix",0,true)){
-//State = 8;
-//gd.RaceState = 0;
-FlashRed();
+State = 14;
+gd.transform.GetComponent(SinglePlayer_Script).type = RaceStyle.GrandPrix;
+transform.GetComponent(Level_Select).GrandPrixOnly = true;
+StartSinglePlayer();
 }
 
-if(MultiButton(Rect(GUIPos.x,GUIPos.y + 10 + GUISize.y,GUISize.x,GUISize.y),"Single Race",1,true)){
-//State = 8;
-//gd.RaceState = 1;
-FlashRed();
+if(MultiButton(Rect(GUIPos.x,GUIPos.y + 10 + GUISize.y,GUISize.x,GUISize.y),"Custom Race",1,true)){
+State = 14;
+gd.transform.GetComponent(SinglePlayer_Script).type = RaceStyle.CustomRace;
+transform.GetComponent(Level_Select).GrandPrixOnly = false;
+StartSinglePlayer();
 }
 
 if(MultiButton(Rect(GUIPos.x,GUIPos.y + 20 + (2*GUISize.y),GUISize.x,GUISize.y),"Time Trial",2,true)){
-//State = 5;
-//gd.RaceState = 2;
-FlashRed();
+State = 14;
+gd.transform.GetComponent(SinglePlayer_Script).type = RaceStyle.TimeTrial;
+transform.GetComponent(Level_Select).GrandPrixOnly = false;
+StartSinglePlayer();
 }
 
 if(MultiButton(Rect(GUIPos.x,GUIPos.y + 30 + (3*GUISize.y),GUISize.x,GUISize.y),"Yogtowers Tour",3,true)){
@@ -677,6 +681,10 @@ Inputs = copy;
 
 }
 
+if(State == 14){
+
+}
+
 if(Input.GetAxis("Cancel") != 0 && controlCatch == false){
 controlCatch = true;
 }
@@ -711,6 +719,8 @@ var conscious : boolean = true;
 var MinPlayers : int;
 
 function StartServer(){
+
+gd.BlackOut = true;
 
 yield WaitForSeconds(0.6);
 
@@ -747,9 +757,7 @@ MyRacer.access = Network.player;
 HS.AddRacer(MyRacer);
 }
 
-Application.LoadLevel("Lobby");
-
-gd.BlackOut = false;
+HS.gameObject.networkView.RPC ("LoadNetworkLevel",RPCMode.AllBuffered, "Lobby",0);
 
 }
 
@@ -871,7 +879,6 @@ State = -1;
 
 function OnConnectedToServer() {
 CS.enabled = true;
-CS.StartConnectionStuff();
 }
 
 var errorText : String;
@@ -880,4 +887,28 @@ function OnFailedToConnect(error: NetworkConnectionError) {
 		errorText = error.ToString();
 		State = 12;
 	}
+	
+function StartSinglePlayer(){
+
+while(gd.currentKart == -1){
+GameObject.Find("CS_Camera").camera.enabled = true;
+transform.GetComponent(Character_Select).enabled = true;
+transform.GetComponent(Level_Select).hidden = true;
+yield;
+}
+
+GameObject.Find("CS_Camera").camera.enabled = false;
+
+var sps : SinglePlayer_Script = gd.GetComponent(SinglePlayer_Script);
+
+while(sps.nextTrack == -1){
+transform.GetComponent(Level_Select).hidden = false;
+yield;
+}
+
+sps.enabled = true;
+
+gd.BlackOut = true;	
+			
+}	
 

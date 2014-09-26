@@ -16,8 +16,8 @@ collider.enabled = false;
 
 yield WaitForSeconds(1);
 
-while(Particles.position.y > OriginalHeight - 0.3){
-Particles.position.y -= Time.deltaTime/10f;
+while(Particles.position.y > OriginalHeight - 1){
+Particles.position.y -= Time.deltaTime/5f;
 yield;
 }
 
