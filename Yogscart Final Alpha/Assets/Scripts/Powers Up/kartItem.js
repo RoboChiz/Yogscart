@@ -21,7 +21,7 @@ pf = transform.GetComponent(Position_Finding);
 }
 
 function OnTriggerEnter (other : Collider) {
-if(other.name == "Crate" && inUse == false){
+if(other.tag == "Crate" && inUse == false){
 decidePowerUp();
 inUse = true;
 }

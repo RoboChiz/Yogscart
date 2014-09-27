@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: bf9494894594a1a4c8f09bd2583d6316
 ModelImporter:
-  serializedVersion: 15
+  serializedVersion: 16
   fileIDToRecycleName:
     100000: Armature
     100002: Armature_001
@@ -119,6 +119,7 @@ ModelImporter:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
     optimizeGameObjects: 0
+    motionNodeName: 
     animationCompression: 3
     animationRotationError: .5
     animationPositionError: .5
@@ -536,4 +537,5 @@ ModelImporter:
   lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: 578a48b93fa806c45baae92e00787020,
     type: 3}
   animationType: 3
+  additionalBone: 0
   userData: 

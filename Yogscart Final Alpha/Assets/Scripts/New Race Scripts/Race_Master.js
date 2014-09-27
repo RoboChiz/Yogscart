@@ -160,7 +160,10 @@ if(State == Testing.RaceInfo){
 
 GUI.color = new Color32(255, 255, 255, raceGUIAlpha);
 
+if(type != RaceStyle.TimeTrial)
 var raceTexture : Texture2D  = Resources.Load("UI Textures/Level Selection/" + (sps.totalRaces+1),Texture2D);
+else
+raceTexture = Resources.Load("UI Textures/Level Selection/TimeTrial",Texture2D);
 
 idealWidth = Screen.width-20;
 previewRatio = idealWidth/raceTexture.width;
