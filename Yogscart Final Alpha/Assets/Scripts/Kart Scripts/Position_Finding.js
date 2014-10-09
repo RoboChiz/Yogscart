@@ -1,6 +1,6 @@
 ﻿#pragma strict
 
-var MyPosition : int;
+var position : int;
 
 var Lap : int;
 var currentPos : int;
@@ -28,9 +28,9 @@ currentTotal = Mathf.Clamp(currentTotal,Lap * tm.PositionPoints.Length,Mathf.Inf
 currentDistance = Vector3.Distance(transform.position,tm.PositionPoints[NumClamp(currentPos + 1,0,tm.PositionPoints.Length)].rep.position);
 
 var hit : RaycastHit;
-if(currentTotal > (Lap+1)*tm.PositionPoints.Length-1){
+if(currentPos == 0 && currentTotal >= (Lap+1)*tm.PositionPoints.Length-1){
 
-if(currentPos == 0 && Mathf.Abs(Vector3.Distance(transform.position,tm.PositionPoints[1].rep.position) - Vector3.Distance(transform.position,tm.PositionPoints[tm.PositionPoints.Length-1].rep.position)) < 0.5)
+if(currentPos == 0 && Vector3.Distance(transform.position,tm.PositionPoints[1].rep.position) <= Vector3.Distance(transform.position,tm.PositionPoints[tm.PositionPoints.Length-1].rep.position))
 Lap += 1;
 
 }

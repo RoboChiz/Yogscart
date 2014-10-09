@@ -36,6 +36,8 @@ var flameParticles : ParticleSystem[];
 
 var KartBody : Transform;
 
+var engineSound : AudioClip;
+
 function Awake(){
 //Precalulcate intensive constants
 MSdivided = (1/MaxSpeed);
@@ -83,6 +85,20 @@ VisualUpdate();
 function FixedUpdate () {
 
 lapisAmount = Mathf.Clamp(lapisAmount,0,10);
+
+//Play engine Audio
+if(engineSound != null){
+if(!audio.isPlaying){
+audio.clip = engineSound;
+audio.Play();
+audio.loop = true;
+}
+
+var es = ExpectedSpeed/4f;
+audio.volume = Mathf.Lerp(audio.volume,es*4,Time.deltaTime);
+audio.pitch = Mathf.Lerp(audio.pitch,1 + es,Time.deltaTime);
+
+}
 
 if(!isFalling){
 if(!locked){
@@ -133,8 +149,8 @@ ExpectedSpeed += (throttle * Acceleration * 2) *  Time.fixedDeltaTime;
 else{
 var percentage : float = MSdivided * Mathf.Abs(ExpectedSpeed);
 ExpectedSpeed += (throttle * Acceleration * (1f-percentage)) *  Time.fixedDeltaTime;
-}
-				
+}				
+												
 }
 
 function ApplyStopForce (){
@@ -150,8 +166,11 @@ ExpectedSpeed = 0;
 function ApplySteering(){
 
 if(!applyingDrift){
-Wheels[0].steerAngle = Mathf.Lerp(Wheels[0].steerAngle,steer * turnSpeed,Time.fixedDeltaTime*10);
-Wheels[1].steerAngle = Mathf.Lerp(Wheels[1].steerAngle,steer * turnSpeed,Time.fixedDeltaTime*10);
+
+var speedVal = Mathf.Clamp((MaxSpeed - ExpectedSpeed)/2f,1,Mathf.Infinity);
+
+Wheels[0].steerAngle = Mathf.Lerp(Wheels[0].steerAngle,steer * turnSpeed * speedVal,Time.fixedDeltaTime*10);
+Wheels[1].steerAngle = Mathf.Lerp(Wheels[1].steerAngle,steer * turnSpeed * speedVal,Time.fixedDeltaTime*10);
 }else{
 Wheels[0].steerAngle = Mathf.Lerp(Wheels[0].steerAngle,DriftVal,Time.fixedDeltaTime);
 Wheels[1].steerAngle = Mathf.Lerp(Wheels[1].steerAngle,DriftVal,Time.fixedDeltaTime);

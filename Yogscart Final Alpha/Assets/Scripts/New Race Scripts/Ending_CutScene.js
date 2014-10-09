@@ -25,17 +25,17 @@ i = 13;
 }
 }
 
-if(skipScene == true && Input.GetAxisRaw("Submit") !=0  && controlLock == false){
+if(skipScene == true && Input.GetAxisRaw(gd.pcn[0]+"Submit") !=0  && controlLock == false){
 gd.Exit();
 controlLock = true;
 }
 
-if(skipScene == false && Input.GetAxisRaw("Submit") !=0 && controlLock == false){
+if(skipScene == false && Input.GetAxisRaw(gd.pcn[0]+"Submit") !=0 && controlLock == false){
 skipScene = true;
 controlLock = true;
 }
 
-if(Input.GetAxisRaw("Submit") == 0)
+if(Input.GetAxisRaw(gd.pcn[0]+"Submit") == 0)
 controlLock = false;
 
 if(skipScene)

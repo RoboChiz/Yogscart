@@ -3,23 +3,42 @@
 private var td : TrackData;
 private var pf : Position_Finding;
 private var ks : kartScript;
+private var ki : kartItem;
 
-var angleRequired : float = 5f;
+var Difficulty : int;
+//0 - 50cc, 1 - 100cc, 2 - 150cc, 3 - Insane
 
+var angleRequired : float = 2f;
 private var steering : int;
+
+private var nTarget : Vector3;
+private var targestPos : int;
+
+private var usedItem : boolean = false;
 
 function Awake(){
 td = GameObject.Find("Track Manager").GetComponent(TrackData);
 pf = transform.GetComponent(Position_Finding);
 ks = transform.GetComponent(kartScript);
+ki = transform.GetComponent(kartItem);
 }
-
-private var nTarget : Vector3;
-
-private var targestPos : int;
 
 function Update () {
 
+//Calculate Throttle
+ks.throttle = 1;
+
+//Calculate Item
+
+if(Difficulty == 0){
+if(ki.heldPowerUp != -1 && usedItem == false){
+useItemRandom();
+usedItem = true;
+}
+}
+
+
+//Calculate Steering
 if(pf.currentPos+1 != targestPos){
 
 var nextChump : int;
@@ -54,19 +73,16 @@ steering = 0;
 
 ks.steer = steering;
 
-Debug.DrawRay(transform.position,transform.right*3);
-Debug.DrawRay(transform.position,-transform.right*3);
 
-if(Physics.Raycast(transform.position,transform.right,3)){
-ks.steer = 1;
 }
 
-if(Physics.Raycast(transform.position,-transform.right,3)){
-ks.steer = -1;
-}
-
-
-
-ks.throttle = 1;
-
+function useItemRandom(){
+Debug.Log("Started Iteming!");
+yield WaitForSeconds(Random.Range(0,15));
+ki.input = true;
+yield;
+yield;
+Debug.Log("Done Iteming!");
+ki.input = false;
+usedItem = false;
 }

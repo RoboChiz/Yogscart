@@ -195,7 +195,10 @@ if(LoopedTrack == true && i > 0 && i < PositionPoints.Length && PositionPoints[i
  
  PositionPoints = copy;
  
- //Selection.activeTransform = obj.transform;
+ #if UNITY_EDITOR
+	Selection.activeTransform = obj.transform; 
+ #endif
+
  
  }
  

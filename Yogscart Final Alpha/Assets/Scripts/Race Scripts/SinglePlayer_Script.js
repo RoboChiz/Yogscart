@@ -47,7 +47,7 @@ rm.type = type;
 var copy = new Array();
 
 if(type != RaceStyle.TimeTrial){
-for(var i : int = 0;i < 11;i++){
+for(var i : int = 0;i < 12 - gd.pcn.Length;i++){
 var AIRacer = new PlayerRacer();
 AIRacer.Human = false;
 AIRacer.HumanID = -1;
@@ -60,9 +60,11 @@ copy.Push(AIRacer);
 }
 }
 
+for(i = 0;i < gd.pcn.Length;i++){
+if(type != RaceStyle.TimeTrial || (type == RaceStyle.TimeTrial && i == 0)){
 var nRacer = new PlayerRacer();
 nRacer.Human = true;
-nRacer.HumanID = 0;
+nRacer.HumanID = i;
 nRacer.Character = gd.currentCharacter;
 nRacer.Hat = gd.currentHat;
 nRacer.Kart = gd.currentKart;
@@ -70,6 +72,8 @@ nRacer.Wheel = gd.currentWheel;
 nRacer.timer = new Timer();
 
 copy.Push(nRacer);
+}
+}
 
 rm.SPRacers = copy;
 
@@ -87,4 +91,3 @@ rm.SinglePlayerRace();
 Debug.Log("Done the RACE loading!");
 
 }
-

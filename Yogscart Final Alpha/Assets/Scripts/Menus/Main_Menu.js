@@ -48,16 +48,17 @@ function Update(){
 var background = transform.GetChild(0).guiTexture;
 background.pixelInset = Rect(0,0,Screen.width,Screen.height);
 
-if(gd == null){
-gd = GameObject.Find("GameData").GetComponent(CurrentGameData);
-sps = gd.GetComponent(SinglePlayer_Script);
-HS = GameObject.Find("GameData").GetComponent(Race_Host);
-CS = GameObject.Find("GameData").GetComponent(Race_Client);
-}
 }
 
 function Start(){
 LockedColourAlpha.a = 0;
+
+gd = GameObject.Find("GameData").GetComponent(CurrentGameData);
+sps = gd.GetComponent(SinglePlayer_Script);
+HS = GameObject.Find("GameData").GetComponent(Race_Host);
+CS = GameObject.Find("GameData").GetComponent(Race_Client);
+
+gd.allowedToChange = true;
 
 var url = "https://db.tt/N51AaMhM";
 www1 = new WWW (url);
@@ -65,6 +66,7 @@ yield www1;
 
 if(!String.IsNullOrEmpty(www1.error))
 Error = true;
+
 
 }
 
@@ -89,7 +91,27 @@ var LogoRect = Rect(Screen.width/20f,Screen.width/20f,LogoWidth,Logo.height * Ra
 
 GUI.DrawTexture(LogoRect,Logo);
 
-if(Input.GetAxis("Submit") == 0 && Input.GetAxis("Cancel") == 0 )
+if(gd.pcn == null || gd.pcn.Length == 0){
+
+var inputWidth : float = Screen.width/3f;
+var inputRect = Rect(Screen.width/20f * 2.5f,Screen.height * (1f/6f),inputWidth,Screen.height * (2f/6f));
+
+OutLineLabel2(inputRect,"Press Start on an Input Device!",2);
+
+var keyboardIcon = Resources.Load("UI Textures/Controls/Keyboard",Texture2D);
+var xboxIcon = Resources.Load("UI Textures/Controls/Xbox",Texture2D);
+
+var keyRect = Rect(Screen.width/20f * 4f,Screen.height * (1.75f/6f),inputWidth/3f,Screen.height * (2f/6f));
+var xboxRect = Rect(Screen.width/20f * 4f,Screen.height * (2.5f/6f),inputWidth/3f,Screen.height * (2f/6f));
+
+GUI.DrawTexture(keyRect,keyboardIcon,ScaleMode.ScaleToFit);
+GUI.DrawTexture(xboxRect,xboxIcon,ScaleMode.ScaleToFit);
+
+controlLock = true;
+
+}else{
+
+if(Input.GetAxis(gd.pcn[0]+"Submit") == 0 && Input.GetAxis(gd.pcn[0]+"Cancel") == 0 )
 controlLock = false;
 
 if(State == 0){ //Title Screen
@@ -115,7 +137,7 @@ OutLineLabel(VersionRect,www1.text,2);
 else
 OutLineLabel(VersionRect,version + " [UPDATE AVAILABLE]",2);
 
-if(Input.GetAxis("Submit") != 0 && controlLock == false){
+if(Input.GetAxis(gd.pcn[0]+"Submit") != 0 && controlLock == false){
 State = 1;
 controlLock = true;
 }
@@ -126,7 +148,7 @@ var Options : String[];
 
 if(State == 1){ // Main Menu
 
-if(Input.GetAxis("Cancel") != 0 && controlLock == false){
+if(Input.GetAxis(gd.pcn[0]+"Cancel") != 0 && controlLock == false){
 State = 0;
 currentSelection = 0;
 controlLock = true;
@@ -145,7 +167,7 @@ GUI.DrawTexture(Rect(Screen.width/20f,(Screen.width/20f*(i+5)),Screen.width/4f,S
 
 }
 
-if(Input.GetAxis("Submit") != 0 && controlLock == false){
+if(Input.GetAxis(gd.pcn[0]+"Submit") != 0 && controlLock == false){
 
 if(currentSelection == 0){
 State = 2;
@@ -153,9 +175,9 @@ currentSelection = 0;
 }
 
 if(currentSelection == 1){
-FlashRed();
 //State = 4;
 //currentSelection = 0;
+FlashRed();
 }
 
 if(currentSelection == 2){
@@ -173,6 +195,9 @@ State = 8;
 currentSelection = 0;
 }
 
+if(currentSelection == 3){
+FlashRed();
+}
 
 if(currentSelection == 4){
 Application.Quit();
@@ -187,7 +212,7 @@ controlLock = true;
 
 if(State == 2){ //Single Player
 
-if(Input.GetAxis("Cancel") != 0 && controlLock == false){
+if(Input.GetAxis(gd.pcn[0]+"Cancel") != 0 && controlLock == false){
 State = 1;
 currentSelection = 0;
 controlLock = true;
@@ -206,7 +231,7 @@ GUI.DrawTexture(Rect(Screen.width/20f,(Screen.width/20f*(i+5)),Screen.width/4f,S
 
 }
 
-if(Input.GetAxis("Submit") != 0 && controlLock == false){
+if(Input.GetAxis(gd.pcn[0]+"Submit") != 0 && controlLock == false){
 
 if(currentSelection == 0){
 transform.GetComponent(Level_Select).GrandPrixOnly = true;
@@ -235,7 +260,7 @@ controlLock = true;
 
 if(State == 3){ //Difficulty Selector
 
-if(Input.GetAxis("Cancel") != 0 && controlLock == false){
+if(Input.GetAxis(gd.pcn[0]+"Cancel") != 0 && controlLock == false){
 State = 2;
 currentSelection = 0;
 controlLock = true;
@@ -259,7 +284,7 @@ GUI.DrawTexture(Rect(Screen.width/10f,(Screen.width/20f*(i+5)),OptionsTexture.wi
 
 }
 
-if(Input.GetAxis("Submit") != 0 && controlLock == false){
+if(Input.GetAxis(gd.pcn[0]+"Submit") != 0 && controlLock == false){
 
 gd.transform.GetComponent(SinglePlayer_Script).Difficulty = currentSelection;
 
@@ -276,7 +301,7 @@ controlLock = true;
 
 if(State == 4){ //Multiplayer Menu
 
-if(Input.GetAxis("Cancel") != 0 && controlLock == false){
+if(Input.GetAxis(gd.pcn[0]+"Cancel") != 0 && controlLock == false){
 State = 1;
 currentSelection = 0;
 controlLock = true;
@@ -297,7 +322,7 @@ GUI.DrawTexture(Rect(Screen.width/10f,(Screen.width/20f*(i+5)),OptionsTexture.wi
 
 }
 
-if(Input.GetAxis("Submit") != 0 && controlLock == false){
+if(Input.GetAxis(gd.pcn[0]+"Submit") != 0 && controlLock == false){
 
 if(currentSelection == 2)
 State = 5;
@@ -315,7 +340,7 @@ controlLock = true;
 
 if(State == 5){ //Host Menu
 
-if(Input.GetAxis("Cancel") != 0 && controlLock == false){
+if(Input.GetAxis(gd.pcn[0]+"Cancel") != 0 && controlLock == false){
 State = 4;
 currentSelection = 0;
 controlLock = true;
@@ -360,7 +385,7 @@ GUI.DrawTexture(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.wid
 
 }
 
-if(Input.GetAxis("Submit") != 0 && controlLock == false){
+if(Input.GetAxis(gd.pcn[0]+"Submit") != 0 && controlLock == false){
 
 if(currentSelection == 2)
 WithBots = !WithBots;
@@ -380,7 +405,7 @@ controlLock = true;
 
 if(State == 6){ //Join Menu
 
-if(Input.GetAxis("Cancel") != 0 && controlLock == false){
+if(Input.GetAxis(gd.pcn[0]+"Cancel") != 0 && controlLock == false){
 State = 4;
 currentSelection = 0;
 controlLock = true;
@@ -401,7 +426,7 @@ GUI.DrawTexture(Rect(Screen.width/10f,(Screen.width/20f*(i+5)),OptionsTexture.wi
 
 }
 
-if(Input.GetAxis("Submit") != 0 && controlLock == false){
+if(Input.GetAxis(gd.pcn[0]+"Submit") != 0 && controlLock == false){
 
 if(currentSelection == 3){
 if(NetworkPassword == "" || NetworkPassword == null)
@@ -431,7 +456,7 @@ var OutlineRect : Rect = Rect(Screen.width/2f - Screen.width/4f,Screen.height/2f
 
 OutLineLabel(OutlineRect,"Can't connect to Server! " + errorText,1);
 
-if((Input.GetAxis("Submit") != 0 || Input.GetAxis("Cancel") != 0) && controlLock == false){
+if((Input.GetAxis(gd.pcn[0]+"Submit") != 0 || Input.GetAxis(gd.pcn[0]+"Cancel") != 0) && controlLock == false){
 State = 6;
 controlLock = true;
 }
@@ -441,7 +466,7 @@ controlLock = true;
 
 if(State == 8){ //Options ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-if(Input.GetAxis("Cancel") != 0 && controlLock == false){
+if(Input.GetAxis(gd.pcn[0]+"Cancel") != 0 && controlLock == false){
 
 for(g = 0; g < Screen.resolutions.Length; g++){
 if(Screen.resolutions[g] == Screen.currentResolution)
@@ -477,9 +502,9 @@ OutLineLabel2(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width
 }
 
 if(currentSelection == 0){
-if(Input.GetAxis("Horizontal") != 0 && HorizontalLock == false){
+if(Input.GetAxis(gd.pcn[0]+"Horizontal") != 0 && HorizontalLock == false){
 
-ScreenR += Mathf.Sign(Input.GetAxis("Horizontal"));
+ScreenR += Mathf.Sign(Input.GetAxis(gd.pcn[0]+"Horizontal"));
 
 if(ScreenR >= Screen.resolutions.Length)
 ScreenR = 0;
@@ -511,9 +536,9 @@ OutLineLabel2(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width
 }
 
 if(currentSelection == 2){
-if(Input.GetAxis("Horizontal") != 0 && HorizontalLock == false){
+if(Input.GetAxis(gd.pcn[0]+"Horizontal") != 0 && HorizontalLock == false){
 
-Quality += Mathf.Sign(Input.GetAxis("Horizontal"));
+Quality += Mathf.Sign(Input.GetAxis(gd.pcn[0]+"Horizontal"));
 
 if(Quality >= QualitySettings.names.Length)
 Quality = 0;
@@ -526,7 +551,7 @@ HoriWait();
 }
 }
 
-if(Input.GetAxis("Submit") != 0 && controlLock == false){
+if(Input.GetAxis(gd.pcn[0]+"Submit") != 0 && controlLock == false){
 
 if(currentSelection == 1)
 FullScreen = !FullScreen;
@@ -552,9 +577,9 @@ if(State == 14){//Single Player Race
 
 //Get Vertical Input
 if(Options != null && Options.Length > 0){
-if(Input.GetAxis("Vertical") != 0&& VerticalLock == false){
+if(Input.GetAxis(gd.pcn[0]+"Vertical") != 0&& VerticalLock == false){
 
-currentSelection -= Mathf.Sign(Input.GetAxis("Vertical"));
+currentSelection -= Mathf.Sign(Input.GetAxis(gd.pcn[0]+"Vertical"));
 
 
 if(currentSelection >= Options.Length)
@@ -570,6 +595,7 @@ VertWait();
 
 OutLineLabel(Rect(Screen.width/10f,(Screen.width/20f*(i+5)),300,Screen.width/20f),"[Locked]",2,LockedColourAlpha);
 
+}
 }
 
 function VertWait(){
@@ -617,9 +643,13 @@ State = 3;
 else
 State = 2;
 
+gd.allowedToChange = true;
+
 }
 
 function StartSinglePlayer(){
+
+gd.allowedToChange = false;
 
 while(gd.currentKart == -1){
 GameObject.Find("CS_Camera").camera.enabled = true;

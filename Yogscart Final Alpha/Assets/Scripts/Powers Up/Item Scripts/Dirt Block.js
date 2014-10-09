@@ -8,7 +8,7 @@ transform.GetComponent(MeshRenderer).enabled = false;
 transform.GetComponent(BoxCollider).enabled = false;
 
 if(collision.transform.GetComponent(kartScript) != null){
-collision.transform.GetComponent(kartScript).enabled = false;
+collision.transform.GetComponent(kartScript).locked = false;
 
 if(collision.transform.FindChild("Kart Body").localRotation == Quaternion.Euler(0,0,0)){
 StartCoroutine("Spin",collision.transform);
@@ -18,7 +18,7 @@ Ani.SetBool("Hit",false);
 StopCoroutine("Spin");
 
 
-collision.transform.GetComponent(kartScript).enabled = true;
+collision.transform.GetComponent(kartScript).locked = true;
 
 collision.transform.FindChild("Kart Body").localRotation = Quaternion.Euler(0,0,0);
 }

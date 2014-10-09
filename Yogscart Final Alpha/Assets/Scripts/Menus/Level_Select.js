@@ -33,13 +33,13 @@ GUI.color = Color(256,256,256,Alpha);
 
 if(hidden == false){
 //Do Input
-if(Input.GetAxis("Vertical") != 0 && stickLockV == false && !GrandPrixOnly){
+if(Input.GetAxis(gd.pcn[0]+"Vertical") != 0 && stickLockV == false && !GrandPrixOnly){
 stickLockV = true; 
 ButtonWaitV();
 TypeSelecion = !TypeSelecion;
 } 
 
-if(Input.GetAxis("Cancel") != 0 && controlLock == false){
+if(Input.GetAxis(gd.pcn[0]+"Cancel") != 0 && controlLock == false){
 if(transform.GetComponent(Character_Select) != null){
 gd.currentKart = -1;
 transform.GetComponent(Character_Select).fireLock = true;
@@ -51,8 +51,8 @@ transform.GetComponent(Main_Menu).StartCoroutine("StartSinglePlayer");
 
 if(TypeSelecion){ //Track Selection
 
-if(Input.GetAxis("Horizontal") != 0 && stickLockH == false){
-currentTrack += Mathf.Sign(Input.GetAxis("Horizontal"));
+if(Input.GetAxis(gd.pcn[0]+"Horizontal") != 0 && stickLockH == false){
+currentTrack += Mathf.Sign(Input.GetAxis(gd.pcn[0]+"Horizontal"));
 if(currentTrack < 0)
 currentTrack = 3;
 
@@ -63,15 +63,15 @@ stickLockH = true;
 ButtonWaitH();
 } 
 
-if(Input.GetAxis("Submit") != 0 && controlLock == false){
+if(Input.GetAxis(gd.pcn[0]+"Submit") != 0 && controlLock == false){
 controlLock = true;
 Finished();
 }
 
 }else{
 
-if(Input.GetAxis("Horizontal") != 0 && stickLockH == false){
-currentCup += Mathf.Sign(Input.GetAxis("Horizontal"));
+if(Input.GetAxis(gd.pcn[0]+"Horizontal") != 0 && stickLockH == false){
+currentCup += Mathf.Sign(Input.GetAxis(gd.pcn[0]+"Horizontal"));
 if(currentCup < 0)
 currentCup = gd.Tournaments.Length-1;
 
@@ -82,7 +82,7 @@ stickLockH = true;
 ButtonWaitH();
 }
 
-if(GrandPrixOnly && Input.GetAxis("Submit") != 0 && controlLock == false){
+if(GrandPrixOnly && Input.GetAxis(gd.pcn[0]+"Submit") != 0 && controlLock == false){
 currentTrack = 0;
 controlLock = true;
 Finished();
@@ -134,11 +134,13 @@ GUI.DrawTexture(TRect,gd.Tournaments[i].Icon);
 var LHRect : Rect = Rect(75,Screen.height/2,Width,Height);
 GUI.DrawTexture(LHRect,LevelHolder);
 
-if(Input.GetAxis("Submit") != 0 && controlLock == false)
+if(gd.pcn != null && gd.pcn.Length > 0){
+if(Input.GetAxis(gd.pcn[0]+"Submit") != 0 && controlLock == false)
 controlLock = true;
 
-if(Input.GetAxis("Submit") == 0 && controlLock == true)
+if(Input.GetAxis(gd.pcn[0]+"Submit") == 0 && controlLock == true)
 controlLock = false;
+}
 
 if(GrandPrixOnly){
 

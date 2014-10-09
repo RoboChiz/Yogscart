@@ -18,7 +18,10 @@ if(transform.GetComponent(kartScript) != null){
 var td = GameObject.Find("Track Manager").transform.GetComponent(TrackData);
 
 var nPos = td.PositionPoints[transform.GetComponent(Position_Finding).currentPos].rep.position;
+if(transform.GetComponent(Position_Finding).currentPos+1 < td.PositionPoints.Length)
 var n1Pos = td.PositionPoints[transform.GetComponent(Position_Finding).currentPos+1].rep.position;
+else
+n1Pos = td.PositionPoints[0].rep.position;
 
 transform.position = nPos;
 

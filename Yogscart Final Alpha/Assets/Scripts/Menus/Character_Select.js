@@ -56,11 +56,11 @@ GUI.skin = Resources.Load("GUISkins/Main Menu", GUISkin);
 var yint : int;
 var iconWidth : float = (Screen.width/2)/5f;
 
-if(Input.GetAxis("Submit") == 0 && Input.GetAxis("Cancel") == 0)
+if(Input.GetAxis(gd.pcn[0]+"Submit") == 0 && Input.GetAxis(gd.pcn[0]+"Cancel") == 0)
 fireLock = false;
 
 if(State == 0){
-if(Input.GetAxis("Cancel") != 0 && fireLock == false){
+if(Input.GetAxis(gd.pcn[0]+"Cancel") != 0 && fireLock == false){
 
 transform.GetComponent(Main_Menu).Return();
 
@@ -71,7 +71,7 @@ this.enabled = false;
 
 if(State > 0){
 
-if(Input.GetAxis("Cancel") != 0 && fireLock == false){
+if(Input.GetAxis(gd.pcn[0]+"Cancel") != 0 && fireLock == false){
 State -= 1;
 if(State < 0)
 State = 0;
@@ -106,7 +106,7 @@ var TextureRect : Rect = Rect(20 + ((i%5)*iconWidth),20 + (yint*(Screen.width/2)
 GUI.DrawTexture(TextureRect,gd.Characters[i].Icon);
 
 //Get Input
-if(Input.GetAxis("Submit") != 0 && fireLock == false && gd.Characters[loadedCharacter].Unlocked == true){
+if(Input.GetAxis(gd.pcn[0]+"Submit") != 0 && fireLock == false && gd.Characters[loadedCharacter].Unlocked == true){
 State = 1;
 fireLock = true;
 }
@@ -114,8 +114,8 @@ fireLock = true;
 }
 
 //Input from Controller
-if(Input.GetAxis("Horizontal") != 0 && controlLock == false){
-var HAction : int = Mathf.Sign(Input.GetAxis("Horizontal"));
+if(Input.GetAxis(gd.pcn[0]+"Horizontal") != 0 && controlLock == false){
+var HAction : int = Mathf.Sign(Input.GetAxis(gd.pcn[0]+"Horizontal"));
 
 var tempCS = CharacterSelection;
 tempCS += Vector2(HAction,0);
@@ -140,8 +140,8 @@ controlLock = true;
 }
 }
 
-if(Input.GetAxis("Vertical") != 0 && controlLock == false){
-var VAction : int = Mathf.Sign(Input.GetAxis("Vertical"));
+if(Input.GetAxis(gd.pcn[0]+"Vertical") != 0 && controlLock == false){
+var VAction : int = Mathf.Sign(Input.GetAxis(gd.pcn[0]+"Vertical"));
 
 CharacterSelection -= Vector2(0,VAction);
 
@@ -174,7 +174,7 @@ lastLoadedCharacter = loadedCharacter;
 }
 }
 
-loadedCharacterModel.Rotate(Vector3.up,-Input.GetAxis("Rotate") * Time.fixedDeltaTime * rotSpeed);
+loadedCharacterModel.Rotate(Vector3.up,-Input.GetAxis(gd.pcn[0]+"Rotate") * Time.fixedDeltaTime * rotSpeed);
 
 }
 ///////////////////////////////////////////HAT SELECT///////////////////////////////////////////
@@ -195,7 +195,7 @@ TextureRect = Rect(20 + ((i%5)*iconWidth),20 + (yint*(Screen.width/2)/5f),iconWi
 GUI.DrawTexture(TextureRect,gd.Hats[i].Icon);
 
 //Get Input
-if(Input.GetAxis("Submit") != 0 && fireLock == false && gd.Hats[loadedHat].Unlocked == true){
+if(Input.GetAxis(gd.pcn[0]+"Submit") != 0 && fireLock == false && gd.Hats[loadedHat].Unlocked == true){
 State = 2;
 fireLock = true;
 }
@@ -203,8 +203,8 @@ fireLock = true;
 }
 
 //Input from Controller
-if(Input.GetAxis("Horizontal") != 0 && controlLock == false){
-HAction = Mathf.Sign(Input.GetAxis("Horizontal"));
+if(Input.GetAxis(gd.pcn[0]+"Horizontal") != 0 && controlLock == false){
+HAction = Mathf.Sign(Input.GetAxis(gd.pcn[0]+"Horizontal"));
 
 var tempHS = HatSelection;
 tempHS += Vector2(HAction,0);
@@ -229,8 +229,8 @@ controlLock = true;
 }
 }
 
-if(Input.GetAxis("Vertical") != 0 && controlLock == false){
-VAction = Mathf.Sign(Input.GetAxis("Vertical"));
+if(Input.GetAxis(gd.pcn[0]+"Vertical") != 0 && controlLock == false){
+VAction = Mathf.Sign(Input.GetAxis(gd.pcn[0]+"Vertical"));
 
 HatSelection -= Vector2(0,VAction);
 
@@ -274,13 +274,15 @@ lastLoadedHat = loadedHat;
 }
 
 
-loadedCharacterModel.Rotate(Vector3.up,-Input.GetAxis("Rotate") * Time.fixedDeltaTime * rotSpeed);
+loadedCharacterModel.Rotate(Vector3.up,-Input.GetAxis(gd.pcn[0]+"Rotate") * Time.fixedDeltaTime * rotSpeed);
 
 }
 
 
 
 if(State == 2){ //Kart Select
+
+iconWidth = (Screen.width/2)/6f;
 
 //Get rid of Character
 if(!spawnCharinKart){
@@ -319,8 +321,8 @@ GUI.Box(downArrow1,"Down");
 GUI.Box(downArrow2,"Down");
 
 //Input from Controller
-if(Input.GetAxis("Vertical") != 0 && controlLock == false){
-VAction = Mathf.Sign(Input.GetAxis("Vertical"));
+if(Input.GetAxis(gd.pcn[0]+"Vertical") != 0 && controlLock == false){
+VAction = Mathf.Sign(Input.GetAxis(gd.pcn[0]+"Vertical"));
 
 if(kartSelect)
 KartSelection.x -= VAction;
@@ -331,8 +333,8 @@ ButtonWait();
 controlLock = true;
 }
 
-if(Input.GetAxis("Horizontal") != 0 && controlLock == false){
-VAction = Mathf.Sign(Input.GetAxis("Horizontal"));
+if(Input.GetAxis(gd.pcn[0]+"Horizontal") != 0 && controlLock == false){
+VAction = Mathf.Sign(Input.GetAxis(gd.pcn[0]+"Horizontal"));
 
 kartSelect = !kartSelect;
 
@@ -438,10 +440,10 @@ lastLoadedWheel = loadedWheel;
 
 }
 
-loadedKartModel.Rotate(Vector3.up,-Input.GetAxis("Rotate") * Time.fixedDeltaTime * rotSpeed);
+loadedKartModel.Rotate(Vector3.up,-Input.GetAxis(gd.pcn[0]+"Rotate") * Time.fixedDeltaTime * rotSpeed);
 
 //Finish Character Select
-if(Input.GetAxis("Submit") != 0 && fireLock == false && gd.Karts[loadedKart].Unlocked == true && gd.Wheels[loadedWheel].Unlocked == true){
+if(Input.GetAxis(gd.pcn[0]+"Submit") != 0 && fireLock == false && gd.Karts[loadedKart].Unlocked == true && gd.Wheels[loadedWheel].Unlocked == true){
 
 gd.currentCharacter = loadedCharacter;
 gd.currentHat = loadedHat;

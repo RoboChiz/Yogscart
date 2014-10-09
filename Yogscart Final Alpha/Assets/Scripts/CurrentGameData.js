@@ -1,7 +1,4 @@
 ﻿#pragma strict
-
-var Cams : Transform; 
-
 //Tracks 
 @HideInInspector
 var currentCup : int = -1;
@@ -46,6 +43,9 @@ var RaceState : int = -1;
 
 var Difficulty : int;
 
+@HideInInspector
+var allowedToChange : boolean;
+var pcn : String[];
 
 //@HideInInspector
 var BlackOut : boolean = true;
@@ -84,11 +84,15 @@ private var ColourAlpha : Color = Color.black;
 		Characters[n].Unlocked = true;
 		}
 		
-
+		iconHeights = new int[4];
+		showIcon = new boolean[4];
 		
 		}
-		
 	
+		private var iconHeights : int[];
+		private var showIcon : boolean[];
+		private var inputLock : boolean;
+		
 		function OnGUI () {
 		GUI.depth = -5;
 		//Black Out
@@ -100,8 +104,134 @@ private var ColourAlpha : Color = Color.black;
 		texture.SetPixel(0,0,ColourAlpha);
 		texture.Apply();
 		GUI.DrawTexture(Rect(-5,-5,Screen.width +5,Screen.height + 5),texture);
+		
+		for(var i : int; i < 4; i++){
+		
+		var idealSize = Screen.height/6f;
+		
+		if(showIcon[i])
+		iconHeights[i] = Mathf.Lerp(iconHeights[i],idealSize,Time.deltaTime * 3f);
+		else
+		iconHeights[i] = Mathf.Lerp(iconHeights[i],0,Time.deltaTime * 3f);
+		
+		var iconRect : Rect = Rect(10 + (i*idealSize),Screen.height - iconHeights[i],idealSize,idealSize);
+		
+		if(pcn!= null && pcn.Length > i){
+		var Icon : Texture2D;
+		if(pcn[i] == "Key_")
+		Icon = Resources.Load("UI Textures/Controls/Keyboard",Texture2D);
+		else
+		Icon = Resources.Load("UI Textures/Controls/Xbox",Texture2D);
+		
+		GUI.Box(iconRect,Icon);
+		
+		}else
+		GUI.Box(iconRect,"Player " + (i+1) + " has left!");
+		
+		}
+		
+		if(!inputLock && allowedToChange){
+		if((pcn == null || pcn.Length < 4)){
+		if(Input.GetAxis("Key_Submit")&&!inputLock)
+		AddController("Key_");
+		
+		if(Input.GetAxis("C1_Submit")&&!inputLock)
+		AddController("C1_");
+		
+		if(Input.GetAxis("C2_Submit")&&!inputLock)
+		AddController("C2_");
+		
+		if(Input.GetAxis("C3_Submit")&&!inputLock)
+		AddController("C3_");
+		
+		if(Input.GetAxis("C4_Submit")&&!inputLock)
+		AddController("C4_");
+		
+		}
+		
+		if(pcn != null){
+		if(Input.GetAxis("Key_Leave")&&!inputLock)
+		RemoveController("Key_");
+		
+		if(Input.GetAxis("C1_Leave")&&!inputLock)
+		RemoveController("C1_");
+		
+		if(Input.GetAxis("C2_Leave")&&!inputLock)
+		RemoveController("C2_");
+		
+		if(Input.GetAxis("C3_Leave")&&!inputLock)
+		RemoveController("C3_");
+		
+		if(Input.GetAxis("C4_Leave")&&!inputLock)
+		RemoveController("C4_");
+		
+		}
+		}
+		
+		
 		}
 
+
+function AddController(input : String){
+inputLock = true;
+var alreadyIn : boolean;
+if(pcn != null)
+for(var i : int = 0; i < pcn.Length; i++)
+if(pcn[i] == input){
+alreadyIn = true;
+i = 5;
+}
+
+
+if(!alreadyIn){
+var copy = new Array();
+
+if(pcn != null)
+copy = pcn;
+
+copy.Push(input);
+
+
+var toShow : int = copy.length-1;
+while(showIcon[toShow] == true)
+yield;
+
+pcn = copy;
+
+showIcon[toShow] = true;
+yield WaitForSeconds(1);
+showIcon[toShow] = false;
+
+}
+inputLock = false;
+}
+
+function RemoveController(input : String){
+inputLock = true;
+
+var copy = new Array();
+var toShow : int = -1;
+
+for(var i : int = 0; i < pcn.Length; i++)
+if(pcn[i] != input)
+copy.Push(pcn[i]);
+else
+toShow = i;
+
+if(toShow != -1){
+while(showIcon[toShow] == true)
+yield;
+
+pcn = copy;
+
+showIcon[toShow] = true;
+yield WaitForSeconds(1);
+showIcon[toShow] = false;
+}
+
+inputLock = false;
+
+}
 
 
 //Classes

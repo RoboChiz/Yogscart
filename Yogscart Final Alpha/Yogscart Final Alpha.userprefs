@@ -1,10 +1,12 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\New Race Scripts\Race_Master.js">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Menus\newCharacterSelect.js">
     <Files>
-      <File FileName="Assets\Scripts\Powers Up\Item_Box.js" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\Powers Up\kartItem.js" Line="24" Column="13" />
-      <File FileName="Assets\Scripts\New Race Scripts\Race_Master.js" Line="729" Column="22" />
+      <File FileName="Assets\Scripts\Menus\Character_Select.js" Line="52" Column="1" />
+      <File FileName="Assets\Scripts\Kart Scripts\kartInput.js" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Networking\Client_Script.js" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Networking\SpectatorCam.js" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Menus\newCharacterSelect.js" Line="9" Column="20" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

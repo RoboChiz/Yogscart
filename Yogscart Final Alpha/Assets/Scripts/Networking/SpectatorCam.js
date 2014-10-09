@@ -3,15 +3,27 @@
 var specObjects : GameObject[];
 var currentSpec : int = 0;
 
-
 private var velocity = Vector3.zero;
 
+@HideInInspector
+var locked : boolean;
+
 private var controlLock : boolean;
+
+function RandomSort(){
+while(true){
+yield WaitForSeconds(Random.Range(5,20));
+currentSpec += 1;
+
+if(currentSpec >= specObjects.Length)
+currentSpec = 0;
+}
+}
 
 function Update () {
 
 if(specObjects == null || specObjects.Length == 0){
-specObjects = GameObject.FindGameObjectsWithTag("Spectated");
+specObjects = GameObject.FindGameObjectsWithTag("Kart");
 transform.GetComponent(Kart_Camera).enabled = false;
 }else{
 
@@ -21,6 +33,7 @@ var Target = specObjects[currentSpec].transform;
 
 transform.GetComponent(Kart_Camera).Target = Target;
 
+if(!locked){
 if(Input.GetAxis("Submit") != 0 && controlLock == false){
 currentSpec += 1;
 
@@ -32,6 +45,7 @@ controlLock = true;
 
 if(Input.GetAxis("Submit") == 0)
 controlLock = false;
+}
 
 transform.GetComponent(Kart_Camera).Angle += Time.deltaTime*20;
 

@@ -169,9 +169,9 @@ yield WaitForSeconds(0.5);
 Destroy(CutsceneCam);
 
 //Spawn Ingame Camera
-IngameCam = Instantiate(gd.Cams,tm.IntroPans[0].StartPoint,Quaternion.identity);
+IngameCam = Instantiate(Resources.Load("Prefabs/Cameras",Transform),tm.IntroPans[0].StartPoint,Quaternion.identity);
 IngameCam.name = "InGame Cams";
-IngameCam.GetComponent(Camera_Control).Locked = true;
+IngameCam.GetComponent(kartInput).camLocked = true;
 IngameCam.GetChild(0).GetComponent(Kart_Camera).Target = KartObject;
 IngameCam.GetChild(1).GetComponent(Kart_Camera).Target = KartObject;
 
@@ -234,7 +234,7 @@ cs.Representation.GetComponent(kartScript).locked = false;
 if(Network.isServer == false || (Network.isServer == true && transform.GetComponent(Host_Script).conscious == true))
 KartObject.GetComponent(Position_Finding).enabled = true;
 
-IngameCam.GetComponent(Camera_Control).Locked = false;
+IngameCam.GetComponent(kartInput).camLocked = false;
 
 StartTimer(); 
 Started = true;
@@ -337,7 +337,7 @@ function StopRacing(){
 KartObject.gameObject.AddComponent(Racer_AI);
 KartObject.GetComponent(kartInput).enabled = false;
 
-IngameCam.GetComponent(Camera_Control).Locked = true;
+IngameCam.GetComponent(kartInput).camLocked = true;
 while(IngameCam.GetChild(1).GetComponent(Kart_Camera).Distance > -6){
 IngameCam.GetChild(1).GetComponent(Kart_Camera).Distance -= Time.fixedDeltaTime * 10;
 yield;
@@ -351,7 +351,7 @@ function EndRace(){
 KartObject.gameObject.AddComponent(Racer_AI);
 KartObject.GetComponent(kartInput).enabled = false;
 
-IngameCam.GetComponent(Camera_Control).Locked = true;
+IngameCam.GetComponent(kartInput).camLocked = true;
 while(IngameCam.GetChild(1).GetComponent(Kart_Camera).Distance > -6){
 IngameCam.GetChild(1).GetComponent(Kart_Camera).Distance -= Time.fixedDeltaTime * 10;
 yield;
