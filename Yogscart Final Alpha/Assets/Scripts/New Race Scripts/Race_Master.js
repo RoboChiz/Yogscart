@@ -124,6 +124,9 @@ yield;
 SetUpKarts();
 yield PlayCutscene();
 
+if(type != RaceStyle.TimeTrial)
+InvokeRepeating("SortArray",0,0.2);
+
 yield Countdown();
 BeginRace();
 
@@ -458,6 +461,7 @@ keyWait();
 
 }
 }
+}
 
 if(Paused){
 
@@ -555,7 +559,6 @@ keyLock = false;
 
 lastTime = Time.realtimeSinceStartup;
 
-}
 }
 
 private var Paused : boolean = false;
@@ -828,9 +831,6 @@ function BeginRace(){
 State = Testing.RaceGUI;
 UnlockKarts();
 StartCoroutine("BeginTick");
-
-if(type != RaceStyle.TimeTrial)
-InvokeRepeating("SortArray",0,0.2);
 
 InvokeRepeating("CheckPlayer",0.1,0.2);
 

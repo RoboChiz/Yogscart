@@ -330,6 +330,9 @@ transform.name = "OldGameData";
 
 yield WaitForSeconds(1);
 Application.LoadLevel(1);
+yield;
+
+GameObject.Find("GameData").GetComponent(CurrentGameData).pcn = pcn;
 Destroy(this.gameObject);
 }
  
