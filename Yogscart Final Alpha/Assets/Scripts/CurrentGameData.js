@@ -43,7 +43,7 @@ var RaceState : int = -1;
 
 var Difficulty : int;
 
-@HideInInspector
+//@HideInInspector
 var allowedToChange : boolean;
 var pcn : String[];
 

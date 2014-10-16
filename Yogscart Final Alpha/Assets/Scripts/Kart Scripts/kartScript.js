@@ -7,8 +7,6 @@ var steer : float;
 var drift : boolean;
 private var driftLock : boolean;
 
-var locked : boolean;
-
 var ExpectedSpeed : float;
 private var actualSpeed : float;
 
@@ -26,6 +24,7 @@ var isFalling : boolean;
 var forceAmount : float = 5;
 
 var lapisAmount : int = 0;
+var locked : boolean;
 
 private var MSdivided : float;
 private var localScale : float;
@@ -54,10 +53,8 @@ RightDrift.particleSystem.startSpeed *= localScale;
 private var tricking : boolean;
 
 function Update(){
-CheckGravity();
 
-if(!isFalling)
-adjustVertical();
+CheckGravity();
 
 if(isFalling){
 if(!tricking && drift && driftLock == false){
@@ -100,23 +97,28 @@ audio.pitch = Mathf.Lerp(audio.pitch,1 + es,Time.deltaTime);
 
 }
 
-if(!isFalling){
-if(!locked){
+
+if(locked || isFalling){
+steer = 0;
+throttle = 0;
+drift = false;
+}
 
 if(throttle == 0)
 ApplyStopForce();
 else
 ApplyThrottle();
 
+
 ApplySteering();
 
+if(!locked)
 ApplyDrift();
+
 
 var nMaxSpeed : float = Mathf.Lerp(lastMaxSpeed,MaxSpeed-(1f-lapisAmount/10f),Time.fixedDeltaTime);
 
 ExpectedSpeed = Mathf.Clamp(ExpectedSpeed,-nMaxSpeed,nMaxSpeed);
-}
-
 
 if(isBoosting){
 nMaxSpeed = MaxSpeed + BoostAddition;
@@ -140,7 +142,7 @@ rigidbody.AddForce(transform.forward * rigidbody.mass * nA);
 lastMaxSpeed = nMaxSpeed;
 
 }
-}
+
 
 function ApplyThrottle(){
 
@@ -167,7 +169,7 @@ function ApplySteering(){
 
 if(!applyingDrift){
 
-var speedVal = Mathf.Clamp((MaxSpeed - ExpectedSpeed)/2f,1,Mathf.Infinity);
+var speedVal = Mathf.Clamp((MaxSpeed - Mathf.Abs(ExpectedSpeed))/3f,1,Mathf.Infinity);
 
 Wheels[0].steerAngle = Mathf.Lerp(Wheels[0].steerAngle,steer * turnSpeed * speedVal,Time.fixedDeltaTime*10);
 Wheels[1].steerAngle = Mathf.Lerp(Wheels[1].steerAngle,steer * turnSpeed * speedVal,Time.fixedDeltaTime*10);
@@ -258,33 +260,6 @@ isFalling = false;
 else
 isFalling = true;
 
-}
-
-function adjustVertical(){
-for(var i : int = 0; i < Wheels.Length; i+= 2){
-var hit : WheelHit;
-var travelL : float = 1.0;
-var travelR : float = 1.0;
-    
-var groundedL = Wheels[i].GetGroundHit(hit);
-if (groundedL)
-travelL = (-Wheels[i].transform.InverseTransformPoint(hit.point).y - Wheels[i].radius) / Wheels[i].suspensionDistance;
-else
-    travelL = 1.0;
-    
-var groundedR = Wheels[i+1].GetGroundHit(hit);
-if (groundedR)
-travelR = (-Wheels[i+1].transform.InverseTransformPoint(hit.point).y - Wheels[i+1].radius) / Wheels[i+1].suspensionDistance;
-else
-    travelR = 1.0;    
-
-var force : float = (travelL - travelR) * forceAmount * rigidbody.mass;
- if (groundedL)
-rigidbody.AddForceAtPosition(Wheels[i].transform.up * -force,Wheels[i].transform.position); 
- if (groundedR)
-rigidbody.AddForceAtPosition(Wheels[i+1].transform.up * force,Wheels[i+1].transform.position); 
-
-}
 }
 
 private var isBoosting : boolean;

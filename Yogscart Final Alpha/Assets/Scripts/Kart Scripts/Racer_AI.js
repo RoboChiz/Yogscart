@@ -24,10 +24,6 @@ ki = transform.GetComponent(kartItem);
 }
 
 function Update () {
-
-//Calculate Throttle
-ks.throttle = 1;
-
 //Calculate Item
 
 if(Difficulty == 0){
@@ -39,7 +35,7 @@ usedItem = true;
 
 
 //Calculate Steering
-if(pf.currentPos+1 != targestPos){
+if(NumClamp(pf.currentPos+1,0,td.PositionPoints.Length) != targestPos ){
 
 var nextChump : int;
 if(pf.currentPos+1 < td.PositionPoints.Length)
@@ -64,17 +60,44 @@ Debug.DrawRay(transform.position,transform.forward*5,Color.red);
 Debug.DrawRay(transform.position,NeededDirection,Color.green);
 
 
-if(angle > 90+angleRequired) 
+if(angle > 90+angleRequired)
 steering = -1;
-else if(angle < 90-angleRequired) 
+else if(angle < 90-angleRequired)
 steering = 1;
 else
 steering = 0;
 
+
+//Calculate Throttle
+if(angle >= 120 || angle  <= 60)
+ks.throttle = 0.5;
+else
+ks.throttle = 1;
+
+
+var relativeVelocity : Vector3 = transform.InverseTransformDirection(rigidbody.velocity);
+
+if(ks.ExpectedSpeed > 1 && relativeVelocity.z < 1) //Presume something is blocking the kart.
+reversing = true;
+
+if(reversing){
+
+Debug.DrawRay(transform.position,transform.forward*6,Color.green);
+Debug.DrawRay(transform.position + transform.right,transform.forward*6,Color.green);
+Debug.DrawRay(transform.position - transform.right,transform.forward*6,Color.green);
+
+if(!Physics.Raycast(transform.position,transform.forward,6)&&!Physics.Raycast(transform.position + transform.right,transform.forward,6)&&!Physics.Raycast(transform.position - transform.right,transform.forward,6))
+reversing = false;
+
+steering = -steering;
+ks.throttle = -1;
+}
+
 ks.steer = steering;
 
-
 }
+
+var reversing : boolean;
 
 function useItemRandom(){
 Debug.Log("Started Iteming!");
@@ -85,4 +108,17 @@ yield;
 Debug.Log("Done Iteming!");
 ki.input = false;
 usedItem = false;
+}
+
+function NumClamp(val : int,min : int,max : int){
+
+while(val > max-1)
+val -= (max-min);
+
+while(val < min)
+val += (max-min);
+
+
+return val;
+
 }

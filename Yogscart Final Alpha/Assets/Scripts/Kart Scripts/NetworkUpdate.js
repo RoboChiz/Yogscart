@@ -1,6 +1,7 @@
 ﻿#pragma strict
 
 private var ks : kartScript;
+private var ki : kartInput;
 
 function FixedUpdate () {
 

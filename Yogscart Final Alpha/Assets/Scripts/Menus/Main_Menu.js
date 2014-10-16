@@ -635,7 +635,7 @@ StopCoroutine("StartSinglePlayer");
 controlLock = true;
 
 GameObject.Find("CS_Camera").camera.enabled = false;
-transform.GetComponent(Character_Select).enabled = false;
+transform.GetComponent(newCharacterSelect).enabled = false;
 
 
 if(sps.type != RaceStyle.TimeTrial)
@@ -653,7 +653,7 @@ gd.allowedToChange = false;
 
 while(gd.currentKart == -1){
 GameObject.Find("CS_Camera").camera.enabled = true;
-transform.GetComponent(Character_Select).enabled = true;
+transform.GetComponent(newCharacterSelect).enabled = true;
 transform.GetComponent(Level_Select).hidden = true;
 yield;
 }

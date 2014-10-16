@@ -2,13 +2,12 @@
 
 function OnCollisionEnter(collision : Collision) {
 
-if(collision.rigidbody != null){
-Debug.Log(collision.rigidbody != null);
+if(collision.transform.tag == "Kart" && collision.rigidbody != null){
 transform.GetComponent(MeshRenderer).enabled = false;
 transform.GetComponent(BoxCollider).enabled = false;
 
-if(collision.transform.GetComponent(kartScript) != null){
-collision.transform.GetComponent(kartScript).locked = false;
+if(collision.transform.GetComponent(kartScript) != null && collision.transform.GetComponent(kartScript).locked == false){
+collision.transform.GetComponent(kartScript).locked = true;
 
 if(collision.transform.FindChild("Kart Body").localRotation == Quaternion.Euler(0,0,0)){
 StartCoroutine("Spin",collision.transform);
@@ -22,6 +21,8 @@ collision.transform.GetComponent(kartScript).locked = true;
 
 collision.transform.FindChild("Kart Body").localRotation = Quaternion.Euler(0,0,0);
 }
+
+collision.transform.GetComponent(kartScript).locked = false;
 }
 	
 Destroy(this.gameObject);	
