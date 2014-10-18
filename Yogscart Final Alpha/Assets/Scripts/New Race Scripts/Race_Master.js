@@ -684,19 +684,30 @@ function SpawnKart(character : int, hat : int, kart : int, wheel : int,pos : int
 var SpawnPosition : Vector3;
 var rot : Quaternion = td.PositionPoints[0].rep.rotation;
 
+
+
+	var centre : Vector3;
+	centre = td.PositionPoints[0].rep.transform.position;
+	
+
+	var pos1 : Vector3;
+	pos1 = centre + (rot*Vector3.forward*(td.Scale*1.5f)*1.5f);
+
+
 if(type == RaceStyle.TimeTrial){ //Time Trial
 
-var x1 : Vector3 = rot*(Vector3.forward*(td.Scale*1.5f)+(Vector3.forward*.75f*td.Scale));
 var y1 : Vector3 = rot*(Vector3.right* td.Scale);
 
-SpawnPosition = td.PositionPoints[0].rep.position + x1 + y1;  
+SpawnPosition = td.PositionPoints[0].rep.position + y1;  
 
 }else{ //Normal Race
+
+var startPos : Vector3 = td.PositionPoints[0].rep.position + (rot*Vector3.forward*(td.Scale*1.5f)*-1.5f);
 
 var x2 : Vector3 = rot*(Vector3.forward*(pos%3)*(td.Scale*1.5f)+(Vector3.forward*.75f*td.Scale));
 var y2 : Vector3 = rot*(Vector3.right*(pos + 1)* td.Scale);
 
-SpawnPosition = td.PositionPoints[0].rep.position + x2 + y2;  
+SpawnPosition = startPos + x2 + y2;  
 
 }
 

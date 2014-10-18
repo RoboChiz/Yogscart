@@ -10,14 +10,19 @@ td = GameObject.Find("Track Manager").GetComponent(TrackData);
 
 //Draw Main Lap Point
  try {
+ 
 	var rot : Quaternion;
 	rot = td.PositionPoints[0].rep.transform.rotation;
 	
+	var centre : Vector3;
+	centre = td.PositionPoints[0].rep.transform.position;
+	
 	var pos : Vector3;
-	pos = td.PositionPoints[0].rep.transform.position;
+	pos = centre + (rot*Vector3.forward*(td.Scale*1.5f)*-1.5f);
 
 	var pos1 : Vector3;
-	pos1 = pos + (rot*Vector3.forward*(td.Scale*1.5f)*3);
+	pos1 = centre + (rot*Vector3.forward*(td.Scale*1.5f)*1.5f);
+	
 	var pos2 : Vector3;
 	pos2 = pos1 + (rot*Vector3.right *td.Scale*13f);
 	var pos3 : Vector3;

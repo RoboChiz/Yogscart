@@ -40,9 +40,9 @@ TypeSelecion = !TypeSelecion;
 } 
 
 if(Input.GetAxis(gd.pcn[0]+"Cancel") != 0 && controlLock == false){
-if(transform.GetComponent(Character_Select) != null){
-gd.currentKart = -1;
-transform.GetComponent(Character_Select).fireLock = true;
+if(transform.GetComponent(newCharacterSelect) != null){
+gd.currentChoices = new LoadOut[0];
+transform.GetComponent(newCharacterSelect).ResetEverything();
 transform.GetComponent(Main_Menu).StopCoroutine("StartSinglePlayer");
 controlLock = true;
 transform.GetComponent(Main_Menu).StartCoroutine("StartSinglePlayer");

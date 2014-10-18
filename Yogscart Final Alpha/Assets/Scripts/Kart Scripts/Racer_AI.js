@@ -12,7 +12,7 @@ var angleRequired : float = 2f;
 private var steering : int;
 
 private var nTarget : Vector3;
-private var targestPos : int;
+private var targestPos : int = -1;
 
 private var usedItem : boolean = false;
 

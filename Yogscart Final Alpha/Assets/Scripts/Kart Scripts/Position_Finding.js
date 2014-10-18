@@ -35,6 +35,10 @@ Lap += 1;
 
 }
 
+//Lap Catch, used if for some reason the above code dosen't work. i.e. Lag going across the line
+if(currentPos >0 && currentTotal >= (Lap+1)*tm.PositionPoints.Length)
+Lap += 1;
+
 }
 
 function CheckForward(closestDistance : float){

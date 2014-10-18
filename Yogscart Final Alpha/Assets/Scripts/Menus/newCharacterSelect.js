@@ -3,41 +3,317 @@
 var state : int;
 
 var cursorSpeed : float = 2.5;
+var rotSpeed : float = 15;
+
+var Platforms : Transform[];
+
+var hidden : boolean;
 
 private var choice : LoadOut[];
 private var ready : boolean[];
+private var kartSelected : boolean[];
 private var cursorPosition : Vector2[];
 
 private var inputLock : boolean[];
 private var submitinputLock : boolean[];
 private var choicesPerColumn : int;
 
+private var loadedCharacter : int[];
+private var loadedHat : int[];
+private var loadedKart : int[];
+private var loadedWheel : int[];
+private var loadedModels : Transform[];
+
 private var gd : CurrentGameData;
 
 function Start () {
 
 choice = new LoadOut[4];
-ready = new boolean[4];
-inputLock = new boolean[4];
-submitinputLock = new boolean[4];
-cursorPosition = new Vector2[4];
+loadedModels = new Transform[4];
+
+ResetEverything();
 
 for(var i : int = 0; i < 4;i++){
 choice[i] = new LoadOut();
 submitinputLock[i] = true;
+
+loadedCharacter[i] = -1;
+loadedHat[i] = -1;
+loadedKart[i] = -1;
+loadedWheel[i] = -1;
+
 }
 
-gd = GameObject.Find("GameData").GetComponent(CurrentGameData);
+state = 0;
 
-var counter : int;
+yield WaitForSeconds(0.5);
 
-for(i = 0; i < gd.Characters.Length;i++)
-if(i%5 == 0)
-choicesPerColumn += 1;
+}
+
+function FixedUpdate(){
+if(!hidden){
+
+for(var i : int = 0;i < gd.pcn.Length;i++){
+
+if(state == 0){
+
+if(loadedCharacter[i] != choice[i].character){
+
+var oldRot0 : Quaternion;
+
+if(loadedModels[i] != null){
+oldRot0 = loadedModels[i].rotation;
+Destroy(loadedModels[i].gameObject);
+}else
+oldRot0 = Quaternion.identity;
+
+if(gd.Characters[choice[i].character].Unlocked == true){
+loadedModels[i] = Instantiate(gd.Characters[choice[i].character].CharacterModel_Standing,Platforms[i].FindChild("Spawn").position,oldRot0);
+loadedModels[i].rigidbody.isKinematic = true;
+}
+
+loadedCharacter[i] = choice[i].character;
+
+}
+
+if(loadedModels[i] != null)
+loadedModels[i].Rotate(Vector3.up,-Input.GetAxis(gd.pcn[i]+"Rotate") * Time.fixedDeltaTime * rotSpeed);
+
+}
+
+if(state == 1){
+
+if(loadedHat[i] != choice[i].hat){
+
+var oldRot1 : Quaternion = loadedModels[i].rotation;
+
+if(loadedModels[i] != null)
+Destroy(loadedModels[i].gameObject);
+
+loadedModels[i] = Instantiate(gd.Characters[choice[i].character].CharacterModel_Standing,Platforms[i].FindChild("Spawn").position,oldRot1);
+loadedModels[i].rigidbody.isKinematic = true;
+
+if(gd.Hats[choice[i].hat].Unlocked == true && gd.Hats[choice[i].hat].Model != null){
+
+var HatObject = Instantiate(gd.Hats[choice[i].hat].Model,loadedModels[i].position,Quaternion.identity);
+
+if(loadedModels[i].GetComponent(QA).objects[0] != null){
+HatObject.position = loadedModels[i].GetComponent(QA).objects[0].position;
+HatObject.rotation = loadedModels[i].GetComponent(QA).objects[0].rotation;
+HatObject.parent = loadedModels[i].GetComponent(QA).objects[0];
+
+}
+}
+
+loadedHat[i] = choice[i].hat;
+
+}
+
+if(loadedModels[i] != null)
+loadedModels[i].Rotate(Vector3.up,-Input.GetAxis(gd.pcn[i]+"Rotate") * Time.fixedDeltaTime * rotSpeed);
+
+}
+
+if(state == 2){
+
+if(loadedKart[i] != choice[i].kart || loadedWheel[i] != choice[i].wheel){
+
+var oldRot2 : Quaternion = loadedModels[i].rotation;
+
+if(loadedModels[i] != null)
+Destroy(loadedModels[i].gameObject);
+
+var toSpawn : Transform;
+if(choice[i].character >= gd.Karts[choice[i].kart].Models.Length)
+toSpawn = gd.Karts[choice[i].kart].Model;
+else
+toSpawn = gd.Karts[choice[i].kart].Models[choice[i].character];
+
+loadedModels[i] = Instantiate(toSpawn,Platforms[i].FindChild("Spawn").position + Vector3.up,oldRot2);
+loadedModels[i].localScale = Vector3(3,3,3);
+
+var components = loadedModels[i].GetComponents(typeof(Component));
+
+for(var comp : Component in components){
+if(!( comp instanceof Rigidbody) && !( comp instanceof Transform) )
+Destroy(comp);
+}
+
+if(loadedModels[i].rigidbody != null)
+loadedModels[i].rigidbody.isKinematic = true;
+
+if(choice[i].character < gd.Karts[choice[i].kart].Models.Length){
+if(gd.Hats[choice[i].hat].Unlocked == true && gd.Hats[choice[i].hat].Model != null){
+
+HatObject = Instantiate(gd.Hats[choice[i].hat].Model,loadedModels[i].position,Quaternion.identity);
+
+if(loadedModels[i].GetComponent(QA).objects[0] != null){
+HatObject.position = loadedModels[i].GetComponent(QA).objects[0].position;
+HatObject.rotation = loadedModels[i].GetComponent(QA).objects[0].rotation;
+HatObject.parent = loadedModels[i].GetComponent(QA).objects[0];
+
+}
+}
+}else
+Debug.Log("WARNING! THIS CHARACTER DOES NOT HAVE A KART SETUP. THE GAME WILL CRASH WHEN YOU TRY TO RACE!");
+
+//Load Wheels
+var Wheels = new Transform[4];
+
+for(var j : int = 0; j < Wheels.Length;j++){
+Wheels[j] = loadedModels[i].GetComponent(QA).objects[j+1];
+
+var nWheel : Transform = Instantiate(gd.Wheels[choice[i].wheel].Models[j],Wheels[j].position,Wheels[j].rotation);
+nWheel.parent = Wheels[j].parent;
+nWheel.name = Wheels[j].name;
+nWheel.localScale = Wheels[j].localScale;
+
+Destroy(Wheels[j].gameObject);
+
+loadedModels[i].GetComponent(QA).objects[j+1] = nWheel;
+
+}
+
+loadedKart[i] = choice[i].kart;
+loadedWheel[i] = choice[i].wheel;
+
+}
+
+if(loadedModels[i] != null)
+loadedModels[i].Rotate(Vector3.up,-Input.GetAxis(gd.pcn[i]+"Rotate") * Time.fixedDeltaTime * rotSpeed);
+
+}
+
+}
+}
+
+var oldRect : Vector4;
+var newRect : Vector4;
+var nRect : Vector4;
+var cam : Camera;
+
+//Default off screen
+if(gd.pcn.Length == 0 || hidden){
+cam = Platforms[0].FindChild("Camera").camera;
+oldRect = Vector4(cam.rect.x,cam.rect.y,cam.rect.width,cam.rect.height);
+newRect = Vector4(1.5,0,oldRect.z,oldRect.w);
+nRect = Vector4.Lerp(oldRect,newRect,Time.deltaTime*5f);
+cam.rect = Rect(nRect.x,nRect.y,nRect.z,nRect.w);
+}
+
+if(gd.pcn.Length <= 1 || hidden){
+cam = Platforms[1].FindChild("Camera").camera;
+oldRect = Vector4(cam.rect.x,cam.rect.y,cam.rect.width,cam.rect.height);
+newRect = Vector4(1.5,0,oldRect.z,oldRect.w);
+nRect = Vector4.Lerp(oldRect,newRect,Time.deltaTime*5f);
+cam.rect = Rect(nRect.x,nRect.y,nRect.z,nRect.w);
+}
+
+if(gd.pcn.Length <= 2 || hidden){
+cam = Platforms[2].FindChild("Camera").camera;
+oldRect = Vector4(cam.rect.x,cam.rect.y,cam.rect.width,cam.rect.height);
+newRect = Vector4(1.5,0,oldRect.z,oldRect.w);
+nRect = Vector4.Lerp(oldRect,newRect,Time.deltaTime*5f);
+cam.rect = Rect(nRect.x,nRect.y,nRect.z,nRect.w);
+}
+
+if(gd.pcn.Length <= 3 || hidden){
+cam = Platforms[3].FindChild("Camera").camera;
+oldRect = Vector4(cam.rect.x,cam.rect.y,cam.rect.width,cam.rect.height);
+newRect = Vector4(1.5,0,oldRect.z,oldRect.w);
+nRect = Vector4.Lerp(oldRect,newRect,Time.deltaTime*5f);
+cam.rect = Rect(nRect.x,nRect.y,nRect.z,nRect.w);
+}
+
+if(!hidden){
+
+if(gd.pcn.Length == 1){
+
+cam = Platforms[0].FindChild("Camera").camera;
+
+oldRect = Vector4(cam.rect.x,cam.rect.y,cam.rect.width,cam.rect.height);
+newRect = Vector4(0.5,0,0.5,1);
+nRect = Vector4.Lerp(oldRect,newRect,Time.deltaTime*5f);
+cam.rect = Rect(nRect.x,nRect.y,nRect.z,nRect.w);
+
+}
+
+if(gd.pcn.Length == 2){
+
+cam = Platforms[0].FindChild("Camera").camera;
+oldRect = Vector4(cam.rect.x,cam.rect.y,cam.rect.width,cam.rect.height);
+newRect = Vector4(0.5,0.5,0.5,0.5);
+nRect = Vector4.Lerp(oldRect,newRect,Time.deltaTime*5f);
+cam.rect = Rect(nRect.x,nRect.y,nRect.z,nRect.w);
+
+cam = Platforms[1].FindChild("Camera").camera;
+oldRect = Vector4(cam.rect.x,cam.rect.y,cam.rect.width,cam.rect.height);
+newRect = Vector4(0.5,0,0.5,0.5);
+nRect = Vector4.Lerp(oldRect,newRect,Time.deltaTime*5f);
+cam.rect = Rect(nRect.x,nRect.y,nRect.z,nRect.w);
+
+
+}
+
+
+
+if(gd.pcn.Length == 3){
+
+cam = Platforms[0].FindChild("Camera").camera;
+oldRect = Vector4(cam.rect.x,cam.rect.y,cam.rect.width,cam.rect.height);
+newRect = Vector4(0.5,0.5,0.25,0.5);
+nRect = Vector4.Lerp(oldRect,newRect,Time.deltaTime*5f);
+cam.rect = Rect(nRect.x,nRect.y,nRect.z,nRect.w);
+
+cam = Platforms[1].FindChild("Camera").camera;
+oldRect = Vector4(cam.rect.x,cam.rect.y,cam.rect.width,cam.rect.height);
+newRect = Vector4(0.75,0.5,0.25,0.5);
+nRect = Vector4.Lerp(oldRect,newRect,Time.deltaTime*5f);
+cam.rect = Rect(nRect.x,nRect.y,nRect.z,nRect.w);
+
+cam = Platforms[2].FindChild("Camera").camera;
+oldRect = Vector4(cam.rect.x,cam.rect.y,cam.rect.width,cam.rect.height);
+newRect = Vector4(0.5,0,0.25,0.5);
+nRect = Vector4.Lerp(oldRect,newRect,Time.deltaTime*5f);
+cam.rect = Rect(nRect.x,nRect.y,nRect.z,nRect.w);
+
+}
+
+if(gd.pcn.Length == 4){
+
+cam = Platforms[0].FindChild("Camera").camera;
+oldRect = Vector4(cam.rect.x,cam.rect.y,cam.rect.width,cam.rect.height);
+newRect = Vector4(0.5,0.5,0.25,0.5);
+nRect = Vector4.Lerp(oldRect,newRect,Time.deltaTime*5f);
+cam.rect = Rect(nRect.x,nRect.y,nRect.z,nRect.w);
+
+cam = Platforms[1].FindChild("Camera").camera;
+oldRect = Vector4(cam.rect.x,cam.rect.y,cam.rect.width,cam.rect.height);
+newRect = Vector4(0.75,0.5,0.25,0.5);
+nRect = Vector4.Lerp(oldRect,newRect,Time.deltaTime*5f);
+cam.rect = Rect(nRect.x,nRect.y,nRect.z,nRect.w);
+
+cam = Platforms[2].FindChild("Camera").camera;
+oldRect = Vector4(cam.rect.x,cam.rect.y,cam.rect.width,cam.rect.height);
+newRect = Vector4(0.5,0,0.25,0.5);
+nRect = Vector4.Lerp(oldRect,newRect,Time.deltaTime*5f);
+cam.rect = Rect(nRect.x,nRect.y,nRect.z,nRect.w);
+
+cam = Platforms[3].FindChild("Camera").camera;
+oldRect = Vector4(cam.rect.x,cam.rect.y,cam.rect.width,cam.rect.height);
+newRect = Vector4(0.75,0,0.25,0.5);
+nRect = Vector4.Lerp(oldRect,newRect,Time.deltaTime*5f);
+cam.rect = Rect(nRect.x,nRect.y,nRect.z,nRect.w);
+
+}
+}
 
 }
 
 function OnGUI () {
+if(!hidden){
+
+GUI.skin = Resources.Load("GUISkins/Main Menu",GUISkin);
 
 var stateTexture : Texture2D;
 
@@ -170,14 +446,21 @@ if(Input.GetAxis(gd.pcn[c] + "Cancel") != 0 && submitinputLock[c] == false){
 Resetready();
 submitinputLock[c] = true;
 transform.GetComponent(Main_Menu).Return();
-this.enabled = false;
+hidden = true;
+}
+
+}else{
+
+if(Input.GetAxis(gd.pcn[c] + "Cancel") != 0 && submitinputLock[c] == false){
+ready[c] = false;
+submitinputLock[c] = true;
 }
 
 }
 
 choice[c].character = NumClamp(choice[c].character,0,gd.Characters.Length);
 
-if(Input.GetAxis(gd.pcn[c] + "Horizontal") == 0 && Input.GetAxis(gd.pcn[c] + "Vertical") == 0 &&  Input.GetAxis(gd.pcn[c] + "Submit") == 0 )
+if(Input.GetAxis(gd.pcn[c] + "Horizontal") == 0 && Input.GetAxis(gd.pcn[c] + "Vertical") == 0)
 inputLock[c] = false;
 
 }
@@ -302,17 +585,47 @@ submitinputLock[c] = true;
 if(Input.GetAxis(gd.pcn[c] + "Cancel") != 0 && submitinputLock[c] == false){
 Resetready();
 submitinputLock[c] = true;
+
 state = 0;
 }
 
+}else{
+
+if(Input.GetAxis(gd.pcn[c] + "Cancel") != 0 && submitinputLock[c] == false){
+ready[c] = false;
+submitinputLock[c] = true;
+}
 }
 
 choice[c].hat = NumClamp(choice[c].hat,0,gd.Hats.Length);
 
-if(Input.GetAxis(gd.pcn[c] + "Horizontal") == 0 && Input.GetAxis(gd.pcn[c] + "Vertical") == 0 &&  Input.GetAxis(gd.pcn[c] + "Submit") == 0 )
+if(Input.GetAxis(gd.pcn[c] + "Horizontal") == 0 && Input.GetAxis(gd.pcn[c] + "Vertical") == 0)
 inputLock[c] = false;
 
 }
+}
+
+if(state == 2){
+
+for(i = 0; i < gd.pcn.Length;i++){
+
+if(gd.pcn.Length == 1)
+kartSelect(i,0);
+
+if(gd.pcn.Length == 2)
+kartSelect(i,i+1);
+
+if(gd.pcn.Length > 2)
+kartSelect(i,3 + i);
+
+}
+}
+
+if(state == 3){
+
+gd.currentChoices = choice;
+hidden = true;
+
 }
 
 if(stateTexture != null){
@@ -338,11 +651,153 @@ state += 1;
 Resetready();
 
 }
+}
+
+function kartSelect(c : int,pos : int){
+
+var iconWidth : float = (Screen.width/2f)/5;
+var BoardHeight : float = iconWidth*6f + 10;
+
+//0 = full screen, 1 = 2 player (vertical) top, 2 = 2 player (vertical) bottom, 3 = 4 player (top left), 4  = 4 player (top right), 5  = 4 player (bottom left), 6 = 4 player (bottom right)
+var areaRect : Rect;
+if(pos == 0)
+areaRect = Rect(20,10 + Screen.height/2f - BoardHeight/2f,iconWidth*5f,BoardHeight - 20);
+
+if(pos == 1)
+areaRect = Rect(20,10 + (Screen.height/2f - BoardHeight/2f),iconWidth*5f ,BoardHeight/2f - 20);
+
+if(pos == 2)
+areaRect = Rect(20,10 + Screen.height/2f,iconWidth*5f,BoardHeight/2f - 20);
+
+if(pos == 3)
+areaRect = Rect(20,10 + (Screen.height/2f - BoardHeight/2f),(iconWidth*5f + 20)/2f  - 20,BoardHeight/2f - 20);
+
+if(pos == 4)
+areaRect = Rect(20 + (iconWidth*5f + 20)/2f,10 + (Screen.height/2f - BoardHeight/2f),(iconWidth*5f + 20)/2f  - 20,BoardHeight/2f - 20);
+
+if(pos == 5)
+areaRect = Rect(20,10 + Screen.height/2f ,(iconWidth*5f + 20)/2f  - 20,BoardHeight/2f - 20);
+
+if(pos == 6)
+areaRect = Rect(20 + (iconWidth*5f + 20)/2f,10 + Screen.height/2f ,(iconWidth*5f + 20)/2f  - 20,BoardHeight/2f - 20);
+
+
+GUI.BeginGroup(areaRect);
+
+var kartIcon : Texture2D = gd.Karts[choice[c].kart].Icon;
+var wheelIcon : Texture2D = gd.Wheels[choice[c].wheel].Icon;
+
+var kartRect : Rect = Rect(0,0,areaRect.width/2f,areaRect.height);
+var wheelRect : Rect = Rect(areaRect.width/2f,0,areaRect.width/2f,areaRect.height);
+
+GUI.DrawTexture(kartRect,kartIcon,ScaleMode.ScaleToFit);
+GUI.DrawTexture(wheelRect,wheelIcon,ScaleMode.ScaleToFit);
+
+//Render Cursor
+var CursorTexture : Texture2D = Resources.Load("UI Textures/Cursors/Cursor_"+c,Texture2D);
+
+if(!kartSelected[c])
+GUI.DrawTexture(kartRect,CursorTexture);
+else
+GUI.DrawTexture(wheelRect,CursorTexture);
+
+GUI.EndGroup();
+
+if(Input.GetAxis(gd.pcn[c] + "Vertical") != 0 && inputLock[c] == false && ready[c] == false){
+
+inputLock[c] = true;
+
+var vinput = -Mathf.Sign(Input.GetAxis(gd.pcn[c] + "Vertical"));
+
+if(!kartSelected[c]){
+
+choice[c].kart -= vinput;
+choice[c].kart = NumClamp(choice[c].kart,0,gd.Karts.Length);
+
+}else{
+
+choice[c].wheel -= vinput;
+choice[c].wheel = NumClamp(choice[c].wheel,0,gd.Wheels.Length);
+
+}
+}
+
+if(Input.GetAxis(gd.pcn[c] + "Submit") != 0 && submitinputLock[c] == false){
+
+if(kartSelected[c] == false)
+kartSelected[c] = true;
+else
+ready[c] = true;
+
+submitinputLock[c] = true;
+
+}
+
+
+
+if(Input.GetAxis(gd.pcn[c] + "Horizontal") == 0 && Input.GetAxis(gd.pcn[c] + "Vertical") == 0)
+inputLock[c] = false;
+
+if(Input.GetAxis(gd.pcn[c] + "Submit") == 0 && Input.GetAxis(gd.pcn[c] + "Cancel") == 0 )
+submitinputLock[c] = false;
+
+if(Input.GetAxis(gd.pcn[c] + "Cancel") != 0 && submitinputLock[c] == false){
+if(ready[c] == true)
+ready[c] = false;
+else{
+if(kartSelected[c])
+kartSelected[c] = false;
+else{
+Resetready();
+state = 1;
+}
+}
+
+submitinputLock[c] = true;
+
+}
+
+}
+
+
 
 function Resetready(){
 
-for(var i : int = 0; i < 4;i++)
+for(var i : int = 0; i < 4;i++){
 ready[i] = false;
+kartSelected[i] = false;
+loadedCharacter[i] = -1;
+loadedHat[i] = -1;
+loadedKart[i] = -1;
+loadedWheel[i] = -1;
+}
+
+}
+
+function ResetEverything(){
+
+state = 2;
+
+ready = new boolean[4];
+inputLock = new boolean[4];
+submitinputLock = new boolean[4];
+kartSelected = new boolean[4];
+cursorPosition = new Vector2[4];
+
+loadedCharacter = new int[4];
+loadedHat = new int[4];
+loadedKart = new int[4];
+loadedWheel = new int[4];
+
+gd = GameObject.Find("GameData").GetComponent(CurrentGameData);
+
+var counter : int;
+
+for(var i : int = 0; i < gd.Characters.Length;i++){
+if(i%5 == 0)
+choicesPerColumn += 1;
+submitinputLock[i] = true;
+}
 
 }
 

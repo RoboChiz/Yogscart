@@ -11,6 +11,9 @@ var currentHat : int = -1;
 var currentWheel : int = -1;
 
 @HideInInspector
+var currentChoices : LoadOut[];
+
+@HideInInspector
 var currentPosition : int = 0;
 @HideInInspector
 var Ingame : Transform;

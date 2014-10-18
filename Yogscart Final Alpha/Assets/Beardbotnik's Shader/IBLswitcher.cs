@@ -10,11 +10,20 @@ public class IBLswitcher : MonoBehaviour {
 	
 	void Update () {
 
-		if(Active)
-			ibl = Mathf.Lerp (ibl, 1, smooth * Time.deltaTime);
-		else
-			ibl = Mathf.Lerp (ibl, 0, smooth * Time.deltaTime);
+		if(Active){
+			if(smooth >= 0)
+				ibl = Mathf.Lerp (ibl, 1 , smooth * Time.deltaTime);
+			else
+				ibl = 1;
+		}else{
+			if(smooth >= 0)
+				ibl = Mathf.Lerp (ibl, 0 , smooth * Time.deltaTime);
+			else
+				ibl = 0;
+		}
+
 			Shader.SetGlobalFloat ("_InOutIBL", ibl);
+
 		}
 
 

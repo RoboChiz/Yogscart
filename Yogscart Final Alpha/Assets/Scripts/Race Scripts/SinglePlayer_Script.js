@@ -65,10 +65,10 @@ if(type != RaceStyle.TimeTrial || (type == RaceStyle.TimeTrial && i == 0)){
 var nRacer = new PlayerRacer();
 nRacer.Human = true;
 nRacer.HumanID = i;
-nRacer.Character = gd.currentCharacter;
-nRacer.Hat = gd.currentHat;
-nRacer.Kart = gd.currentKart;
-nRacer.Wheel = gd.currentWheel;
+nRacer.Character = gd.currentChoices[i].character;
+nRacer.Hat = gd.currentChoices[i].hat;
+nRacer.Kart = gd.currentChoices[i].kart;
+nRacer.Wheel = gd.currentChoices[i].wheel;
 nRacer.timer = new Timer();
 
 copy.Push(nRacer);
