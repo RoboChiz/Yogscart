@@ -4,12 +4,13 @@ private var td : TrackData;
 private var pf : Position_Finding;
 private var ks : kartScript;
 private var ki : kartItem;
+private var gd : CurrentGameData;
 
 var Difficulty : int;
 //0 - 50cc, 1 - 100cc, 2 - 150cc, 3 - Insane
 var Stupidity : int; //Bigger the number, stupider the AI.
 
-var angleRequired : float = 5f;
+var angleRequired : float = 10f;
 private var steering : int;
 
 private var nTarget : Vector3;
@@ -22,18 +23,21 @@ td = GameObject.Find("Track Manager").GetComponent(TrackData);
 pf = transform.GetComponent(Position_Finding);
 ks = transform.GetComponent(kartScript);
 ki = transform.GetComponent(kartItem);
+gd = GameObject.Find("GameData").GetComponent(CurrentGameData);
 }
 
 function Update () {
 //Calculate Item
 
-if(Difficulty == 0){
 if(ki.heldPowerUp != -1 && usedItem == false){
+
+if(Stupidity < 5 && gd.PowerUps[ki.heldPowerUp].type == ItemType.UsableAsShield){
+useShield();
+}else
 useItemRandom();
+
 usedItem = true;
 }
-}
-
 
 //Calculate Steering
 if(NumClamp(pf.currentPos+1,0,td.PositionPoints.Length) != targestPos ){
@@ -76,12 +80,19 @@ ks.throttle = 0.75;
 
 //Calculate Throttle
 if(angle >= 120 || angle  <= 60){
+
 if(Stupidity < 6)
 ks.drift = true;
-else
 ks.throttle = 0.5;
+
 }else{
 ks.throttle = 1;
+}
+
+var testangle : float = Vector3.Angle(transform.forward,NeededDirection);
+if(testangle >= 135){
+steering = 1;
+ks.throttle = 0.25;
 }
 
 var relativeVelocity : Vector3 = transform.InverseTransformDirection(rigidbody.velocity);
@@ -123,6 +134,16 @@ Debug.Log("Started Iteming!");
 yield WaitForSeconds(Random.Range(0,15));
 ki.input = true;
 yield;
+yield;
+Debug.Log("Done Iteming!");
+ki.input = false;
+usedItem = false;
+}
+
+function useShield(){
+Debug.Log("Started Iteming!");
+ki.input = true;
+while(ki.heldPowerUp != -1)
 yield;
 Debug.Log("Done Iteming!");
 ki.input = false;

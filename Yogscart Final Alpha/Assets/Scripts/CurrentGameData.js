@@ -5,10 +5,14 @@ var currentCup : int = -1;
 @HideInInspector
 var currentTrack : int = -1;
 
+//Delete Later!
 var currentKart : int =-1;
 var currentCharacter : int = -1;
 var currentHat : int = -1;
 var currentWheel : int = -1;
+//Delete Later!
+
+var type : RaceStyle;
 
 @HideInInspector
 var currentChoices : LoadOut[];

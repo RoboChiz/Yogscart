@@ -184,9 +184,9 @@ currentSelection = 0;
 }
 
 if(currentSelection == 1){
-//State = 4;
-//currentSelection = 0;
-FlashRed();
+gd.type = RaceStyle.Online;
+State = 4;
+currentSelection = 0;
 }
 
 if(currentSelection == 2){
@@ -245,16 +245,19 @@ if(Input.GetAxis(gd.pcn[0]+"Submit") != 0 && controlLock == false){
 if(currentSelection == 0){
 transform.GetComponent(Level_Select).GrandPrixOnly = true;
 gd.transform.GetComponent(SinglePlayer_Script).type = RaceStyle.GrandPrix;
+gd.type = RaceStyle.GrandPrix;
 State = 3;
 }
 if(currentSelection == 1){
 transform.GetComponent(Level_Select).GrandPrixOnly = false;
 gd.transform.GetComponent(SinglePlayer_Script).type = RaceStyle.CustomRace;
+gd.type = RaceStyle.CustomRace;
 State = 3;
 }
 if(currentSelection == 2){
 transform.GetComponent(Level_Select).GrandPrixOnly = false;
 gd.transform.GetComponent(SinglePlayer_Script).type = RaceStyle.TimeTrial;
+gd.type = RaceStyle.TimeTrial;
 StartCoroutine("StartSinglePlayer");
 State = 14;
 }
@@ -316,7 +319,7 @@ currentSelection = 0;
 controlLock = true;
 }
 
-Options = ["SplitScreen","Quick Race","Host","Join"];
+Options = ["Quick Race","Host","Join"];
 
 for(i = 0;i < Options.Length;i++){
 OptionsTexture = Resources.Load("UI Textures/New Main Menu/State 4/" + Options[i],Texture2D); 
@@ -333,10 +336,10 @@ GUI.DrawTexture(Rect(Screen.width/10f,(Screen.width/20f*(i+5)),OptionsTexture.wi
 
 if(Input.GetAxis(gd.pcn[0]+"Submit") != 0 && controlLock == false){
 
-if(currentSelection == 2)
+if(currentSelection == 1)
 State = 5;
 
-if(currentSelection == 3)
+if(currentSelection == 2)
 State = 6;
 
 currentSelection = 0;
@@ -670,8 +673,6 @@ gd.allowedToChange = true;
 
 function StartSinglePlayer(){
 
-gd.allowedToChange = false;
-
 while(gd.currentChoices.Length == 0){
 transform.GetComponent(newCharacterSelect).hidden = false;
 transform.GetComponent(Level_Select).hidden = true;
@@ -693,14 +694,16 @@ function StartServer(){
 
 State = 14;
 
-while(gd.currentKart == -1){
-GameObject.Find("CS_Camera").camera.enabled = true;
-transform.GetComponent(Character_Select).enabled = true;
+gd.allowedToChange = false;
+
+while(gd.pcn.Length > 1)
+gd.RemoveController(gd.pcn[1]);
+
+while(gd.currentChoices.Length == 0){
+transform.GetComponent(newCharacterSelect).hidden = false;
 transform.GetComponent(Level_Select).hidden = true;
 yield;
 }
-
-GameObject.Find("CS_Camera").camera.enabled = false;
 
 gd.BlackOut = true;
 
@@ -730,14 +733,13 @@ StartConnection();
 
 function StartConnection(){
 
-while(gd.currentKart == -1){
-GameObject.Find("CS_Camera").SetActive(true);
-transform.GetComponent(Character_Select).enabled = true;
+gd.allowedToChange = false;
+
+while(gd.currentChoices.Length == 0){
+transform.GetComponent(newCharacterSelect).hidden = false;
 transform.GetComponent(Level_Select).hidden = true;
 yield;
 }
-
-GameObject.Find("CS_Camera").SetActive(false);
 
 CS.enabled = true;
 CS.ConnectedToServer();

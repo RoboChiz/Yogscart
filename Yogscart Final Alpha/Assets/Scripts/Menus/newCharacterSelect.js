@@ -319,9 +319,12 @@ var stateTexture : Texture2D;
 
 var iconWidth : float = (Screen.width/2f)/5;
 
+var Heightratio : float = ((Screen.width/3f)/1000f)*200f;
+
 var BoardTexture = Resources.Load("UI Textures/GrandPrix Positions/Backing2",Texture2D);
 var BoardHeight : float = iconWidth*6f + 10;
-var BoardRect = Rect(10,Screen.height/2f - BoardHeight/2f,iconWidth*5f + 20 ,BoardHeight);
+var BoardRect = Rect(10,Screen.height/2f - BoardHeight/2f + Heightratio,iconWidth*5f + 20 ,BoardHeight - Heightratio);
+var startHeight = Screen.height/2f - BoardHeight/2f + 10 + Heightratio;
 
 GUI.DrawTexture(BoardRect,BoardTexture);
 
@@ -331,11 +334,15 @@ submitinputLock[g] = true;
 
 if(state == 0){ //Character Select
 
+if(gd.type != RaceStyle.TimeTrial && gd.type != RaceStyle.Online){
 gd.allowedToChange = true;
+}else{
+gd.allowedToChange = false;
+while(gd.pcn.Length > 1)
+gd.RemoveController(gd.pcn[1]);
+}
 
 stateTexture = Resources.Load("UI Textures/New Character Select/char",Texture2D);
-
-var startHeight = Screen.height/2f - BoardHeight/2f + 10;
 
 var characterCounter : int;
 
@@ -475,8 +482,6 @@ if(state == 1){ //Hat Select
 gd.allowedToChange = false;
 
 stateTexture = Resources.Load("UI Textures/New Character Select/hat",Texture2D);
-
-startHeight = Screen.height/2f - BoardHeight/2f + 10;
 
 var hatCounter : int;
 
@@ -656,30 +661,31 @@ Resetready();
 function kartSelect(c : int,pos : int){
 
 var iconWidth : float = (Screen.width/2f)/5;
-var BoardHeight : float = iconWidth*6f + 10;
+var Heightratio : float = ((Screen.width/3f)/1000f)*200f;
+var BoardHeight : float = iconWidth*6f + 10 - Heightratio;
 
 //0 = full screen, 1 = 2 player (vertical) top, 2 = 2 player (vertical) bottom, 3 = 4 player (top left), 4  = 4 player (top right), 5  = 4 player (bottom left), 6 = 4 player (bottom right)
 var areaRect : Rect;
 if(pos == 0)
-areaRect = Rect(20,10 + Screen.height/2f - BoardHeight/2f,iconWidth*5f,BoardHeight - 20);
+areaRect = Rect(20,10 + Heightratio/2f + Screen.height/2f - BoardHeight/2f,iconWidth*5f,BoardHeight - 20);
 
 if(pos == 1)
-areaRect = Rect(20,10 + (Screen.height/2f - BoardHeight/2f),iconWidth*5f ,BoardHeight/2f - 20);
+areaRect = Rect(20,10 + Heightratio/2f + (Screen.height/2f - BoardHeight/2f),iconWidth*5f ,BoardHeight/2f - 20);
 
 if(pos == 2)
-areaRect = Rect(20,10 + Screen.height/2f,iconWidth*5f,BoardHeight/2f - 20);
+areaRect = Rect(20,10 + Heightratio/2f + Screen.height/2f,iconWidth*5f,BoardHeight/2f - 20);
 
 if(pos == 3)
-areaRect = Rect(20,10 + (Screen.height/2f - BoardHeight/2f),(iconWidth*5f + 20)/2f  - 20,BoardHeight/2f - 20);
+areaRect = Rect(20,10 + Heightratio/2f + (Screen.height/2f - BoardHeight/2f),(iconWidth*5f + 20)/2f  - 20,BoardHeight/2f - 20);
 
 if(pos == 4)
-areaRect = Rect(20 + (iconWidth*5f + 20)/2f,10 + (Screen.height/2f - BoardHeight/2f),(iconWidth*5f + 20)/2f  - 20,BoardHeight/2f - 20);
+areaRect = Rect(20 + (iconWidth*5f + 20)/2f,10 + Heightratio/2f + (Screen.height/2f - BoardHeight/2f),(iconWidth*5f + 20)/2f  - 20,BoardHeight/2f - 20);
 
 if(pos == 5)
-areaRect = Rect(20,10 + Screen.height/2f ,(iconWidth*5f + 20)/2f  - 20,BoardHeight/2f - 20);
+areaRect = Rect(20,10 + Heightratio/2f + Screen.height/2f ,(iconWidth*5f + 20)/2f  - 20,BoardHeight/2f - 20);
 
 if(pos == 6)
-areaRect = Rect(20 + (iconWidth*5f + 20)/2f,10 + Screen.height/2f ,(iconWidth*5f + 20)/2f  - 20,BoardHeight/2f - 20);
+areaRect = Rect(20 + (iconWidth*5f + 20)/2f,10 + Heightratio/2f + Screen.height/2f ,(iconWidth*5f + 20)/2f  - 20,BoardHeight/2f - 20);
 
 
 GUI.BeginGroup(areaRect);
@@ -687,8 +693,12 @@ GUI.BeginGroup(areaRect);
 var kartIcon : Texture2D = gd.Karts[choice[c].kart].Icon;
 var wheelIcon : Texture2D = gd.Wheels[choice[c].wheel].Icon;
 
-var kartRect : Rect = Rect(0,0,areaRect.width/2f,areaRect.height);
-var wheelRect : Rect = Rect(areaRect.width/2f,0,areaRect.width/2f,areaRect.height);
+var idealWidth : float = areaRect.width/2f;
+var nRatio : float = idealWidth/kartIcon.width;
+var idealheight = kartIcon.height * nRatio;
+
+var kartRect : Rect = Rect(0,areaRect.height/2f - idealheight/2f,idealWidth,idealheight);
+var wheelRect : Rect = Rect(areaRect.width/2f,areaRect.height/2f - idealheight/2f,idealWidth,idealheight);
 
 GUI.DrawTexture(kartRect,kartIcon,ScaleMode.ScaleToFit);
 GUI.DrawTexture(wheelRect,wheelIcon,ScaleMode.ScaleToFit);

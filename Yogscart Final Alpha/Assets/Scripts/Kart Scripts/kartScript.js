@@ -129,6 +129,7 @@ audio.pitch = Mathf.Lerp(audio.pitch,1 + es,Time.deltaTime);
 
 }
 
+if(!isFalling){
 if(throttle == 0 || locked)
 ApplyStopForce();
 else
@@ -166,7 +167,7 @@ rigidbody.AddForce(transform.forward * rigidbody.mass * nA);
 
 lastMaxSpeed = nMaxSpeed;
 
-
+}
 }
 
 
@@ -281,7 +282,10 @@ applyingDrift = false;
 
 function CheckGravity(){
 
-if(Wheels[0].isGrounded == true || Wheels[1].isGrounded == true  || Wheels[2].isGrounded == true  || Wheels[3].isGrounded == true)
+Debug.DrawRay(transform.position,Physics.gravity.normalized*1);
+
+if((Wheels[0].isGrounded == true || Wheels[1].isGrounded == true  || Wheels[2].isGrounded == true  || Wheels[3].isGrounded == true)||
+Physics.Raycast(transform.position,Physics.gravity.normalized,1))
 isFalling = false;
 else
 isFalling = true;

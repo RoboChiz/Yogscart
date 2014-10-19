@@ -1,15 +1,13 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Kart Scripts\kartScript.js">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\New Race Scripts\Race_Master.js">
     <Files>
-      <File FileName="Assets\Scripts\Kart Scripts\kartScript.js" Line="117" Column="1" />
-      <File FileName="Assets\Scripts\New Race Scripts\Race_Master.js" Line="339" Column="1" />
-      <File FileName="Assets\Scripts\Menus\newCharacterSelect.js" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\Menus\Character_Select.js" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\Menus\Level_Select.js" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\CurrentGameData.js" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\Menus\Main_Menu.js" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\Kart Scripts\kartAnimation.js" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\CurrentGameData.js" Line="16" Column="1" />
+      <File FileName="Assets\Scripts\Menus\Main_Menu.js" Line="342" Column="25" />
+      <File FileName="Assets\Scripts\New Race Scripts\Race_Master.js" Line="12" Column="9" />
+      <File FileName="Assets\Scripts\Menus\newCharacterSelect.js" Line="343" Column="2" />
+      <File FileName="Assets\Scripts\Race Scripts\SinglePlayer_Script.js" Line="8" Column="1" />
+      <File FileName="Assets\Scripts\New Race Scripts\Race_Host.js" Line="82" Column="28" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

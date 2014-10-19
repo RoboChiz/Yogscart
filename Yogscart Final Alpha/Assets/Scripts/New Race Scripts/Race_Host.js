@@ -79,7 +79,7 @@ lastLevelPrefix += 1;
 
 function OnGUI(){
 
-if(Input.GetAxis("Submit") == 0 && Input.GetAxis("Cancel") == 0)
+if(Input.GetAxis(gd.pcn[0]+"Submit") == 0 && Input.GetAxis("Cancel") == 0)
 controlLock = false;
 
 //Debug GUI

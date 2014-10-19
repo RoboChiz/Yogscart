@@ -65,12 +65,12 @@
      <Compile Include="Assets\Scripts\Character Scripts\Blink_Script.js" />
      <Compile Include="Assets\Scripts\Character Scripts\QA.js" />
      <Compile Include="Assets\Scripts\CurrentGameData.js" />
-     <Compile Include="Assets\Scripts\Kart Scripts\ColliderForce.js" />
      <Compile Include="Assets\Scripts\Kart Scripts\Kart_Camera.js" />
      <Compile Include="Assets\Scripts\Kart Scripts\LoadExtras.js" />
      <Compile Include="Assets\Scripts\Kart Scripts\NetworkUpdate.js" />
      <Compile Include="Assets\Scripts\Kart Scripts\Position_Finding.js" />
      <Compile Include="Assets\Scripts\Kart Scripts\Racer_AI.js" />
+     <Compile Include="Assets\Scripts\Kart Scripts\colliderTest.js" />
      <Compile Include="Assets\Scripts\Kart Scripts\kartAI.js" />
      <Compile Include="Assets\Scripts\Kart Scripts\kartAnimation.js" />
      <Compile Include="Assets\Scripts\Kart Scripts\kartInput.js" />

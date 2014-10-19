@@ -1037,7 +1037,10 @@ function FinishRace(){
 	PlayerPrefs.SetString(gd.Tournaments[sps.nextCup].Tracks[sps.nextTrack].Name,nTimeString);
 	
 	}		
-		
+	
+	CancelInvoke("CheckPlayer");
+	StopCoroutine("BeginTick");	
+				
 	}
 	
 	controlLock = true;
