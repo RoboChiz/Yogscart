@@ -578,6 +578,7 @@ SPRacers[i].rep.GetComponent(Position_Finding).position = i;
 
 if(SPRacers[i].Human == false){
 SPRacers[i].rep.gameObject.AddComponent(Racer_AI);
+SPRacers[i].rep.GetComponent(Racer_AI).Stupidity = SPRacers[i].aiStupidity;
 }else{
 //Add Script
 SPRacers[i].rep.gameObject.AddComponent(kartInput);
@@ -826,6 +827,7 @@ transform.GetComponent(AudioSource).audio.Play ();
 
 for(var i : int = 3; i >= 0; i--){
 CountdownText = i;
+setStartBoost(i);
 CountdownRect = Rect(Screen.width/2 - (Screen.height/1.5f)/2f,Screen.height/2 - (Screen.height/1.5f)/2f,Screen.height/1.5f,Screen.height/1.5f);
 CountdownShow = true;
 yield WaitForSeconds(0.8);
@@ -834,6 +836,7 @@ yield WaitForSeconds(0.3);
 }
 
 CountdownText = -1;
+setStartBoost(4);
 
 }
 
@@ -1324,10 +1327,19 @@ yield WaitForSeconds(0.2);
 keyLock = false;
 }
 
+function setStartBoost(val : int){
+
+for(var i : int = 0; i < SPRacers.Length; i++){
+SPRacers[i].rep.GetComponent(kartScript).startBoosting = val;
+}
+
+}
+
 class PlayerRacer {
 
 var Human : boolean;
 var HumanID : int = -1;
+var aiStupidity : int = -1;
 
 var Character : int;
 var Hat : int;

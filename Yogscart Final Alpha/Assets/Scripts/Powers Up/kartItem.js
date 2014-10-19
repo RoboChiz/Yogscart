@@ -103,7 +103,7 @@ clone.rigidbody.isKinematic = true;
 
 heldPowerUp = -1;
 
-while(input == true && clone != null){
+while(input == true && clone.parent != null){
 yield;
 }
 

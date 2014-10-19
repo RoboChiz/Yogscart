@@ -51,6 +51,16 @@ for(var i : int = 0;i < 12 - gd.pcn.Length;i++){
 var AIRacer = new PlayerRacer();
 AIRacer.Human = false;
 AIRacer.HumanID = -1;
+//0 - 50cc, 1 - 100cc, 2 - 150cc, 3 - Insane
+if(Difficulty == 0)
+AIRacer.aiStupidity = Random.Range(5,10);
+if(Difficulty == 1)
+AIRacer.aiStupidity = Random.Range(3,8);
+if(Difficulty == 2)
+AIRacer.aiStupidity = Random.Range(1,5);
+if(Difficulty == 3)
+AIRacer.aiStupidity = 1;
+
 AIRacer.Character = Random.Range(0,gd.Characters.Length);
 AIRacer.Kart = Random.Range(0,gd.Karts.Length);
 AIRacer.Hat = Random.Range(0,gd.Hats.Length);

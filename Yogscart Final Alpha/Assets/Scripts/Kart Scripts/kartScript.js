@@ -26,6 +26,13 @@ var forceAmount : float = 5;
 var lapisAmount : int = 0;
 var locked : boolean;
 
+var startBoosting : int = -1;
+private var allowedBoost : boolean;
+private var spinOut : boolean;
+private var boostAmount : float;
+
+var spinTime : float = 2f;
+
 private var MSdivided : float;
 private var localScale : float;
 
@@ -77,6 +84,31 @@ driftLock = false;
 
 VisualUpdate();
 
+//Calculate Start Boost
+if(startBoosting == 3 && throttle > 0){
+spinOut = true;
+}
+if(startBoosting == 2 && throttle > 0 && spinOut == false){
+allowedBoost = true;
+}
+
+if(startBoosting < 2 && throttle == 0){
+allowedBoost = false;
+}
+
+if(allowedBoost && throttle > 0)
+boostAmount += Time.deltaTime * 0.1f;
+
+if(startBoosting == 4 && allowedBoost){
+Boost(boostAmount);
+startBoosting = -1;
+}
+
+if(startBoosting == 4 && spinOut){
+SpinOut();
+startBoosting = -1;
+}
+
 }
 
 function FixedUpdate () {
@@ -97,24 +129,17 @@ audio.pitch = Mathf.Lerp(audio.pitch,1 + es,Time.deltaTime);
 
 }
 
-
-if(locked || isFalling){
-steer = 0;
-throttle = 0;
-drift = false;
-}
-
-if(throttle == 0)
+if(throttle == 0 || locked)
 ApplyStopForce();
 else
 ApplyThrottle();
 
-
+if(!locked){
 ApplySteering();
 
-if(!locked)
 ApplyDrift();
 
+}
 
 var nMaxSpeed : float = Mathf.Lerp(lastMaxSpeed,MaxSpeed-(1f-lapisAmount/10f),Time.fixedDeltaTime);
 
@@ -140,6 +165,7 @@ var nA  = (nExpectedSpeed-actualSpeed)/Time.fixedDeltaTime;
 rigidbody.AddForce(transform.forward * rigidbody.mass * nA);
 
 lastMaxSpeed = nMaxSpeed;
+
 
 }
 
@@ -300,6 +326,30 @@ function VisualUpdate(){
 if(MeshWheels != null)
 for(var i : int = 0; i < MeshWheels.Length; i++)
 MeshWheels[i].Rotate(Vector3(Wheels[i].rpm/30f,0,0));
+}
+
+function SpinOut(){
+
+locked = true;
+
+var t : float = 0;
+
+var Ani = transform.FindChild("Kart Body").FindChild("Character").GetComponent(Animator);
+Ani.SetBool("Hit",true);
+
+Debug.Log(t);
+
+while(t < spinTime){
+transform.rigidbody.velocity = Vector3.Lerp(transform.rigidbody.velocity,Vector3(0,rigidbody.velocity.y,0),Time.deltaTime);
+transform.FindChild("Kart Body").Rotate(transform.up,Time.deltaTime / (spinTime/360f));
+yield;
+t += Time.deltaTime;
+Debug.Log(t);
+}
+
+Ani.SetBool("Hit",false);
+locked = false;
+
 }
 
 function HaveTheSameSign(first : float, second : float) : boolean

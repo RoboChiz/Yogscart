@@ -7,8 +7,9 @@ private var ki : kartItem;
 
 var Difficulty : int;
 //0 - 50cc, 1 - 100cc, 2 - 150cc, 3 - Insane
+var Stupidity : int; //Bigger the number, stupider the AI.
 
-var angleRequired : float = 2f;
+var angleRequired : float = 5f;
 private var steering : int;
 
 private var nTarget : Vector3;
@@ -53,6 +54,7 @@ targestPos = nextChump;
 
 }
 
+if(!ks.locked){
 var NeededDirection : Vector3 = nTarget - transform.position;
 var angle : float = Vector3.Angle(transform.right,NeededDirection);
 
@@ -64,16 +66,23 @@ if(angle > 90+angleRequired)
 steering = -1;
 else if(angle < 90-angleRequired)
 steering = 1;
-else
+else{
 steering = 0;
+ks.drift = false;
+}
 
+if(steering != 0)
+ks.throttle = 0.75;
 
 //Calculate Throttle
-if(angle >= 120 || angle  <= 60)
-ks.throttle = 0.5;
+if(angle >= 120 || angle  <= 60){
+if(Stupidity < 6)
+ks.drift = true;
 else
+ks.throttle = 0.5;
+}else{
 ks.throttle = 1;
-
+}
 
 var relativeVelocity : Vector3 = transform.InverseTransformDirection(rigidbody.velocity);
 
@@ -94,6 +103,16 @@ ks.throttle = -1;
 }
 
 ks.steer = steering;
+
+}
+
+if(ks.startBoosting != -1){
+if(Stupidity < 4 && ks.startBoosting <= 2)
+ks.throttle = 1;
+
+if(Stupidity > 7 && ks.startBoosting <= 3)
+ks.throttle = 1;
+}
 
 }
 
