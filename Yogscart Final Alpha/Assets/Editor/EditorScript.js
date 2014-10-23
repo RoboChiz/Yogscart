@@ -61,9 +61,50 @@ public class TrackDataEditor extends Editor{
         Debug.Log("Something's gone wrong! Make sure that you have setup a track in this scene."); 
     }
     
-    
-    function OnGUI () {
-
+    @MenuItem ("Track Editor/Play Test Track (Normal Race)")
+    static function PTT_NR () {
+    	if(GameObject.Find("GameData") == null)
+    	   LoadLevel(0);
+    	else
+    	Debug.Log("Please delete the existing GameData");
     }
+    
+     @MenuItem ("Track Editor/Play Test Track (Time Trial)")
+    static function PTT_TT () {
+    	if(GameObject.Find("GameData") == null)
+    	   LoadLevel(1);
+    	else
+    	Debug.Log("Please delete the existing GameData");
+    }
+    
+    static function LoadLevel (i : int) {
+    if(Application.isPlaying == false){
+		if(GameObject.Find("Track Manager") != null && GameObject.Find("Track Manager").GetComponent(TrackData) != null && Resources.Load("Prefabs/GameData",Transform) != null){
+ 			EditorApplication.isPlaying = true;
+ 			var gd = Instantiate(Resources.Load("Prefabs/GameData",Transform),Vector3.zero,Quaternion.identity);
+ 			gd.name = "GameData";
+ 			gd.gameObject.AddComponent(Race_Test);
+ 			
+ 			gd.GetComponent(CurrentGameData).pcn = new String[1];
+ 			if(Input.GetJoystickNames().Length > 0)
+ 			gd.GetComponent(CurrentGameData).pcn[0] = "C1_";
+ 			else
+ 			gd.GetComponent(CurrentGameData).pcn[0] = "Key_";
+ 			
+ 			if(i == 0)
+ 			gd.GetComponent(Race_Test).type = RaceStyle.CustomRace;
+ 			if(i == 1)
+ 			gd.GetComponent(Race_Test).type = RaceStyle.TimeTrial;
+ 			
+		}else{
+			Debug.Log("Cannot test this level as there is no Track!");
+		}
+    }else{
+    Debug.Log("Game is already running!");
+    }
+}
+    
 
 }
+
+

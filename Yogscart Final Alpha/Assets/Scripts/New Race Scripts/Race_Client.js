@@ -9,6 +9,8 @@ private var LoadedCharacters : NetworkPlayer[];
 
 private var takingPart : boolean;
 
+var me : PlayerRacer;
+
 function Awake(){
 gd = GameObject.Find("GameData").GetComponent(CurrentGameData);
 }
@@ -26,8 +28,16 @@ while(Application.loadedLevelName == "Main MenuV2")
 yield;
 
 if(Application.loadedLevelName == "Lobby"){
-Debug.Log("Lobby!");
-networkView.RPC("SpawnMe_Lobby",RPCMode.AllBuffered,gd.currentCharacter,gd.currentHat);
+
+me = new PlayerRacer();
+me.Human = true;
+me.Character = gd.currentChoices[0].character;
+me.Hat = gd.currentChoices[0].hat;
+me.Kart = gd.currentChoices[0].kart;
+me.Wheel = gd.currentChoices[0].wheel;
+
+networkView.RPC("SpawnMe_Lobby",RPCMode.AllBuffered,me.Character,me.Hat);
+
 }else{
 Debug.Log(Application.loadedLevelName);
 }
@@ -62,8 +72,12 @@ gameObject.AddComponent(Race_Master);
 var rm = transform.GetComponent(Race_Master);
 
 rm.type = RaceStyle.Online;
-rm.State = Testing.CharacterSpawning;
 
+}
+
+@RPC
+function PosUpdate(i : int){
+me.rep.GetComponent(Position_Finding).position = i;
 }
 
 @RPC
@@ -73,17 +87,9 @@ gd.BlackOut = true;
 
 LoadedCharacters = new NetworkPlayer[0];
 
-if(level == "Lobby"){
-if(transform.GetComponent(RaceScript) != null){
+if(transform.GetComponent(Race_Master) != null){
 Debug.Log("PURGE IT'S SOUL!");
-Destroy(transform.GetComponent(RaceScript));
-}
-
-if(transform.GetComponent(MasterRaceScript) != null){
-Debug.Log("PURGE IT'S SOUL!");
-Destroy(transform.GetComponent(MasterRaceScript));
-}
-
+Destroy(transform.GetComponent(Race_Master));
 }
 
 if(transform.GetComponent(Countdown) != null){
@@ -219,6 +225,7 @@ while(Application.loadedLevelName != "Lobby")
 yield;
 
 if(loadedCharacter == false){
+Debug.Log(character);
 var Char : Transform = Instantiate(gd.Characters[character].CharacterModel_Standing,Vector3(0,1,0),Quaternion.identity);
 Char.gameObject.AddComponent(LobbyAI);
 Char.gameObject.layer = 0;

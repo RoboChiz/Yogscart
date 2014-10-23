@@ -1,13 +1,7 @@
 ﻿#pragma strict
 
-//Race Master - V1 
+//Race Tester - V1 
 //Created By Robo_Chiz
-//I AM RACE MASTER, MASTER OF ALL... THE RACES....FEAR ME!!!
-
-enum Testing{Race,CharacterSpawning,CutScene,RaceInfo,Countdown,RaceGUI,ScoreBoard,NextMenu,Loading};
-enum RaceStyle{GrandPrix,TimeTrial,CustomRace,Online};
-
-var DebugMode : boolean;
 
 var type : RaceStyle;
 var State = Testing.Race;
@@ -50,12 +44,11 @@ private var keyLock : boolean;
 function Start(){
 gd = transform.GetComponent(CurrentGameData);
 td = GameObject.Find("Track Manager").GetComponent(TrackData);
-//This section of code is for debugging each part of the Race Script, remember to remove all of the code relating to the Debug Mode when the alpha is released.
-if(DebugMode){
 
 if(td.IntroPans != null && td.IntroPans.Length > 0 && td.PositionPoints != null && td.PositionPoints.Length > 0){
 
 if(State == Testing.Race){
+if(type == RaceStyle.CustomRace){
 SPRacers = new PlayerRacer[12];
 
 for(var h : int = 0;h < 12;h++){
@@ -67,40 +60,30 @@ SPRacers[h].HumanID = 0;
 }else
 SPRacers[h].Human = false;
 
-var gd : CurrentGameData = GameObject.Find("GameData").GetComponent(CurrentGameData);
-
 SPRacers[h].Character = Random.Range(0,gd.Characters.Length);
 SPRacers[h].Hat = Random.Range(0,gd.Hats.Length);
 SPRacers[h].Kart = Random.Range(0,gd.Karts.Length);
 SPRacers[h].Wheel = Random.Range(0,gd.Wheels.Length);
 SPRacers[h].timer = new Timer();
+SPRacers[h].aiStupidity = h;
+}
+}
 
+if(type == RaceStyle.TimeTrial){
+SPRacers = new PlayerRacer[1];
+SPRacers[0] = new PlayerRacer();
+SPRacers[0].Human = true;
+SPRacers[0].HumanID = 0;
+SPRacers[0].Character = 0;
+SPRacers[0].Hat = 0;
+SPRacers[0].Kart = 0;
+SPRacers[0].Wheel = 0;
+SPRacers[0].timer = new Timer();
 }
 
 SinglePlayerRace();
 }
-
-if(State == Testing.CharacterSpawning)
-if(type != RaceStyle.Online)
-SetUpKarts();
-
-
-if(State == Testing.CutScene)
-PlayCutscene();
-
-if(State == Testing.Countdown)
-Countdown();
-
-//if(State == Testing.ScoreBoard)
-
-}else
-Debug.Log("Track Error! Make sure everything is set up!");
 }
-//End of Debug Mode Section
-
-if(Network.isServer || Network.isClient)
-MultiplayerRace(transform.GetComponent(Race_Client).myPos);
-
 }
 
 function SinglePlayerRace(){
@@ -115,8 +98,6 @@ Destroy(objs[i]);
 }
 
 OverallTimer = new Timer();
-addBoost = 0;
-missOut = false;
 
 yield;
 
@@ -137,28 +118,6 @@ SPRacers[0].rep.GetComponent(kartItem).heldPowerUp = 3;
 yield WaitForSeconds(1);
 Destroy(transform.GetComponent(AudioSource));
 }
-
-function MultiplayerRace(pos : int){
-gd = transform.GetComponent(CurrentGameData);
-td = GameObject.Find("Track Manager").GetComponent(TrackData);
-
-OverallTimer = new Timer();
-addBoost = 0;
-missOut = false;
-yield;
-
-SetUpMyKart(pos);
-yield PlayCutscene();
-
-if(Network.isClient)
-networkView.RPC("ReadytoStart",RPCMode.Server);
-else
-transform.GetComponent(Race_Host).ReadytoStart();
-
-}
-
-private var addBoost : float;
-private var missOut : boolean = false;
 
 private var lastTime : float;
 
@@ -193,11 +152,10 @@ GUI.DrawTexture(previewRect,previewTexture);
 
 if(State == Testing.RaceInfo){
 
-if(!DebugMode){
 GUI.color = new Color32(255, 255, 255, raceGUIAlpha);
 
 if(type != RaceStyle.TimeTrial)
-var raceTexture : Texture2D  = Resources.Load("UI Textures/Level Selection/" + (sps.totalRaces+1),Texture2D);
+var raceTexture : Texture2D  = Resources.Load("UI Textures/Level Selection/" + 1,Texture2D);
 else
 raceTexture = Resources.Load("UI Textures/Level Selection/TimeTrial",Texture2D);
 
@@ -207,7 +165,6 @@ previewRatio = idealWidth/raceTexture.width;
 var raceRect : Rect = Rect(10,Screen.height - raceTexture.height*previewRatio,Screen.width-20,raceTexture.height*previewRatio);
 
 GUI.DrawTexture(raceRect,raceTexture);
-}
 
 }
 
@@ -234,26 +191,6 @@ CountdownAlpha = Mathf.Lerp(CountdownAlpha,256,Time.deltaTime*10f);
 else
 CountdownAlpha = Mathf.Lerp(CountdownAlpha,0,Time.deltaTime*10f);
 
-
-//READD COUTNDOWN BOOST
-//if(CountdownText >= 3)
-//if(Input.GetAxis(pcn[0]+"Throttle") != 0)
-//missOut = true;
-
-//if(CountdownText <= 2){
-
-//if(Input.GetAxis(pcn[0]+"Throttle") != 0){
-//addBoost += Time.deltaTime/10f; 
-//Debug.Log("Adding Boost!");
-//}
-
-//if(addBoost != 0 && Input.GetAxis(pcn[0]+"Throttle") == 0){
-//missOut = true;
-//Debug.Log("missOut!");
-//}
-
-//}
-
 if(GameObject.Find("Music Holder").GetComponent(AudioSource).volume < 0.25f)
 GameObject.Find("Music Holder").GetComponent(AudioSource).volume += Time.deltaTime/4f;
 
@@ -263,11 +200,6 @@ if(State == Testing.RaceGUI){
 
 activeraceAlpha = true;
 
-if(addBoost != 0 && missOut == false){
-Debug.Log("START BOOST!");
-SPRacers[Player1].rep.GetComponent(kartScript).Boost(addBoost);
-missOut = true;
-}
 var style = new GUIStyle(GUI.skin.GetStyle("Special Box"));
 
 var BoxWidth : float = Screen.width / 10f;
@@ -304,29 +236,10 @@ GUI.DrawTexture(BoardRect,BoardTexture);
 
 var OutlineColour : Color = Color.black;
 
-if(type == RaceStyle.TimeTrial){
-	var BestTimer = gd.Tournaments[sps.nextCup].Tracks[sps.nextTrack].BestTrackTime; 		
-	
-if((isEmpty(BestTimer) == true) || (OverallTimer.Minute < BestTimer.Minute) || (OverallTimer.Minute <= BestTimer.Minute && OverallTimer.Second < BestTimer.Second)
-||(OverallTimer.Minute <= BestTimer.Minute && OverallTimer.Second <= BestTimer.Second && OverallTimer.milliSecond <= BestTimer.milliSecond)){
-OutLineLabel2(Rect((Screen.width/2f),2f*(Screen.height/16f),Screen.width/2f-(Screen.height/16f),(Screen.height/16f)*14f),"New Best Time!!!",2,Color.green);
-}else{
-OutLineLabel2(Rect((Screen.width/2f),2f*(Screen.height/16f),Screen.width/2f-(Screen.height/16f),(Screen.height/16f)*14f),"You Lost!!!",2,Color.red);
-}
-
-OutLineLabel2(Rect((Screen.width/2f),3f*(Screen.height/16f),Screen.width/2f-(Screen.height/16f),(Screen.height/16f)*14f),"Best Time",2,OutlineColour);
-OutLineLabel2(Rect((Screen.width/2f),4f*(Screen.height/16f),Screen.width/2f-(Screen.height/16f),(Screen.height/16f)*14f),BestTimer.ToString(),2,OutlineColour);
-
-OutLineLabel2(Rect((Screen.width/2f),5f*(Screen.height/16f),Screen.width/2f-(Screen.height/16f),(Screen.height/16f)*14f),"Your Time",2,OutlineColour);
-OutLineLabel2(Rect((Screen.width/2f),6f*(Screen.height/16f),Screen.width/2f-(Screen.height/16f),(Screen.height/16f)*14f),OverallTimer.ToString(),2,OutlineColour);
-
-}
-
-if(type == RaceStyle.GrandPrix || type == RaceStyle.CustomRace){
 
 GUI.BeginGroup(BoardRect);
 
-for(var f : int = 0; f < 12; f++){
+for(var f : int = 0; f < SPRacers.Length; f++){
 
 var PosTexture : Texture2D = Resources.Load("UI Textures/GrandPrix Positions/" + (f+1).ToString(),Texture2D);
 var SelPosTexture : Texture2D = Resources.Load("UI Textures/GrandPrix Positions/" + (f+1).ToString() + "_Sel",Texture2D);
@@ -362,25 +275,11 @@ OutLineLabel2(Rect(20 + (PosTexture.width * Ratio) + (NameTexture.width * Ratio2
 
 GUI.EndGroup();
 
-}
 
-var PressStart1 : Texture2D = Resources.Load("UI Textures/Main Menu/Press Start",Texture2D);
-var PressStart2 : Texture2D = Resources.Load("UI Textures/Main Menu/Press A",Texture2D);
-
-if(Input.GetJoystickNames().Length > 0)
-GUI.DrawTexture(Rect(Screen.width/2f - Screen.height/16f,Screen.height/16f * 14.4,Screen.width/2f ,Screen.height/16f*1.75),PressStart2,ScaleMode.ScaleToFit);
-else
-GUI.DrawTexture(Rect(Screen.width/2f - Screen.height/16f,Screen.height/16f * 14.4,Screen.width/2f ,Screen.height/16f*1.75),PressStart1,ScaleMode.ScaleToFit);
-
-if(Input.GetAxis(gd.pcn[0]+"Submit") != 0 && controlLock == false){
-State = Testing.NextMenu;
-controlLock = true;
-}
 
 }
 
 if(State == Testing.NextMenu){
-if(!DebugMode){
 BoardTexture = Resources.Load("UI Textures/GrandPrix Positions/Backing",Texture2D);
 BoardRect = Rect(Screen.width/2f - Screen.height/16f,Screen.height/16f,Screen.width/2f ,(Screen.height/16f)*14f);
 
@@ -457,7 +356,6 @@ keyLock = true;
 keyWait();
 }
 
-}
 }
 }
 
@@ -998,18 +896,9 @@ FinishAI(i);
 
 finishedSPRacers = copy;
 
-if(type != RaceStyle.Online){
 if(finishedPlayers == Players && State != Testing.NextMenu)
 FinishRace();
-}else{
-if(Network.isServer){
-Debug.Log("finishedPlayers: " + finishedPlayers + " Length: " + SPRacers.Length);
-if(finishedPlayers >= SPRacers.Length)
-FinishNetworkRace();
 
-
-}
-}
 }
 
 function FinishPlayer(i : int){
@@ -1091,19 +980,7 @@ function FinishRace(){
 	
 	currentSelection = 0;
 	
-	if(type == RaceStyle.TimeTrial){
-	
-	var sps : SinglePlayer_Script = transform.GetComponent(SinglePlayer_Script);
-	var BestTimer = gd.Tournaments[sps.nextCup].Tracks[sps.nextTrack].BestTrackTime; 		
-							
-	if((isEmpty(BestTimer) == true) || (OverallTimer.Minute < BestTimer.Minute) || (OverallTimer.Minute <= BestTimer.Minute && OverallTimer.Second < BestTimer.Second)
-	||(OverallTimer.Minute <= BestTimer.Minute && OverallTimer.Second <= BestTimer.Second && OverallTimer.milliSecond < BestTimer.milliSecond)){
-	
-	var nTimeString = OverallTimer.ToString();
-	gd.Tournaments[sps.nextCup].Tracks[sps.nextTrack].BestTrackTime = OverallTimer;
-	PlayerPrefs.SetString(gd.Tournaments[sps.nextCup].Tracks[sps.nextTrack].Name,nTimeString);
-	
-	}		
+	if(type == RaceStyle.TimeTrial){		
 	
 	CancelInvoke("CheckPlayer");
 	StopCoroutine("BeginTick");	
@@ -1115,22 +992,7 @@ function FinishRace(){
 
 }
 
-function FinishNetworkRace(){
-
-	CancelInvoke("SortArray");
-	
-	CancelInvoke("CheckPlayer");
-	StopCoroutine("BeginTick");
-	
-	networkView.RPC ("Countdowner", RPCMode.All,5);
-	yield WaitForSeconds(5);
-	
-	transform.GetComponent(Race_Host).EndRace();
-
-}
-
 	function UnlockKarts(){
-	if(!Network.isServer && Network.isClient){
 	for(var i : int = 0; i < SPRacers.Length;i++){
 	SPRacers[i].rep.GetComponent(kartScript).locked = false;
 	
@@ -1139,11 +1001,6 @@ function FinishNetworkRace(){
 	
 	if(SPRacers[i].cameras != null)
 	SPRacers[i].rep.GetComponent(kartInput).camLocked = false;
-	}
-	}else{
-	transform.GetComponent(Race_Client).me.rep.GetComponent(kartScript).locked = false;
-	transform.GetComponent(Race_Client).me.rep.GetComponent(kartInfo).hidden = false;
-	transform.GetComponent(Race_Client).me.rep.GetComponent(kartInput).camLocked = false;
 	}
 	}
 
@@ -1429,28 +1286,3 @@ SPRacers[i].rep.GetComponent(kartScript).startBoosting = val;
 transform.GetComponent(Race_Client).me.rep.GetComponent(kartScript).startBoosting = val;
 }
 }
-
-class PlayerRacer {
-
-var Human : boolean;
-var HumanID : int = -1;
-var aiStupidity : int = -1;
-
-var Character : int;
-var Hat : int;
-var Kart : int;
-var Wheel : int;
-
-var rep : Transform;
-var cameras : Transform;
-
-var TotalDistance : int;
-var NextDistance : float;
-var timer : Timer;
-
-var points : int;
-
-//Networking Variables
-var networkRep : NetworkPlayer;
-
-}	

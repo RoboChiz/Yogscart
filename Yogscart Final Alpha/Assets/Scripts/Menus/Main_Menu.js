@@ -29,15 +29,18 @@ private var CS : Race_Client;
 
 var NetworkIP : String = "127.0.0.1";
 var NetworkPort : int = 25000;
+var NetworkPortText : String;
 var NetworkPassword : String;
 
 var HostPort : int = 25000;
+var HostPortText : String;
 var HostPassword : String;
 var WithBots : boolean;
 var Automatic : boolean;
 var conscious : boolean = true;
 
 var MinPlayers : int;
+var MinPlayersText : String;
 
 //Options
 private var ScreenR : int;
@@ -358,7 +361,10 @@ currentSelection = 0;
 controlLock = true;
 }
 
+if(!Automatic)
 Options = ["Port","Password","Bots","AutomaticServer","Start Server"];
+else
+Options = ["Port","Password","Bots","AutomaticServer","MinPlayers","Start Server"];
 
 for(i = 0;i < Options.Length;i++){
 OptionsTexture = Resources.Load("UI Textures/New Main Menu/State 5/" + Options[i],Texture2D); 
@@ -370,6 +376,21 @@ if(currentSelection == i)
 GUI.DrawTexture(Rect(Screen.width/10f,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),SelectedOptionsTexture,ScaleMode.ScaleToFit);
 else
 GUI.DrawTexture(Rect(Screen.width/10f,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),OptionsTexture,ScaleMode.ScaleToFit);
+
+if(i == 0){
+if(currentSelection == i){
+HostPortText = GUI.TextField(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),HostPort.ToString());
+int.TryParse(HostPortText,HostPort);
+}else
+GUI.Label(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),HostPort.ToString());
+}
+
+if(i == 1){
+if(currentSelection == i)
+HostPassword = GUI.TextField(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),HostPassword);
+else
+GUI.Label(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),HostPassword.ToString());
+}
 
 if(i >=2){
 var YesTexture = Resources.Load("UI Textures/New Main Menu/State 5/Yes",Texture2D); 
@@ -392,6 +413,14 @@ else
 GUI.DrawTexture(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),NoTexture,ScaleMode.ScaleToFit);
 }
 
+if(Automatic && i == 4){
+if(currentSelection == i){
+MinPlayersText = GUI.TextField(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),MinPlayers.ToString());
+int.TryParse(MinPlayersText,MinPlayers);
+}else
+GUI.Label(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),MinPlayers.ToString());
+}
+
 
 }
 
@@ -405,7 +434,7 @@ WithBots = !WithBots;
 if(currentSelection == 3)
 Automatic = !Automatic;
 
-if(currentSelection == 4)
+if(Options[currentSelection] == "Start Server")
 StartCoroutine("StartServer");
 
 controlLock = true;
@@ -435,6 +464,8 @@ if(currentSelection == i)
 GUI.DrawTexture(Rect(Screen.width/10f,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),SelectedOptionsTexture,ScaleMode.ScaleToFit);
 else
 GUI.DrawTexture(Rect(Screen.width/10f,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),OptionsTexture,ScaleMode.ScaleToFit);
+
+
 
 }
 

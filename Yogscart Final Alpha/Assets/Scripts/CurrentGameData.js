@@ -14,7 +14,7 @@ var currentWheel : int = -1;
 
 var type : RaceStyle;
 
-@HideInInspector
+//@HideInInspector
 var currentChoices : LoadOut[];
 
 @HideInInspector

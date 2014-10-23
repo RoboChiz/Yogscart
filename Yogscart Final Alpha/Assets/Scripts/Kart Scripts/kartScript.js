@@ -348,7 +348,6 @@ transform.rigidbody.velocity = Vector3.Lerp(transform.rigidbody.velocity,Vector3
 transform.FindChild("Kart Body").Rotate(transform.up,Time.deltaTime / (spinTime/360f));
 yield;
 t += Time.deltaTime;
-Debug.Log(t);
 }
 
 Ani.SetBool("Hit",false);

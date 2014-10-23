@@ -29,32 +29,14 @@ private var controlLock : boolean;
 
 private var gd : CurrentGameData;
 private var td : TrackData;
+private var rc : Race_Client;
 
 private var Ready : boolean;
-//class PlayerRacer {
-
-//var Human : boolean;
-//var HumanID : int = -1;
-
-//var Character : int;
-//var Hat : int;
-//var Kart : int;
-//var Wheel : int;
-
-//var rep : Transform;
-//var cameras : Transform;
-
-//var TotalDistance : int;
-//var NextDistance : float;
-//var timer : Timer;
-
-//var points : int;
-
-//}
 
 function ResetServer(){
 
 gd = transform.GetComponent(CurrentGameData);
+rc = transform.GetComponent(Race_Client);
 
 humanCount = 0;
 finishedCount = 0;
@@ -64,22 +46,43 @@ Votes = new Vector2[0];
 
 State = Phase.Lobby;
 
-if(conscious)
+if(conscious){
 AddRacer(gd.currentCharacter,gd.currentHat,gd.currentKart,gd.currentWheel);
+rc.YoureRacing();
+}
 
 if(DebugMode)
 CalculateFrameRate();
 
 networkView.RPC("LoadNetworkLevel",RPCMode.All,"Lobby",lastLevelPrefix);
-networkView.RPC("SpawnMe_Lobby",RPCMode.AllBuffered,gd.currentCharacter,gd.currentHat);
 
 lastLevelPrefix += 1;
 
 }
 
+function rerunServer(){
+humanCount = 0;
+finishedCount = 0;
+ReadyCount = 0;
+Ready = false;
+controlLock = true;
+
+Votes = new Vector2[0];
+
+State = Phase.Lobby;
+
+finishedRestart = false;
+ended = false;
+finishedCount = 0;
+
+networkView.RPC("LoadNetworkLevel",RPCMode.All,"Lobby",lastLevelPrefix);
+
+lastLevelPrefix += 1;
+}
+
 function OnGUI(){
 
-if(Input.GetAxis(gd.pcn[0]+"Submit") == 0 && Input.GetAxis("Cancel") == 0)
+if(Input.GetAxis(gd.pcn[0]+"Submit") == 0 && Input.GetAxis(gd.pcn[0] + "Cancel") == 0)
 controlLock = false;
 
 //Debug GUI
@@ -88,9 +91,9 @@ GUI.Label(Rect(420,10,250,25),"FPS: " + FPS.ToString());
 
 if(RacingPlayers != null){
 if(WaitingRacers != null)
-GUI.Label(Rect(10,10,400,25),"Total Players : " + Network.connections.Length + " Racing Players : " + RacingPlayers.Length + " Waiting Players: " + WaitingRacers.Length);
+GUI.Label(Rect(10,10,400,25),"Total Players : " + (Network.connections.Length+1) + " Racing Players : " + RacingPlayers.Length + " Waiting Players: " + WaitingRacers.Length);
 else
-GUI.Label(Rect(10,10,400,25),"Total Players : " + Network.connections.Length + " Racing Players : " + RacingPlayers.Length + " Waiting Players: 0");
+GUI.Label(Rect(10,10,400,25),"Total Players : " + (Network.connections.Length+1) + " Racing Players : " + RacingPlayers.Length + " Waiting Players: 0");
 
 for(var i : int = 0; i < RacingPlayers.Length; i++)
 
@@ -104,7 +107,7 @@ GUI.Label(Rect(10,10 + 25 + (25*i),250,25),"[BOT]");
 if(State == Phase.Lobby){
 
 if(!Ready){
-if(Input.GetAxis("Submit") != 0 && controlLock == false){
+if(Input.GetAxis(gd.pcn[0] + "Submit") != 0 && controlLock == false){
 Ready = true;
 networkView.RPC ("Countdowner", RPCMode.All,5);
 LevelSelectTimer();
@@ -112,7 +115,7 @@ controlLock = true;
 }
 }
 
-if(Input.GetAxis("Cancel") != 0 && controlLock == false){
+if(Input.GetAxis(gd.pcn[0] + "Cancel") != 0 && controlLock == false){
 CloseServer();
 controlLock = true;
 }
@@ -182,6 +185,11 @@ yield;
 
 td = GameObject.Find("Track Manager").GetComponent(TrackData);
 
+while(transform.GetComponent(Race_Master) == null)
+yield;
+
+transform.GetComponent(Race_Master).SPRacers = RacingPlayers;
+
 }
 }
 
@@ -206,6 +214,7 @@ Votes = copy;
 networkView.RPC ("VoteUpdate", RPCMode.All,AddTo);
 
 if(Votes.Length >= RacingPlayers.Length){
+Debug.Log("Votes: " + Votes.Length + " RacingPlayers: " + RacingPlayers.Length);
 StopCoroutine("Timer30");
 networkView.RPC ("Countdowner", RPCMode.All,5);
 DetermineLevel();
@@ -221,7 +230,7 @@ ReadyCount += 1;
 
 if(ReadyCount >= RacingPlayers.Length){
 networkView.RPC ("Countdown", RPCMode.All);
-yield WaitForSeconds(3.1);
+yield WaitForSeconds(4.4);
 networkView.RPC ("BeginRace", RPCMode.All);
 State = Phase.Racing; 
 }
@@ -254,16 +263,12 @@ function EndRace(){
 if(ended == false){
 ended = true;
 
-networkView.RPC ("FinishRace", RPCMode.All);
-networkView.RPC ("Countdowner", RPCMode.All,10);
-yield WaitForSeconds(10.1);
-
 //Reset Server
 Network.RemoveRPCs(networkView.owner);
 networkView.RPC ("LoadNetworkLevel",RPCMode.AllBuffered, "Lobby",lastLevelPrefix);
 Ready = false;
 
-ResetServer();
+rerunServer();
 
 }
 }
