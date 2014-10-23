@@ -1,4 +1,8 @@
 ﻿#pragma strict
+
+enum User{Player,Dev,Vip};
+var gameTag : User;
+
 //Tracks 
 @HideInInspector
 var currentCup : int = -1;

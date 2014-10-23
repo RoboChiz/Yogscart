@@ -42,10 +42,14 @@ var conscious : boolean = true;
 var MinPlayers : int;
 var MinPlayersText : String;
 
+var playerName : String;
+
 //Options
 private var ScreenR : int;
 private var FullScreen : boolean;
 private var Quality : int;
+
+private var creditsHeight : float;
 
 function Update(){
 var background = transform.GetChild(0).guiTexture;
@@ -62,6 +66,8 @@ HS = GameObject.Find("GameData").GetComponent(Race_Host);
 CS = GameObject.Find("GameData").GetComponent(Race_Client);
 
 gd.allowedToChange = true;
+
+playerName = PlayerPrefs.GetString("playerName","Player");
 
 var url = "https://db.tt/N51AaMhM";
 www1 = new WWW (url);
@@ -92,6 +98,7 @@ Alpha = Mathf.Lerp(Alpha,0,Time.deltaTime*5);
 GUI.skin = Resources.Load("GUISkins/Main Menu", GUISkin);
 GUI.color = Color(256,256,256,Alpha);
 
+if(State != 9){
 var CharacterRender : Texture2D = Resources.Load("UI Textures/New Main Menu/Side Images/"+ Random.Range(0,1),Texture2D); 
 GUI.DrawTexture(Rect(Screen.width/2f,10,Screen.width/2f,Screen.height-20),CharacterRender,ScaleMode.ScaleToFit);
 
@@ -99,9 +106,10 @@ var Logo : Texture2D = Resources.Load("UI Textures/Main Menu/Logo",Texture2D);
 
 var LogoWidth : float = Screen.width/2f;
 var Ratio : float = LogoWidth/Logo.width;
-var LogoRect = Rect(Screen.width/20f,Screen.width/20f,LogoWidth,Logo.height * Ratio);
 
+var LogoRect = Rect(Screen.width/20f,Screen.width/20f,LogoWidth,Logo.height * Ratio);
 GUI.DrawTexture(LogoRect,Logo);
+}
 
 if(gd.pcn == null || gd.pcn.Length == 0){
 
@@ -208,7 +216,8 @@ currentSelection = 0;
 }
 
 if(currentSelection == 3){
-FlashRed();
+State = 9;
+creditsHeight = Screen.height;
 }
 
 if(currentSelection == 4){
@@ -545,6 +554,13 @@ OutLineLabel2(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width
 
 }
 
+if(i == 3){
+if(currentSelection == 3)
+playerName = GUI.TextField(Rect(Screen.width/10f + (OptionsTexture.width * ratio),(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),playerName.ToString());
+else
+GUI.Label(Rect(Screen.width/10f + (OptionsTexture.width * ratio),(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),playerName);
+}
+
 if(currentSelection == 0){
 if(Input.GetAxis(gd.pcn[0]+"Horizontal") != 0 && HorizontalLock == false){
 
@@ -615,6 +631,8 @@ g = Screen.resolutions.Length + 1;
 FullScreen = Screen.fullScreen;
 Quality = QualitySettings.GetQualityLevel();
 
+PlayerPrefs.SetString("playerName",playerName);
+
 State = 1;
 currentSelection = 0;
 controlLock = true;
@@ -625,6 +643,32 @@ controlLock = true;
 }
 
 
+
+
+}
+
+if(State == 9){
+
+var Credits : String[] = ["Ross - Project Manager / Developer","Robo_Chiz - Lead Programmer / Networking",
+"Mysca - Level Design / UI","Beardbotnik - Character Design / Graphics Designer", "Tom - Animation", "Pico - Music",
+"Yogscart is a non-profit fan game and is in no way affiliated with the Yogscast or the Youth Olympic Games", "We hope you enjoyed the alpha"];
+
+Logo = Resources.Load("UI Textures/Main Menu/Logo",Texture2D);
+LogoWidth = Screen.width/2f;
+Ratio = LogoWidth/Logo.width;
+LogoRect = Rect(Screen.width/2f - LogoWidth/2f,creditsHeight,LogoWidth,Logo.height * Ratio);
+
+GUI.DrawTexture(LogoRect,Logo);
+
+for(var cred : int = 0; cred < Credits.Length; cred++)
+GUI.Label(Rect(Screen.width/2f - LogoWidth/2f,creditsHeight + (Logo.height * Ratio * (cred+1)) ,LogoWidth,Logo.height * Ratio),Credits[cred]);
+
+creditsHeight -= Time.deltaTime*30f;
+
+if(Input.GetAxis(gd.pcn[0] + "Cancel") != 0 && !controlLock){
+controlLock = true;
+State = 1;
+}
 
 
 }
