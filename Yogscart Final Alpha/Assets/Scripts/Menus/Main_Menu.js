@@ -24,8 +24,8 @@ private var www1 : WWW;
 private var Error : boolean = false;
 
 //Network Holding
-private var HS : Race_Host;
-private var CS : Race_Client;
+private var HS : Host;
+private var CS : Client;
 
 var NetworkIP : String = "127.0.0.1";
 var NetworkPort : int = 25000;
@@ -62,8 +62,8 @@ LockedColourAlpha.a = 0;
 
 gd = GameObject.Find("GameData").GetComponent(CurrentGameData);
 sps = gd.GetComponent(SinglePlayer_Script);
-HS = GameObject.Find("GameData").GetComponent(Race_Host);
-CS = GameObject.Find("GameData").GetComponent(Race_Client);
+HS = GameObject.Find("GameData").GetComponent(Host);
+CS = GameObject.Find("GameData").GetComponent(Client);
 
 gd.allowedToChange = true;
 
@@ -475,6 +475,25 @@ else
 GUI.DrawTexture(Rect(Screen.width/10f,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),OptionsTexture,ScaleMode.ScaleToFit);
 
 
+if(i == 0)
+if(currentSelection == i)
+NetworkIP = GUI.TextField(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),NetworkIP);
+else
+GUI.Label(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),NetworkIP);
+
+if(i == 1)
+if(currentSelection == i){
+NetworkPortText = GUI.TextField(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),NetworkPort.ToString());
+int.TryParse(NetworkPortText,NetworkPort);
+}else
+GUI.Label(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),NetworkPort.ToString());
+
+if(i == 2)
+if(currentSelection == i)
+NetworkPassword = GUI.TextField(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),NetworkPassword.ToString());
+else
+GUI.Label(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),NetworkPassword);
+
 
 }
 
@@ -788,9 +807,9 @@ if(HostPassword != "" || HostPassword != null)
 Network.incomingPassword = HostPassword;
 
 var useNat = !Network.HavePublicAddress();
-Network.InitializeServer(12, 25000, useNat);
+Network.InitializeServer(200, 25000, useNat);
 
-if(conscious == false)
+if(!conscious)
 MasterServer.RegisterHost("YogscartRace", "Surprise Server", "Best game ever!");
 
 HS.Bots = WithBots;
@@ -799,6 +818,9 @@ HS.MinPlayers = MinPlayers;
 HS.conscious = conscious;
 HS.enabled = true;
 HS.ResetServer();
+
+if(conscious)
+HS.AddHost(gd.currentChoices[0].character,gd.currentChoices[0].hat,gd.currentChoices[0].kart,gd.currentChoices[0].wheel);
 
 }	
 
@@ -812,12 +834,12 @@ gd.allowedToChange = false;
 
 while(gd.currentChoices.Length == 0){
 transform.GetComponent(newCharacterSelect).hidden = false;
-transform.GetComponent(Level_Select).hidden = true;
 yield;
 }
 
+gd.transform.networkView.RPC("ReadyPlayer",RPCMode.Server);
+
 CS.enabled = true;
-CS.ConnectedToServer();
 }
 
 var errorText : String;

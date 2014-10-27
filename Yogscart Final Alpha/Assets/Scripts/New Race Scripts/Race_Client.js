@@ -126,21 +126,6 @@ yield;
 if(level == "Lobby"){
 
 }else{
-var obj = new GameObject();
-obj.AddComponent(Camera);
-obj.AddComponent(AudioListener);
-obj.AddComponent(SpectatorCam);
-
-obj.AddComponent(Kart_Camera);
-
-obj.GetComponent(Kart_Camera).Distance = 7;
-obj.GetComponent(Kart_Camera).Height = 1;
-obj.GetComponent(Kart_Camera).PlayerHeight = 1;
-obj.GetComponent(Kart_Camera).smoothTime = 0;
-obj.GetComponent(Kart_Camera).rotsmoothTime = 100;
-
-obj.camera.depth = -5;
-obj.transform.name = "SpectatorCam";
 
 }
 

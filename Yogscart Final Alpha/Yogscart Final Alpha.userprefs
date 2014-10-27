@@ -1,9 +1,19 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Menus\Main_Menu.js">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Kart Scripts\Racer_AI.js">
     <Files>
-      <File FileName="Assets\Scripts\Menus\Main_Menu.js" Line="70" Column="59" />
-      <File FileName="Assets\Scripts\CurrentGameData.js" Line="3" Column="18" />
+      <File FileName="Assets\Scripts\Kart Scripts\Racer_AI.js" Line="68" Column="48" />
+      <File FileName="Assets\Scripts\Menus\Main_Menu.js" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Networking 2\Host.js" Line="96" Column="49" />
+      <File FileName="Assets\Scripts\CurrentGameData.js" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\New Race Scripts\Race_Host.js" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Networking 2\Client.js" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\New Race Scripts\Race_Master.js" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\New Race Scripts\Race_Client.js" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Menus\Level_Select.js" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Kart Scripts\Kart_Camera.js" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Kart Scripts\kartInput.js" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Powers Up\kartItem.js" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

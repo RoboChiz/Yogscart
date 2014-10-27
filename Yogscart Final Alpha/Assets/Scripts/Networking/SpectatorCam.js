@@ -28,7 +28,7 @@ currentSpec = 0;
 function Update () {
 
 if(specObjects == null || specObjects.Length == 0){
-specObjects = GameObject.FindGameObjectsWithTag("Kart");
+specObjects = GameObject.FindGameObjectsWithTag("Spectated");
 transform.GetComponent(Kart_Camera).enabled = false;
 }else{
 

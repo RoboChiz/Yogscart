@@ -83,8 +83,11 @@
      <Compile Include="Assets\Scripts\Menus\LobbyHandler.js" />
      <Compile Include="Assets\Scripts\Menus\MainMenu.js" />
      <Compile Include="Assets\Scripts\Menus\Main_Menu.js" />
+     <Compile Include="Assets\Scripts\Menus\NewCharacter_Test.js" />
      <Compile Include="Assets\Scripts\Menus\Title Rotate.js" />
      <Compile Include="Assets\Scripts\Menus\newCharacterSelect.js" />
+     <Compile Include="Assets\Scripts\Networking 2\Client.js" />
+     <Compile Include="Assets\Scripts\Networking 2\Host.js" />
      <Compile Include="Assets\Scripts\Networking\Client_Script.js" />
      <Compile Include="Assets\Scripts\Networking\Countdown.js" />
      <Compile Include="Assets\Scripts\Networking\Host_Script.js" />

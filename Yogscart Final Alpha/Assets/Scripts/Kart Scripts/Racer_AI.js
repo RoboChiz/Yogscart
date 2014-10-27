@@ -60,7 +60,12 @@ targestPos = nextChump;
 
 if(!ks.locked){
 var NeededDirection : Vector3 = nTarget - transform.position;
-var angle : float = Vector3.Angle(transform.right,NeededDirection);
+NeededDirection.y = 0;
+
+var fireDirection = transform.right;
+fireDirection.y = 0;
+
+var angle : float = Vector3.Angle(fireDirection,NeededDirection);
 
 Debug.DrawRay(transform.position,transform.forward*5,Color.red);
 Debug.DrawRay(transform.position,NeededDirection,Color.green);

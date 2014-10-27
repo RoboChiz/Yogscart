@@ -42,6 +42,8 @@ var finishedAI : int; //Used for debugging
 @HideInInspector
 var Player1 : int;
 
+private var minuteTimer : boolean;
+
 @HideInInspector
 var currentSelection : int;
 private var controlLock : boolean;
@@ -98,8 +100,17 @@ Debug.Log("Track Error! Make sure everything is set up!");
 }
 //End of Debug Mode Section
 
-if(Network.isServer || Network.isClient)
-MultiplayerRace(transform.GetComponent(Race_Client).myPos);
+}
+
+@RPC
+function MultiplayerRace(){
+
+gd = transform.GetComponent(CurrentGameData);
+td = GameObject.Find("Track Manager").GetComponent(TrackData);
+
+OverallTimer = new Timer();
+InvokeRepeating("SortArray",0,0.2);
+BeginRace();
 
 }
 
@@ -136,25 +147,6 @@ SPRacers[0].rep.GetComponent(kartItem).heldPowerUp = 3;
 
 yield WaitForSeconds(1);
 Destroy(transform.GetComponent(AudioSource));
-}
-
-function MultiplayerRace(pos : int){
-gd = transform.GetComponent(CurrentGameData);
-td = GameObject.Find("Track Manager").GetComponent(TrackData);
-
-OverallTimer = new Timer();
-addBoost = 0;
-missOut = false;
-yield;
-
-SetUpMyKart(pos);
-yield PlayCutscene();
-
-if(Network.isClient)
-networkView.RPC("ReadytoStart",RPCMode.Server);
-else
-transform.GetComponent(Race_Host).ReadytoStart();
-
 }
 
 private var addBoost : float;
@@ -254,7 +246,7 @@ CountdownAlpha = Mathf.Lerp(CountdownAlpha,0,Time.deltaTime*10f);
 
 //}
 
-if(GameObject.Find("Music Holder").GetComponent(AudioSource).volume < 0.25f)
+if(GameObject.Find("Music Holder") != null && GameObject.Find("Music Holder").GetComponent(AudioSource).volume < 0.25f)
 GameObject.Find("Music Holder").GetComponent(AudioSource).volume += Time.deltaTime/4f;
 
 }
@@ -320,13 +312,11 @@ OutLineLabel2(Rect((Screen.width/2f),4f*(Screen.height/16f),Screen.width/2f-(Scr
 OutLineLabel2(Rect((Screen.width/2f),5f*(Screen.height/16f),Screen.width/2f-(Screen.height/16f),(Screen.height/16f)*14f),"Your Time",2,OutlineColour);
 OutLineLabel2(Rect((Screen.width/2f),6f*(Screen.height/16f),Screen.width/2f-(Screen.height/16f),(Screen.height/16f)*14f),OverallTimer.ToString(),2,OutlineColour);
 
-}
-
-if(type == RaceStyle.GrandPrix || type == RaceStyle.CustomRace){
+}else{
 
 GUI.BeginGroup(BoardRect);
 
-for(var f : int = 0; f < 12; f++){
+for(var f : int = 0; f < SPRacers.Length; f++){
 
 var PosTexture : Texture2D = Resources.Load("UI Textures/GrandPrix Positions/" + (f+1).ToString(),Texture2D);
 var SelPosTexture : Texture2D = Resources.Load("UI Textures/GrandPrix Positions/" + (f+1).ToString() + "_Sel",Texture2D);
@@ -364,6 +354,7 @@ GUI.EndGroup();
 
 }
 
+if(type != RaceStyle.Online){
 var PressStart1 : Texture2D = Resources.Load("UI Textures/Main Menu/Press Start",Texture2D);
 var PressStart2 : Texture2D = Resources.Load("UI Textures/Main Menu/Press A",Texture2D);
 
@@ -377,6 +368,7 @@ State = Testing.NextMenu;
 controlLock = true;
 }
 
+}
 }
 
 if(State == Testing.NextMenu){
@@ -650,44 +642,6 @@ Players += 1;
 
 }
 
-function SetUpMyKart(i : int){
-
-	var rc = transform.GetComponent(Race_Client).me;
-
-	transform.GetComponent(Race_Client).me.rep = SpawnKart(rc.Character,rc.Hat,rc.Kart,rc.Wheel,i);
-
-	var viewID = Network.AllocateViewID();
-	
-	transform.GetComponent(Race_Client).me.rep.GetComponent(NetworkView).viewID = viewID;
-		
-	//Add Script
-	transform.GetComponent(Race_Client).me.rep.gameObject.AddComponent(kartInput);
-	transform.GetComponent(Race_Client).me.rep.gameObject.AddComponent(kartInfo);
-	transform.GetComponent(Race_Client).me.rep.GetComponent(Position_Finding).position = i; 
-	transform.GetComponent(Race_Client).me.rep.GetComponent(kartInput).InputName = gd.pcn[0];
-	
-	//Add Camera
-	var IngameCam = Instantiate(Resources.Load("Prefabs/Cameras",Transform),td.PositionPoints[0].rep.position,Quaternion.identity);
-		IngameCam.name = "InGame Cams";
-
-		transform.GetComponent(Race_Client).me.rep.GetComponent(kartInput).camLocked = true;
-		transform.GetComponent(Race_Client).me.rep.GetComponent(kartInput).frontCamera = IngameCam.GetChild(1).camera;
-		transform.GetComponent(Race_Client).me.rep.GetComponent(kartInput).backCamera = IngameCam.GetChild(0).camera;
-
-		IngameCam.GetChild(0).GetComponent(Kart_Camera).Target = transform.GetComponent(Race_Client).me.rep;
-		IngameCam.GetChild(1).GetComponent(Kart_Camera).Target = transform.GetComponent(Race_Client).me.rep;
-		transform.GetComponent(Race_Client).me.cameras = IngameCam;
-		transform.GetComponent(Race_Client).me.cameras = IngameCam;
-		
-	networkView.RPC("KartSpawn",RPCMode.OthersBuffered,viewID,i,transform.GetComponent(Race_Client).me.Character,transform.GetComponent(Race_Client).me.Hat,transform.GetComponent(Race_Client).me.Kart,transform.GetComponent(Race_Client).me.Wheel);
-	
-	if(Network.isServer){
-	SPRacers[i].timer = new Timer();
-	SPRacers[i].rep = transform.GetComponent(Race_Client).me.rep;
-	}
-	
-}
-
 function SpawnKart(character : int, hat : int, kart : int, wheel : int,pos : int){
 
 //Find Position to spawn racer
@@ -761,7 +715,11 @@ return clone;
 //////////////////////////////////////////////////////////////////////////////////////////////Cut Scene Functions //////////////////////////////////////////////////////////////////////////////////////////////
 
 function PlayCutscene() {
+
 State = Testing.CutScene;
+
+td = GameObject.Find("Track Manager").GetComponent(TrackData);
+gd = GameObject.Find("GameData").GetComponent(CurrentGameData);
 
 var CutsceneCam = new GameObject();
 CutsceneCam.AddComponent(Camera);
@@ -851,10 +809,17 @@ setStartBoost(4);
 
 }
 
-@RPC
 function BeginRace(){
 State = Testing.RaceGUI;
+
 UnlockKarts();
+if(Network.isServer || (!Network.isServer && !Network.isClient))
+
+for(var i : int; i < SPRacers.Length;i++)
+if(SPRacers[i].timer == null)
+SPRacers[i].timer = new Timer();
+
+
 StartCoroutine("BeginTick");
 
 if(Network.isServer == true || (!Network.isServer && !Network.isClient))
@@ -972,7 +937,13 @@ SPRacers[i].rep.GetComponent(Position_Finding).position = i;
 if(isEmpty(SPRacers[i].timer) == true && SPRacers[i].rep.GetComponent(Position_Finding).Lap == td.Laps){
 copy.Push(i);
 if(SPRacers[i].Human == true){
+
 finishedPlayers += 1;
+
+if(Network.isServer && finishedPlayers < SPRacers.Length && minuteTimer == false){
+minuteTimer = true;
+StartCoroutine("AutoEndRace");
+}
 
 if(!Network.isServer){
 StartCoroutine("FinishPlayer",i);
@@ -1004,9 +975,10 @@ FinishRace();
 }else{
 if(Network.isServer){
 Debug.Log("finishedPlayers: " + finishedPlayers + " Length: " + SPRacers.Length);
-if(finishedPlayers >= SPRacers.Length)
+if(finishedPlayers >= SPRacers.Length){
 FinishNetworkRace();
-
+StopCoroutine("AutoEndRace");
+}
 
 }
 }
@@ -1042,31 +1014,40 @@ yield;
 }
 }
 
+function AutoEndRace(){
+yield transform.GetComponent(Host).StartCountdowner(60);
+FinishNetworkRace();
+}
+
+@RPC
 function FinishClient(){
+if(transform.GetComponent(Client).me.timer == null || isEmpty(transform.GetComponent(Client).me.timer)){
 Debug.Log("Client has finished the race");
 
-transform.GetComponent(Race_Client).me.timer = new Timer();
-transform.GetComponent(Race_Client).me.timer.Minute = OverallTimer.Minute;
-transform.GetComponent(Race_Client).me.timer.Second = OverallTimer.Second;
-transform.GetComponent(Race_Client).me.timer.milliSecond = OverallTimer.milliSecond;
+transform.GetComponent(Client).me.timer = new Timer();
+transform.GetComponent(Client).me.timer.Minute = OverallTimer.Minute;
+transform.GetComponent(Client).me.timer.Second = OverallTimer.Second;
+transform.GetComponent(Client).me.timer.milliSecond = OverallTimer.milliSecond;
 
-transform.GetComponent(Race_Client).me.rep.gameObject.AddComponent(Racer_AI);
-Destroy(transform.GetComponent(Race_Client).me.rep.GetComponent(kartInput));
-transform.GetComponent(Race_Client).me.rep.GetComponent(kartInfo).hidden = true;
+State = Testing.ScoreBoard;
+
+transform.GetComponent(Client).me.rep.gameObject.AddComponent(Racer_AI);
+Destroy(transform.GetComponent(Client).me.rep.GetComponent(kartInput));
+transform.GetComponent(Client).me.rep.GetComponent(kartInfo).hidden = true;
 
 yield WaitForSeconds(2);
 
-transform.GetComponent(Race_Client).me.cameras.GetChild(0).camera.enabled = false;
-transform.GetComponent(Race_Client).me.cameras.GetChild(1).camera.enabled = true;
+transform.GetComponent(Client).me.cameras.GetChild(0).camera.enabled = false;
+transform.GetComponent(Client).me.cameras.GetChild(1).camera.enabled = true;
 
-while(transform.GetComponent(Race_Client).me.cameras.GetChild(1).GetComponent(Kart_Camera).Distance > -6.5){
-transform.GetComponent(Race_Client).me.cameras.GetChild(1).GetComponent(Kart_Camera).Distance -= Time.fixedDeltaTime * 10;
-transform.GetComponent(Race_Client).me.cameras.GetChild(1).GetComponent(Kart_Camera).Height = Mathf.Lerp(transform.GetComponent(Race_Client).me.cameras.GetChild(1).GetComponent(Kart_Camera).Height,1,Time.fixedDeltaTime);
-transform.GetComponent(Race_Client).me.cameras.GetChild(1).GetComponent(Kart_Camera).PlayerHeight = Mathf.Lerp(transform.GetComponent(Race_Client).me.cameras.GetChild(1).GetComponent(Kart_Camera).PlayerHeight,1,Time.fixedDeltaTime);
-transform.GetComponent(Race_Client).me.cameras.GetChild(1).GetComponent(Kart_Camera).sideAmount = Mathf.Lerp(transform.GetComponent(Race_Client).me.cameras.GetChild(1).GetComponent(Kart_Camera).sideAmount,-1.9,Time.fixedDeltaTime);
+while(transform.GetComponent(Client).me.cameras.GetChild(1).GetComponent(Kart_Camera).Distance > -6.5){
+transform.GetComponent(Client).me.cameras.GetChild(1).GetComponent(Kart_Camera).Distance -= Time.fixedDeltaTime * 10;
+transform.GetComponent(Client).me.cameras.GetChild(1).GetComponent(Kart_Camera).Height = Mathf.Lerp(transform.GetComponent(Client).me.cameras.GetChild(1).GetComponent(Kart_Camera).Height,1,Time.fixedDeltaTime);
+transform.GetComponent(Client).me.cameras.GetChild(1).GetComponent(Kart_Camera).PlayerHeight = Mathf.Lerp(transform.GetComponent(Client).me.cameras.GetChild(1).GetComponent(Kart_Camera).PlayerHeight,1,Time.fixedDeltaTime);
+transform.GetComponent(Client).me.cameras.GetChild(1).GetComponent(Kart_Camera).sideAmount = Mathf.Lerp(transform.GetComponent(Client).me.cameras.GetChild(1).GetComponent(Kart_Camera).sideAmount,-1.9,Time.fixedDeltaTime);
 yield;
 }
-
+}
 }
 
 function FinishAI(i : int){
@@ -1117,20 +1098,19 @@ function FinishRace(){
 
 function FinishNetworkRace(){
 
+	gd.networkView.RPC("FinishClient",RPCMode.All);
+
 	CancelInvoke("SortArray");
 	
 	CancelInvoke("CheckPlayer");
 	StopCoroutine("BeginTick");
 	
-	networkView.RPC ("Countdowner", RPCMode.All,5);
-	yield WaitForSeconds(5);
-	
-	transform.GetComponent(Race_Host).EndRace();
+	transform.GetComponent(Host).EndRace();
 
 }
 
 	function UnlockKarts(){
-	if(!Network.isServer && Network.isClient){
+	if(!Network.isServer && !Network.isClient){
 	for(var i : int = 0; i < SPRacers.Length;i++){
 	SPRacers[i].rep.GetComponent(kartScript).locked = false;
 	
@@ -1141,9 +1121,9 @@ function FinishNetworkRace(){
 	SPRacers[i].rep.GetComponent(kartInput).camLocked = false;
 	}
 	}else{
-	transform.GetComponent(Race_Client).me.rep.GetComponent(kartScript).locked = false;
-	transform.GetComponent(Race_Client).me.rep.GetComponent(kartInfo).hidden = false;
-	transform.GetComponent(Race_Client).me.rep.GetComponent(kartInput).camLocked = false;
+	transform.GetComponent(Client).me.rep.GetComponent(kartScript).locked = false;
+	transform.GetComponent(Client).me.rep.GetComponent(kartInfo).hidden = false;
+	transform.GetComponent(Client).me.rep.GetComponent(kartInput).camLocked = false;
 	}
 	}
 
@@ -1426,9 +1406,28 @@ for(var i : int = 0; i < SPRacers.Length; i++){
 SPRacers[i].rep.GetComponent(kartScript).startBoosting = val;
 }
 }else{
-transform.GetComponent(Race_Client).me.rep.GetComponent(kartScript).startBoosting = val;
+transform.GetComponent(Client).me.rep.GetComponent(kartScript).startBoosting = val;
 }
 }
+
+function RemovePlay(player : NetworkPlayer){
+
+var toDelete : int = -1;
+		
+		for(var i : int; i < SPRacers.Length;i++){
+			if(SPRacers[i].networkRep == player){
+				toDelete = i;
+				break;
+			}
+		}
+
+	var copy : Array;
+	copy = SPRacers;
+
+	copy.RemoveAt(toDelete);
+
+	SPRacers = copy;
+}	
 
 class PlayerRacer {
 

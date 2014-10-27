@@ -1,0 +1,117 @@
+-debug
+-target:library
+-i:UnityEngine
+-i:System.Collections
+-base:UnityEngine.MonoBehaviour
+-nowarn:BCW0016
+-nowarn:BCW0003
+-method:Main
+-out:Temp/Assembly-UnityScript.dll
+-x-type-inference-rule-attribute:UnityEngineInternal.TypeInferenceRuleAttribute
+-define:UNITY_4_5_5
+-define:UNITY_4_5
+-define:UNITY_STANDALONE_WIN
+-define:ENABLE_MICROPHONE
+-define:ENABLE_TEXTUREID_MAP
+-define:ENABLE_UNITYEVENTS
+-define:ENABLE_NEW_HIERARCHY 
+-define:ENABLE_AUDIO_FMOD
+-define:UNITY_STANDALONE
+-define:ENABLE_MONO
+-define:ENABLE_TERRAIN
+-define:ENABLE_SUBSTANCE
+-define:ENABLE_GENERICS
+-define:INCLUDE_WP8SUPPORT
+-define:ENABLE_MOVIES
+-define:ENABLE_WWW
+-define:ENABLE_IMAGEEFFECTS
+-define:INCLUDE_WP_BLUE_SUPPORT
+-define:ENABLE_WEBCAM
+-define:INCLUDE_METROSUPPORT
+-define:RENDER_SOFTWARE_CURSOR
+-define:ENABLE_NETWORK
+-define:ENABLE_PHYSICS
+-define:ENABLE_CACHING
+-define:ENABLE_CLOTH
+-define:ENABLE_2D_PHYSICS
+-define:ENABLE_SHADOWS
+-define:ENABLE_AUDIO
+-define:ENABLE_NAVMESH_CARVING
+-define:ENABLE_DUCK_TYPING
+-define:ENABLE_SINGLE_INSTANCE_BUILD_SETTING
+-r:E:/Unity/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/Managed/UnityEngine.dll
+-r:Library/ScriptAssemblies/Assembly-CSharp-firstpass.dll
+-r:Library/ScriptAssemblies/Assembly-UnityScript-firstpass.dll
+"Assets/Beardbotnik's Shader/Walk Script.js"
+Assets/ImageEffects/Examples/Billboard.js
+Assets/ImageEffects/Scripts/AA.js
+Assets/ImageEffects/Scripts/Bloom.js
+Assets/ImageEffects/Scripts/Blur.js
+Assets/ImageEffects/Scripts/ColorBalance.js
+Assets/ImageEffects/Scripts/FisheyeEffect.js
+Assets/ImageEffects/Scripts/GodRays.js
+Assets/ImageEffects/Scripts/IndieEffects.js
+Assets/ImageEffects/Scripts/Negative.js
+Assets/ImageEffects/Scripts/VignetteBlur.js
+Assets/Models/ParticleScale.js
+Assets/Resources/Karts/Dyne/Scripts/Pulse.js
+Assets/Scenes/Menus/Intro/IntroScript.js
+Assets/Scenes/Tracks/Sipsco/AnimatedTextureUV.js
+Assets/Scenes/Tracks/Sipsco/Underwater.js
+"Assets/Scripts/Character Scripts/Blink_Script.js"
+"Assets/Scripts/Character Scripts/QA.js"
+Assets/Scripts/CurrentGameData.js
+"Assets/Scripts/Kart Scripts/Kart_Camera.js"
+"Assets/Scripts/Kart Scripts/LoadExtras.js"
+"Assets/Scripts/Kart Scripts/NetworkUpdate.js"
+"Assets/Scripts/Kart Scripts/Position_Finding.js"
+"Assets/Scripts/Kart Scripts/Racer_AI.js"
+"Assets/Scripts/Kart Scripts/colliderTest.js"
+"Assets/Scripts/Kart Scripts/kartAI.js"
+"Assets/Scripts/Kart Scripts/kartAnimation.js"
+"Assets/Scripts/Kart Scripts/kartInput.js"
+"Assets/Scripts/Kart Scripts/kartScript.js"
+"Assets/Scripts/Kart Scripts/mobileInput.js"
+"Assets/Scripts/KartSystem V3/kartInfo.js"
+Assets/Scripts/Menus/Character_Select.js
+Assets/Scripts/Menus/Level_Select.js
+Assets/Scripts/Menus/LobbyAI.js
+Assets/Scripts/Menus/LobbyHandler.js
+Assets/Scripts/Menus/MainMenu.js
+Assets/Scripts/Menus/Main_Menu.js
+Assets/Scripts/Menus/NewCharacter_Test.js
+"Assets/Scripts/Menus/Title Rotate.js"
+Assets/Scripts/Menus/newCharacterSelect.js
+"Assets/Scripts/Networking 2/Client.js"
+"Assets/Scripts/Networking 2/Host.js"
+Assets/Scripts/Networking/Client_Script.js
+Assets/Scripts/Networking/Countdown.js
+Assets/Scripts/Networking/Host_Script.js
+Assets/Scripts/Networking/KartUpdate.js
+Assets/Scripts/Networking/Old_Level_Select.js
+Assets/Scripts/Networking/SpectatorCam.js
+Assets/Scripts/Networking/VotingScreen.js
+"Assets/Scripts/New Race Scripts/Ending_CutScene.js"
+"Assets/Scripts/New Race Scripts/Race_Client.js"
+"Assets/Scripts/New Race Scripts/Race_Host.js"
+"Assets/Scripts/New Race Scripts/Race_Master.js"
+"Assets/Scripts/Powers Up/Clucky_FireEgg.js"
+"Assets/Scripts/Powers Up/Clucky_Model.js"
+"Assets/Scripts/Powers Up/Item Scripts/Dirt Block.js"
+"Assets/Scripts/Powers Up/Item Scripts/Speed_Boost.js"
+"Assets/Scripts/Powers Up/Item_Box.js"
+"Assets/Scripts/Powers Up/Lapis_Item.js"
+"Assets/Scripts/Powers Up/Lapis_Script.js"
+"Assets/Scripts/Powers Up/Rotate.js"
+"Assets/Scripts/Powers Up/kartItem.js"
+"Assets/Scripts/Race Scripts/MasterRaceScript.js"
+"Assets/Scripts/Race Scripts/RaceScript.js"
+"Assets/Scripts/Race Scripts/SinglePlayer_Script.js"
+"Assets/Scripts/Track Editor/Camera_Test.js"
+"Assets/Scripts/Track Editor/DeathCatch.js"
+"Assets/Scripts/Track Editor/DynamiCamera.js"
+"Assets/Scripts/Track Editor/InEngineRender.js"
+"Assets/Scripts/Track Editor/LapPointHandler.js"
+"Assets/Scripts/Track Editor/PositionPointHandler.js"
+"Assets/Scripts/Track Editor/Race_Test.js"
+"Assets/Scripts/Track Editor/TrackData.js"

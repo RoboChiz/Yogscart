@@ -5,7 +5,6 @@ var DebugMode : boolean;
 
 //Only during the lobby phase will players be added to the race.
 //During the Loading Phases, new players will be shown an connection screen until the race countdown has began.
-enum Phase{Lobby,BeginRaceLoading,Racing,EndRaceLoading}
 var State : Phase;
 
 var Bots : boolean;

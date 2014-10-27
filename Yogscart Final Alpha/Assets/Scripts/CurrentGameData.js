@@ -337,6 +337,8 @@ public class Timer
 function Exit(){
 BlackOut = true;
 
+Network.SetLevelPrefix(0);
+
 transform.name = "OldGameData";
 
 yield WaitForSeconds(1);

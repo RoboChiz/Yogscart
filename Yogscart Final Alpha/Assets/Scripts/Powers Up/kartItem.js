@@ -91,8 +91,10 @@ heldPowerUp = nItem;
 }
 
 function UsePowerUp(){
+var clone : Transform ;
 
-var clone : Transform = Instantiate(gd.PowerUps[heldPowerUp].Model,transform.GetComponent(QA).objects[6].position,transform.rotation);
+clone = Instantiate(gd.PowerUps[heldPowerUp].Model,transform.GetComponent(QA).objects[6].position,transform.rotation);
+
 clone.parent = transform;
 
 if(gd.PowerUps[heldPowerUp].type == ItemType.UsableAsShield){

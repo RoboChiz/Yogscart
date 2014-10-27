@@ -172,7 +172,7 @@ Debug.Log("Send me a RPC");
 if(Network.isClient == true)
 networkView.RPC ("LevelChoose",RPCMode.Server,currentCup,currentTrack);
 else
-transform.GetComponent(Race_Host).LevelChoose(currentCup,currentTrack);
+transform.GetComponent(Host).LevelChoose(currentCup,currentTrack);
 
 transform.GetComponent(VotingScreen).hidden = false;
 
