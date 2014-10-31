@@ -51,6 +51,9 @@ private var Quality : int;
 
 private var creditsHeight : float;
 
+private var ConfirmSound : AudioClip;
+private var BackSound : AudioClip;
+
 function Update(){
 var background = transform.GetChild(0).guiTexture;
 background.pixelInset = Rect(0,0,Screen.width,Screen.height);
@@ -68,6 +71,10 @@ CS = GameObject.Find("GameData").GetComponent(Client);
 gd.allowedToChange = true;
 
 playerName = PlayerPrefs.GetString("playerName","Player");
+
+
+ConfirmSound = Resources.Load("Music & Sounds/SFX/confirm",AudioClip);
+BackSound = Resources.Load("Music & Sounds/SFX/back",AudioClip);
 
 var url = "https://db.tt/N51AaMhM";
 www1 = new WWW (url);
@@ -133,6 +140,15 @@ controlLock = true;
 
 if(Input.GetAxis(gd.pcn[0]+"Submit") == 0 && Input.GetAxis(gd.pcn[0]+"Cancel") == 0 )
 controlLock = false;
+
+if(State < 14){
+if(Input.GetAxis(gd.pcn[0]+"Submit") != 0 && controlLock == false)
+audio.PlayOneShot(ConfirmSound);
+
+if(State > 0)
+if(Input.GetAxis(gd.pcn[0]+"Cancel") != 0 && controlLock == false)
+audio.PlayOneShot(BackSound);
+}
 
 if(State == 0){ //Title Screen
 

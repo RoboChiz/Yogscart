@@ -129,13 +129,12 @@ audio.pitch = Mathf.Lerp(audio.pitch,1 + es,Time.deltaTime);
 
 }
 
-if(!isFalling){
 if(throttle == 0 || locked)
 ApplyStopForce();
 else
 ApplyThrottle();
 
-if(!locked){
+if(!locked && !isFalling){
 ApplySteering();
 
 ApplyDrift();
@@ -151,6 +150,8 @@ nMaxSpeed = MaxSpeed + BoostAddition;
 ExpectedSpeed = MaxSpeed + BoostAddition;
 }
 
+if(isFalling)
+ExpectedSpeed = 0;
 
 var relativeVelocity : Vector3 = transform.InverseTransformDirection(rigidbody.velocity);
 actualSpeed = relativeVelocity.z;
@@ -167,7 +168,6 @@ rigidbody.AddForce(transform.forward * rigidbody.mass * nA);
 
 lastMaxSpeed = nMaxSpeed;
 
-}
 }
 
 
@@ -284,11 +284,11 @@ function CheckGravity(){
 
 Debug.DrawRay(transform.position,Physics.gravity.normalized*1);
 
-if((Wheels[0].isGrounded == true || Wheels[1].isGrounded == true  || Wheels[2].isGrounded == true  || Wheels[3].isGrounded == true)||
-Physics.Raycast(transform.position,Physics.gravity.normalized,1))
-isFalling = false;
-else
+if((!Wheels[0].isGrounded || !Wheels[1].isGrounded || !Wheels[2].isGrounded || !Wheels[3].isGrounded)||
+!Physics.Raycast(transform.position,Physics.gravity.normalized,1))
 isFalling = true;
+else
+isFalling = false;
 
 }
 
@@ -298,6 +298,10 @@ var BoostAddition : int = 5;
 function Boost(t : float){
 if(isBoosting == false){
 isBoosting = true;
+
+var BoostSound = Resources.Load("Music & Sounds/SFX/boost",AudioClip);
+
+audio.PlayOneShot(BoostSound,3);
 
 Debug.Log("Started Boost");
 
