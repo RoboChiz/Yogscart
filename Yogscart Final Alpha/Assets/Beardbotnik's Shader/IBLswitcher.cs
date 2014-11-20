@@ -31,7 +31,6 @@ public class IBLswitcher : MonoBehaviour {
 	void OnTriggerEnter(Collider other) {
 				if (other.name == "IndoorTrigger") {
 					Active = true;
-					Debug.Log ("Object Entered the Trigger");
 				}
 		}
 	
@@ -39,7 +38,6 @@ public class IBLswitcher : MonoBehaviour {
 	void OnTriggerExit(Collider other) {
 				if (other.name == "IndoorTrigger") {
 					Active = false;
-					Debug.Log ("Object Exited the Trigger");
 				}
 		}
 

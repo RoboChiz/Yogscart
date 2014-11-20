@@ -65,35 +65,7 @@ private var ColourAlpha : Color = Color.black;
 	function Awake () {
 		DontDestroyOnLoad (transform.gameObject);
 		
-		var unlockInsane : boolean = true;
-		
-		for(var n = 0; n < Tournaments.Length; n++){
-		Tournaments[n].LastRank = new String[4];
-		Tournaments[n].LastRank[0] = PlayerPrefs.GetString(Tournaments[n].Name+"[50cc]","No Rank");
-		Tournaments[n].LastRank[1] = PlayerPrefs.GetString(Tournaments[n].Name+"[100cc]","No Rank");
-		Tournaments[n].LastRank[2] = PlayerPrefs.GetString(Tournaments[n].Name+"[150cc]","No Rank");
-		Tournaments[n].LastRank[3] = PlayerPrefs.GetString(Tournaments[n].Name+"[Insane]","No Rank");
-		
-		if(Tournaments[n].LastRank[2] == "No Rank")
-		unlockInsane = false;
-		
-		for(var k = 0; k < Tournaments[n].Tracks.Length; k++){
-		var TimeString = PlayerPrefs.GetString(Tournaments[n].Tracks[k].Name,"0:0:0");
-		var words = TimeString.Split(":"[0]);
-		Tournaments[n].Tracks[k].BestTrackTime.Minute = System.Int32.Parse(words[0]);
-		Tournaments[n].Tracks[k].BestTrackTime.Second = System.Int32.Parse(words[1]);
-		Tournaments[n].Tracks[k].BestTrackTime.milliSecond = System.Int32.Parse(words[2]);
-		}
-		}
-		
-		unlockedInsane = unlockInsane;
-		
-		for(n = 0; n < Characters.Length; n++){
-		var foo = true;
-		foo = PlayerPrefs.GetInt(Characters[n].Name)==1;
-		if(foo)
-		Characters[n].Unlocked = true;
-		}
+		LoadEverything();
 		
 		iconHeights = new int[4];
 		showIcon = new boolean[4];
@@ -181,6 +153,109 @@ private var ColourAlpha : Color = Color.black;
 		
 		
 		}
+		
+		function LoadEverything(){
+		
+		var unlockInsane : boolean = true;
+		
+		for(var n = 0; n < Tournaments.Length; n++){
+		Tournaments[n].LastRank = new String[4];
+		Tournaments[n].LastRank[0] = PlayerPrefs.GetString(Tournaments[n].Name+"[50cc]","No Rank");
+		Tournaments[n].LastRank[1] = PlayerPrefs.GetString(Tournaments[n].Name+"[100cc]","No Rank");
+		Tournaments[n].LastRank[2] = PlayerPrefs.GetString(Tournaments[n].Name+"[150cc]","No Rank");
+		Tournaments[n].LastRank[3] = PlayerPrefs.GetString(Tournaments[n].Name+"[Insane]","No Rank");
+		
+		if(Tournaments[n].LastRank[2] == "No Rank")
+		unlockInsane = false;
+		
+		for(var k = 0; k < Tournaments[n].Tracks.Length; k++){
+		var TimeString = PlayerPrefs.GetString(Tournaments[n].Tracks[k].Name,"0:0:0");
+		var words = TimeString.Split(":"[0]);
+		Tournaments[n].Tracks[k].BestTrackTime.Minute = System.Int32.Parse(words[0]);
+		Tournaments[n].Tracks[k].BestTrackTime.Second = System.Int32.Parse(words[1]);
+		Tournaments[n].Tracks[k].BestTrackTime.milliSecond = System.Int32.Parse(words[2]);
+		}
+		}
+		
+		unlockedInsane = unlockInsane;
+		
+		var foo : int = 0;
+		
+		for(n = 1; n < Characters.Length; n++){
+		foo = PlayerPrefs.GetInt(Characters[n].Name,0);
+		if(foo == 1){
+		Characters[n].Unlocked = true;
+		Debug.Log(Characters[n].Name + " is unlocked!");
+		}else{
+		Characters[n].Unlocked = false;
+		Debug.Log(Characters[n].Name + " is not unlocked!");
+		}
+		}
+		
+		for(n = 1; n < Hats.Length; n++){
+		foo = PlayerPrefs.GetInt(Hats[n].Name,0);
+		if(foo == 1){
+		Hats[n].Unlocked = true;
+		}else{
+		Hats[n].Unlocked = false;
+		}
+		}
+		
+		for(n = 1; n < Karts.Length; n++){
+		foo = PlayerPrefs.GetInt(Karts[n].Name,0);
+		if(foo == 1){
+		Karts[n].Unlocked = true;
+		}else{
+		Karts[n].Unlocked = false;
+		}
+		}
+		
+		for(n = 1; n < Wheels.Length; n++){
+		foo = PlayerPrefs.GetInt(Wheels[n].Name,0);
+		if(foo == 1){
+		Wheels[n].Unlocked = true;
+		}else{
+		Wheels[n].Unlocked = false;
+		}
+		}
+			
+		}
+		
+		function ResetEverything(){
+		
+		for(var n = 0; n < Tournaments.Length; n++){
+		PlayerPrefs.SetString(Tournaments[n].Name+"[50cc]","No Rank");
+		PlayerPrefs.SetString(Tournaments[n].Name+"[100cc]","No Rank");
+		PlayerPrefs.SetString(Tournaments[n].Name+"[150cc]","No Rank");
+		PlayerPrefs.SetString(Tournaments[n].Name+"[Insane]","No Rank");
+		
+		for(var k = 0; k < Tournaments[n].Tracks.Length; k++){
+		PlayerPrefs.SetString(Tournaments[n].Tracks[k].Name,"0:0:0");
+		}
+		}
+		
+		unlockedInsane = false;
+		
+		for(n = 1; n < Characters.Length; n++){
+		PlayerPrefs.SetInt(Characters[n].Name,0);
+		}
+		
+		for(n = 1; n < Hats.Length; n++){
+		PlayerPrefs.SetInt(Hats[n].Name,0);
+		}
+		
+		for(n = 1; n < Karts.Length; n++){
+		PlayerPrefs.SetInt(Karts[n].Name,0);
+		}
+		
+		for(n = 1; n < Wheels.Length; n++){
+		PlayerPrefs.SetInt(Wheels[n].Name,0);
+		}
+		
+		
+		LoadEverything();
+		
+		}
 
 
 function AddController(input : String){
@@ -249,7 +324,12 @@ inputLock = false;
 public class Character
  {
     var Name : String;
+    var model : Transform;
+    
+    //Delete Later////
     var CharacterModel_Standing : Transform;
+    //Delete Later////
+    
     var StartRaceSound : AudioClip;
 	var EndRaceSound : AudioClip; 
 	var hitSounds : AudioClip[];
@@ -262,8 +342,11 @@ public class Character
  {
     var Name : String;
     var Icon : Texture2D;
+    var model : Transform;
+    //Delete Later////
     var Model : Transform;
     var Models : Transform[];
+    //Delete Later////
     var Unlocked : boolean = false;
  }
 
@@ -313,7 +396,10 @@ public class Wheel
 {  
     var Name : String;
     var Icon : Texture2D;
+    var model : Transform;
+    //Delete Later////
     var Models : Transform[];
+    //Delete Later////
     var Unlocked : boolean = false;
 }
  
