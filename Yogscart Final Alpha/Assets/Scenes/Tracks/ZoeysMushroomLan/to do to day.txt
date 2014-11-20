@@ -1,3 +1,0 @@
-Finish SipsCo, test play it
-Finish ZM, test play it
-Finish UI, all menus including lobby buttons

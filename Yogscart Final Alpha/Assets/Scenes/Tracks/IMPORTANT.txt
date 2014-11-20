@@ -1,2 +1,0 @@
-When creating new tracks, use the Level Blockout included as a base for the level.
-This will allow you to test the level after you've imported it.
