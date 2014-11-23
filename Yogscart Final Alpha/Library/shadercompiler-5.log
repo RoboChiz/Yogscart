@@ -1,29 +1,17 @@
-Base path: E:/Unity/Editor/Data
-Pipe name: \\.\pipe\UnityShaderCompiler-5-1536
+Base path: D:/Unity/Editor/Data
+Pipe name: \\.\pipe\UnityShaderCompiler-5-4300
 Cmd: getPlatforms
 Cmd: compileSnippet
-  api=0 type=0 insize=4213 outsize=1219 kw=DIRECTIONAL SHADOWS_SCREEN LIGHTMAP_ON DIRLIGHTMAP_OFF ok=1
+  api=1 type=1 insize=5435 outsize=111 kw= ok=1
 Cmd: compileSnippet
-  api=0 type=1 insize=4213 outsize=1529 kw=DIRECTIONAL SHADOWS_OFF LIGHTMAP_ON DIRLIGHTMAP_OFF ok=1
+  api=0 type=1 insize=5443 outsize=491 kw= ok=1
 Cmd: compileSnippet
-  api=0 type=0 insize=3768 outsize=1187 kw=POINT SHADOWS_OFF ok=1
+  api=0 type=1 insize=5448 outsize=942 kw= ok=1
 Cmd: compileSnippet
-  api=0 type=0 insize=3768 outsize=1374 kw=SPOT SHADOWS_DEPTH SHADOWS_NATIVE ok=1
+  api=1 type=1 insize=5452 outsize=662 kw= ok=1
 Cmd: compileSnippet
-  api=0 type=0 insize=3768 outsize=1227 kw=POINT_COOKIE SHADOWS_CUBE ok=1
-Cmd: compileSnippet
-  api=0 type=1 insize=3768 outsize=1235 kw=POINT SHADOWS_OFF ok=1
-Cmd: compileSnippet
-  api=0 type=1 insize=3768 outsize=1197 kw=DIRECTIONAL SHADOWS_SCREEN ok=1
-Cmd: compileSnippet
-  api=0 type=0 insize=1564 outsize=1076 kw=SHADOWS_NONATIVE ok=1
-Cmd: compileSnippet
-  api=0 type=1 insize=1564 outsize=1269 kw=SHADOWS_SPLIT_SPHERES SHADOWS_NATIVE ok=1
-Cmd: compileSnippet
-  api=0 type=0 insize=867 outsize=635 kw= ok=1
-Cmd: compileSnippet
-  api=0 type=0 insize=3359 outsize=743 kw=WATER_REFRACTIVE ok=1
-Cmd: compileSnippet
-  api=0 type=1 insize=3359 outsize=944 kw=WATER_REFLECTIVE ok=1
-Cmd: compileSnippet
-  api=0 type=1 insize=867 outsize=133 kw= ok=1
+  api=1 type=1 insize=5454 outsize=662 kw= ok=1
+Unhandled exception: Readfile from pipe failed. GLE=The pipe has been ended.
+
+
+Quitting shader compiler process

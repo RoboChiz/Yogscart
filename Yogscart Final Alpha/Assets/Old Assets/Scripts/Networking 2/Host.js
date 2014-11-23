@@ -190,8 +190,8 @@ RacingPlayers[i].timer = new Timer();
 for(var j : int;j < RacingPlayers.Length; j++)
 if(RacingPlayers[j].networkRep != networkView.owner)
 networkView.RPC ("SetupYourKart", RacingPlayers[j].networkRep,j);
-else
-cs.SetupYourKart(j);
+//else
+//cs.SetupYourKart(j);
 
 networkView.RPC ("SetyourselfUp", RPCMode.All);
 

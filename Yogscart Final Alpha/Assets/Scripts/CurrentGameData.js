@@ -56,11 +56,18 @@ var Difficulty : int;
 
 //@HideInInspector
 var allowedToChange : boolean;
-var pcn : String[];
+
+var pcn : nInput[];
+
+var popupText : String[];
 
 //@HideInInspector
 var BlackOut : boolean = true;
-private var ColourAlpha : Color = Color.black;
+private var isPlaying : boolean;
+var PlayBackSpeed : float = 0.5f;
+private var currentFrame : int = 0;
+
+private var ColourAlpha : Color = Color.white;
 	
 	function Awake () {
 		DontDestroyOnLoad (transform.gameObject);
@@ -71,22 +78,79 @@ private var ColourAlpha : Color = Color.black;
 		showIcon = new boolean[4];
 		
 		}
+		
+		function PlayAnimation()
+		{
+		
+		while(true)
+		{
+		yield WaitForSeconds(PlayBackSpeed);
+		currentFrame += 1;
+		
+		if(currentFrame > 22)
+		currentFrame = 0;
+		
+		}
+		
+		}
 	
 		private var iconHeights : int[];
 		private var showIcon : boolean[];
 		private var inputLock : boolean;
 		
 		function OnGUI () {
+		
+		GUI.skin = Resources.Load("GUISkins/Main Menu", GUISkin);
+		
 		GUI.depth = -5;
 		//Black Out
 		var texture = new Texture2D(1,1);
 		if(BlackOut == false && ColourAlpha.a > 0)
+		{
 		ColourAlpha.a -= Time.deltaTime;
+		}
 		if(BlackOut == true && ColourAlpha.a < 1)
+		{
 		ColourAlpha.a += Time.deltaTime;
-		texture.SetPixel(0,0,ColourAlpha);
+		}
+
+		
+		texture.SetPixel(0,0,Color.black);
 		texture.Apply();
-		GUI.DrawTexture(Rect(-5,-5,Screen.width +5,Screen.height + 5),texture);
+		
+		GUI.color = ColourAlpha;
+		
+			GUI.DrawTexture(Rect(-5,-5,Screen.width +5,Screen.height + 5),texture);
+		
+			var aniSize : float = ((Screen.height + Screen.width)/2f)/8f;
+			var aniRect : Rect = Rect(Screen.width - 10 - aniSize, Screen.height - 10 - aniSize,aniSize,aniSize);
+					
+			GUI.DrawTexture(aniRect,Resources.Load("UI Textures/Loading/" + (currentFrame+1)));
+			
+		GUI.color = Color.white;
+		
+		if(BlackOut)
+		{
+		
+			SetAllPCN(InputState.Locked);
+			
+			if(!isPlaying)
+			{
+			StartCoroutine("PlayAnimation");
+			isPlaying = true;
+			}
+		
+		
+		}else{
+		
+		if(isPlaying)
+			{
+			StopCoroutine("PlayAnimation");
+			isPlaying = false;
+			}
+			
+		}
+		
 		
 		for(var i : int; i < 4; i++){
 		
@@ -101,7 +165,7 @@ private var ColourAlpha : Color = Color.black;
 		
 		if(pcn!= null && pcn.Length > i){
 		var Icon : Texture2D;
-		if(pcn[i] == "Key_")
+		if(pcn[i].inputName == "Key_")
 		Icon = Resources.Load("UI Textures/Controls/Keyboard",Texture2D);
 		else
 		Icon = Resources.Load("UI Textures/Controls/Xbox",Texture2D);
@@ -151,6 +215,38 @@ private var ColourAlpha : Color = Color.black;
 		}
 		}
 		
+		for(var j : int = 0; j < pcn.Length; j++)
+		{
+		if(pcn[j].state != InputState.Locked && Input.GetAxis(pcn[j].inputName + "Submit") == 0 && Input.GetAxis(pcn[j].inputName + "Cancel") == 0)
+		pcn[j].controlLock = false;
+		}
+		
+		
+		if(popupText != null && popupText.Length > 0)
+		{
+		
+		SetAllPCN(InputState.GDOnly);
+		
+		var BoxWidth : int = Screen.width / 3f;
+		var BoxHeight : int = Screen.height / 3f;
+		
+		var boxRect : Rect = Rect(Screen.width/2f - BoxWidth/2f,Screen.height/2f - BoxHeight/2f,BoxWidth,BoxHeight);
+		
+		GUI.Box(boxRect,popupText[0]);
+		
+		if(pcn.Length > 0){
+		
+		if(pcn[0].GetGDInput("Submit") != 0)
+		{
+			removePopUp();
+			
+			if(popupText.Length == 0)
+			SetAllPCN(InputState.Open);
+			
+		}
+		}
+		
+		}
 		
 		}
 		
@@ -263,7 +359,7 @@ inputLock = true;
 var alreadyIn : boolean;
 if(pcn != null)
 for(var i : int = 0; i < pcn.Length; i++)
-if(pcn[i] == input){
+if(pcn[i].inputName == input){
 alreadyIn = true;
 i = 5;
 }
@@ -275,7 +371,9 @@ var copy = new Array();
 if(pcn != null)
 copy = pcn;
 
-copy.Push(input);
+var newInput = new nInput(input);
+
+copy.Push(newInput);
 
 
 var toShow : int = copy.length-1;
@@ -299,7 +397,7 @@ var copy = new Array();
 var toShow : int = -1;
 
 for(var i : int = 0; i < pcn.Length; i++)
-if(pcn[i] != input)
+if(pcn[i].inputName != input)
 copy.Push(pcn[i]);
 else
 toShow = i;
@@ -319,6 +417,36 @@ inputLock = false;
 
 }
 
+function Popup(promptText : String)
+{
+
+SetAllPCN(InputState.GDOnly);
+
+var copy = new Array();
+
+if(popupText != null)
+copy = popupText;
+
+copy.Push(promptText);
+popupText = copy;
+
+}
+
+function removePopUp()
+{
+var copy = new Array();
+
+copy = popupText;
+copy.RemoveAt(0);
+popupText = copy;
+}
+
+function SetAllPCN(type : InputState)
+{
+for(var i : int; i < pcn.Length; i ++){
+pcn[i].SetState(type);
+}
+}
 
 //Classes
 public class Character
@@ -343,10 +471,6 @@ public class Character
     var Name : String;
     var Icon : Texture2D;
     var model : Transform;
-    //Delete Later////
-    var Model : Transform;
-    var Models : Transform[];
-    //Delete Later////
     var Unlocked : boolean = false;
  }
 
@@ -397,9 +521,6 @@ public class Wheel
     var Name : String;
     var Icon : Texture2D;
     var model : Transform;
-    //Delete Later////
-    var Models : Transform[];
-    //Delete Later////
     var Unlocked : boolean = false;
 }
  
@@ -420,8 +541,79 @@ public class Timer
   
 }
 
+public class nInput
+{
+	var inputName: String;
+	var state : InputState;
+	var controlLock : boolean;
+
+	function nInput(name : String)
+	{
+		inputName = name;
+		state = InputState.Open;
+		controlLock = true;
+	}
+	
+	public function SetState(nstate : InputState)
+	{
+		state = nstate;
+	}
+	
+	public function GetState()
+	{
+		return state;
+	}
+	
+	//Returns the input so long as Open.
+	public function GetInput(inputString : String)
+	{
+	
+		var returnFloat : float = 0;
+	
+		if(state == InputState.Open)
+		{
+		
+		if((inputString != "Submit" && inputString != "Cancel") || ((inputString == "Submit" || inputString == "Cancel") && !controlLock))
+		returnFloat = Input.GetAxis(inputName + inputString);
+		
+		if((inputString == "Submit" || inputString == "Cancel") && returnFloat != 0)
+		controlLock = true;
+		
+		}
+
+		return returnFloat;
+	
+	}
+	
+	//Returns the input so long as it is not locked. Only use for functions in GameData.
+	public function GetGDInput(inputString : String)
+	{
+	
+		var returnFloat : float = 0;
+	
+		if(state != InputState.Locked)
+		{
+		
+		if((inputString != "Submit" && inputString != "Cancel") || ((inputString == "Submit" || inputString == "Cancel") && !controlLock))
+		returnFloat = Input.GetAxis(inputName + inputString);
+		
+		if((inputString == "Submit" || inputString == "Cancel") && returnFloat != 0)
+		controlLock = true;
+		
+		}
+
+		return returnFloat;
+	
+	}
+}
+
+enum InputState{Locked,Open,GDOnly};
+
 function Exit(){
 BlackOut = true;
+
+for(var i : int = 0; i < pcn.Length; i++)
+pcn[i].SetState(InputState.Open);
 
 Network.SetLevelPrefix(0);
 

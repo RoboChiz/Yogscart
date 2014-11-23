@@ -1,21 +1,11 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\kartScript.js">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Old Assets\Scripts\Menus\Main_Menu.js">
     <Files>
-      <File FileName="Assets\Scripts\KartMaker Scripts\KartMaker.js" Line="70" Column="1" />
-      <File FileName="Assets\Scripts\CurrentGameData.js" Line="1" Column="1" />
-      <File FileName="Assets\Old Assets\Scripts\Kart Scripts\Position_Finding.js" Line="1" Column="1" />
-      <File FileName="Assets\Old Assets\Scripts\Kart Scripts\kartInput.js" Line="13" Column="39" />
-      <File FileName="Assets\Old Assets\Scripts\Menus\Level_Select.js" Line="1" Column="1" />
-      <File FileName="Assets\Old Assets\Scripts\Menus\newCharacterSelect.js" Line="1" Column="1" />
-      <File FileName="Assets\Old Assets\Scripts\New Race Scripts\Race_Master.js" Line="288" Column="33" />
-      <File FileName="Assets\Old Assets\Scripts\Kart Scripts\Racer_AI.js" Line="1" Column="1" />
-      <File FileName="Assets\Old Assets\Scripts\Kart Scripts\Replayer.cs" Line="52" Column="16" />
-      <File FileName="Assets\Old Assets\Scripts\Powers Up\kartItem.js" Line="103" Column="49" />
-      <File FileName="Assets\Scripts\kartScript.js" Line="312" Column="79" />
-      <File FileName="Assets\Old Assets\Scripts\Powers Up\Item Scripts\Dirt Block.js" Line="29" Column="22" />
-      <File FileName="Assets\Scripts\KartMaker Scripts\KartSkeleton.js" Line="18" Column="16" />
-      <File FileName="Assets\Old Assets\Scripts\Track Editor\DeathCatch.js" Line="3" Column="19" />
+      <File FileName="Assets\Scripts\CurrentGameData.js" Line="103" Column="60" />
+      <File FileName="Assets\Old Assets\Scripts\Menus\Main_Menu.js" Line="492" Column="5" />
+      <File FileName="Assets\Old Assets\Scripts\Menus\oldMain_Menu.js" Line="792" Column="1" />
+      <File FileName="Assets\Old Assets\Scripts\Menus\newCharacterSelect.js" Line="14" Column="23" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

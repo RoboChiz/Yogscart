@@ -4,18 +4,15 @@ private var gd : CurrentGameData;
 private var sps : SinglePlayer_Script;
 
 var version : String;
+var Logo : Texture2D;
 
-var State : int = 0;
+enum Menu{StartScreen,MainMenu,LocalMenu,DifficultyMenu,Multiplayer,HostMenu,JoinMenu,TournamentMenu,Options,Credits,CharacterSelect};
+var State : Menu = Menu.StartScreen;
 
-var RenderLogo : boolean; //Use this to show a 2D image of the logo for Mobile Devices.
-
-var controlLock : boolean;
 var VerticalLock : boolean;
 var HorizontalLock : boolean;
 
 var currentSelection : int;
-
-var Alpha : float = 1;
 
 var Flashing : boolean;
 var LockedColourAlpha : Color = Color.red;
@@ -23,10 +20,14 @@ var LockedColourAlpha : Color = Color.red;
 private var www1 : WWW;
 private var Error : boolean = false;
 
-//Network Holding
-private var HS : Host;
-private var CS : Client;
+private var sideScroll : int;
+var scrollTime : float = 5f;
 
+var titlesideScroll : int;
+var animated : boolean;
+var locked : boolean;
+
+//Network Holding
 var NetworkIP : String = "127.0.0.1";
 var NetworkPort : int = 25000;
 var NetworkPortText : String;
@@ -54,27 +55,91 @@ private var creditsHeight : float;
 private var ConfirmSound : AudioClip;
 private var BackSound : AudioClip;
 
+private var vertiLock : boolean;
+
 function Update(){
 var background = transform.GetChild(0).guiTexture;
 background.pixelInset = Rect(0,0,Screen.width,Screen.height);
 
 }
 
+function HideTitles(hide : boolean)
+{
+
+var startTime = Time.realtimeSinceStartup;
+
+var toScroll : float;
+var fromScroll : float;
+
+if(hide)
+{
+toScroll = -Screen.width/2f - Screen.width/20f;
+fromScroll = 0;
+}
+else
+{
+toScroll = 0;
+fromScroll = -Screen.width/2f - Screen.width/20f;
+}
+
+while(Time.realtimeSinceStartup-startTime  < scrollTime){
+titlesideScroll = Mathf.Lerp(fromScroll,toScroll,(Time.realtimeSinceStartup-startTime)/scrollTime);
+yield;
+}
+
+}
+
+function ChangeState(nextStage : Menu)
+{
+
+gd.SetAllPCN(InputState.Locked);
+
+var startTime = Time.realtimeSinceStartup;
+
+var toScroll = -Screen.width/2f;
+
+while(Time.realtimeSinceStartup-startTime  < scrollTime){
+sideScroll = Mathf.Lerp(0,toScroll,(Time.realtimeSinceStartup-startTime)/scrollTime);
+yield;
+}
+
+sideScroll = toScroll;
+
+State = nextStage;
+currentSelection = 0;
+
+startTime = Time.realtimeSinceStartup;
+
+while(Time.realtimeSinceStartup-startTime  < scrollTime){
+sideScroll = Mathf.Lerp(toScroll,0,(Time.realtimeSinceStartup-startTime)/scrollTime);
+yield;
+}
+
+sideScroll = 0;
+
+gd.SetAllPCN(InputState.Open);
+
+}
+
 function Start(){
-LockedColourAlpha.a = 0;
 
 gd = GameObject.Find("GameData").GetComponent(CurrentGameData);
 sps = gd.GetComponent(SinglePlayer_Script);
-HS = GameObject.Find("GameData").GetComponent(Host);
-CS = GameObject.Find("GameData").GetComponent(Client);
 
-gd.allowedToChange = true;
+gd.allowedToChange = false;
+gd.BlackOut = true;
 
-playerName = PlayerPrefs.GetString("playerName","Player");
+LockedColourAlpha.a = 0;
 
+GetOptionSettings();
 
 ConfirmSound = Resources.Load("Music & Sounds/SFX/confirm",AudioClip);
 BackSound = Resources.Load("Music & Sounds/SFX/back",AudioClip);
+
+yield WaitForSeconds(1);
+gd.BlackOut = false;
+gd.SetAllPCN(InputState.Open);
+gd.allowedToChange = true;
 
 var url = "https://db.tt/N51AaMhM";
 www1 = new WWW (url);
@@ -83,671 +148,466 @@ yield www1;
 if(!String.IsNullOrEmpty(www1.error))
 Error = true;
 
-for(var g : int = 0; g < Screen.resolutions.Length; g++){
-if(Screen.resolutions[g] == Screen.currentResolution){
-ScreenR = g;
-break;
-}
 }
 
-FullScreen = Screen.fullScreen;
-Quality = QualitySettings.GetQualityLevel();
-
-}
 
 function OnGUI () {
 
-if(State != 14)
-Alpha = Mathf.Lerp(Alpha,1,Time.deltaTime*5);
-else
-Alpha = Mathf.Lerp(Alpha,0,Time.deltaTime*5);
-
 GUI.skin = Resources.Load("GUISkins/Main Menu", GUISkin);
-GUI.color = Color(256,256,256,Alpha);
 
-if(State != 9){
+var avg = ((Screen.height + Screen.width)/2f)/30f;
+
+GUI.skin.label.fontSize = avg;
+GUI.skin.customStyles[4].fontSize = avg;
+
+//Render Character and Logo
 var CharacterRender : Texture2D = Resources.Load("UI Textures/New Main Menu/Side Images/"+ Random.Range(0,1),Texture2D); 
-GUI.DrawTexture(Rect(Screen.width/2f,10,Screen.width/2f,Screen.height-20),CharacterRender,ScaleMode.ScaleToFit);
-
-var Logo : Texture2D = Resources.Load("UI Textures/Main Menu/Logo",Texture2D);
+GUI.DrawTexture(Rect(Screen.width/2f - titlesideScroll,10,Screen.width/2f,Screen.height-20),CharacterRender,ScaleMode.ScaleToFit);
 
 var LogoWidth : float = Screen.width/2f;
 var Ratio : float = LogoWidth/Logo.width;
 
-var LogoRect = Rect(Screen.width/20f,Screen.width/20f,LogoWidth,Logo.height * Ratio);
+var LogoRect = Rect(Screen.width/20f,Screen.width/20f + titlesideScroll,LogoWidth,Logo.height * Ratio);
 GUI.DrawTexture(LogoRect,Logo);
+
+if(State == Menu.Credits || State == Menu.CharacterSelect || State == Menu.TournamentMenu){
+if(animated == false)
+{
+HideTitles(true);
+animated = true;
 }
-
-if(gd.pcn == null || gd.pcn.Length == 0){
-
-var inputWidth : float = Screen.width/3f;
-var inputRect = Rect(Screen.width/20f * 2.5f,Screen.height * (1f/6f),inputWidth,Screen.height * (2f/6f));
-
-OutLineLabel2(inputRect,"Press Start on an Input Device!",2);
-
-var keyboardIcon = Resources.Load("UI Textures/Controls/Keyboard",Texture2D);
-var xboxIcon = Resources.Load("UI Textures/Controls/Xbox",Texture2D);
-
-var keyRect = Rect(Screen.width/20f * 4f,Screen.height * (1.75f/6f),inputWidth/3f,Screen.height * (2f/6f));
-var xboxRect = Rect(Screen.width/20f * 4f,Screen.height * (2.5f/6f),inputWidth/3f,Screen.height * (2f/6f));
-
-GUI.DrawTexture(keyRect,keyboardIcon,ScaleMode.ScaleToFit);
-GUI.DrawTexture(xboxRect,xboxIcon,ScaleMode.ScaleToFit);
-
-controlLock = true;
-
 }else{
-
-if(Input.GetAxis(gd.pcn[0]+"Submit") == 0 && Input.GetAxis(gd.pcn[0]+"Cancel") == 0 )
-controlLock = false;
-
-if(State < 14){
-if(Input.GetAxis(gd.pcn[0]+"Submit") != 0 && controlLock == false)
-audio.PlayOneShot(ConfirmSound);
-
-if(State > 0)
-if(Input.GetAxis(gd.pcn[0]+"Cancel") != 0 && controlLock == false)
-audio.PlayOneShot(BackSound);
+if(animated == true)
+{
+HideTitles(false);
+animated = false;
+}
 }
 
-if(State == 0){ //Title Screen
 
-var PressStart : Texture2D = Resources.Load("UI Textures/New Main Menu/Press Start",Texture2D); 
-
-var PressStartWidth : float = Screen.width/3f;
-var PressStartRatio : float = PressStartWidth/PressStart.width;
-var PressStartRect = Rect(Screen.width/20f * 2.5f,Screen.height * (4f/6f),PressStartWidth,PressStart.height * PressStartRatio);
-
-GUI.DrawTexture(PressStartRect,PressStart);
-
-//Update Version
-
-var VersionRect : Rect = Rect(Screen.width/20f * 2.5f,Screen.height * (5f/6f),PressStartWidth,PressStart.height * PressStartRatio);
-
-if(www1.isDone == false)
-OutLineLabel(VersionRect,version + " [Checking]",2);
-else if(Error)
-OutLineLabel(VersionRect,version + " [NO Internet Connection]",2);
-else if(version == www1.text)
-OutLineLabel(VersionRect,www1.text,2);
-else
-OutLineLabel(VersionRect,version + " [UPDATE AVAILABLE]",2);
-
-if(Input.GetAxis(gd.pcn[0]+"Submit") != 0 && controlLock == false){
-State = 1;
-controlLock = true;
-}
-
-}
+if(gd.pcn != null && gd.pcn.Length > 0){
 
 var Options : String[];
+var stateLocation : String;
 
-if(State == 1){ // Main Menu
+if(!locked){
+var submitInput : float = gd.pcn[0].GetInput("Submit");
+var submitBool = (submitInput != 0);
 
-if(Input.GetAxis(gd.pcn[0]+"Cancel") != 0 && controlLock == false){
-State = 0;
-currentSelection = 0;
-controlLock = true;
-}
-
-Options = ["SinglePlayer","Multiplayer","Options","Credits","Quit"];
-
-for(var i : int = 0;i < Options.Length;i++){
-var OptionsTexture : Texture2D = Resources.Load("UI Textures/New Main Menu/State 1/" + Options[i],Texture2D); 
-var SelectedOptionsTexture : Texture2D = Resources.Load("UI Textures/New Main Menu/State 1/" + Options[i]+"_Sel",Texture2D); 
-
-if(currentSelection == i)
-GUI.DrawTexture(Rect(Screen.width/20f,(Screen.width/20f*(i+5)),Screen.width/4f,Screen.width/20f),SelectedOptionsTexture,ScaleMode.ScaleToFit);
-else
-GUI.DrawTexture(Rect(Screen.width/20f,(Screen.width/20f*(i+5)),Screen.width/4f,Screen.width/20f),OptionsTexture,ScaleMode.ScaleToFit);
-
-}
-
-if(Input.GetAxis(gd.pcn[0]+"Submit") != 0 && controlLock == false){
-
-if(currentSelection == 0){
-State = 2;
-currentSelection = 0;
-}
-
-if(currentSelection == 1){
-gd.type = RaceStyle.Online;
-State = 4;
-currentSelection = 0;
-}
-
-if(currentSelection == 2){
-
-for(var g : int = 0; g < Screen.resolutions.Length; g++){
-if(Screen.resolutions[g] == Screen.currentResolution)
-ScreenR = g;
-g = Screen.resolutions.Length + 1;
-}
-
-FullScreen = Screen.fullScreen;
-Quality = QualitySettings.GetQualityLevel();
-
-State = 8;
-currentSelection = 0;
-}
-
-if(currentSelection == 3){
-State = 9;
-creditsHeight = Screen.height;
-}
-
-if(currentSelection == 4){
-Application.Quit();
-currentSelection = 0;
+var cancelInput : float = gd.pcn[0].GetInput("Cancel");
+var cancelBool = (cancelInput != 0);
 }
 
 
-controlLock = true;
-}
-
-}
-
-if(State == 2){ //Single Player
-
-if(Input.GetAxis(gd.pcn[0]+"Cancel") != 0 && controlLock == false){
-State = 1;
-currentSelection = 0;
-controlLock = true;
-}
-
-Options = ["Grand Prix","Custom Race","Time Trial"];
-
-for(i = 0;i < Options.Length;i++){
-OptionsTexture = Resources.Load("UI Textures/New Main Menu/State 2/" + Options[i],Texture2D); 
-SelectedOptionsTexture = Resources.Load("UI Textures/New Main Menu/State 2/" + Options[i]+"_Sel",Texture2D); 
-
-if(currentSelection == i)
-GUI.DrawTexture(Rect(Screen.width/20f,(Screen.width/20f*(i+5)),Screen.width/4f,Screen.width/20f),SelectedOptionsTexture,ScaleMode.ScaleToFit);
-else
-GUI.DrawTexture(Rect(Screen.width/20f,(Screen.width/20f*(i+5)),Screen.width/4f,Screen.width/20f),OptionsTexture,ScaleMode.ScaleToFit);
-
-}
-
-if(Input.GetAxis(gd.pcn[0]+"Submit") != 0 && controlLock == false){
-
-if(currentSelection == 0){
-transform.GetComponent(Level_Select).GrandPrixOnly = true;
-gd.transform.GetComponent(SinglePlayer_Script).type = RaceStyle.GrandPrix;
-gd.type = RaceStyle.GrandPrix;
-State = 3;
-}
-if(currentSelection == 1){
-transform.GetComponent(Level_Select).GrandPrixOnly = false;
-gd.transform.GetComponent(SinglePlayer_Script).type = RaceStyle.CustomRace;
-gd.type = RaceStyle.CustomRace;
-State = 3;
-}
-if(currentSelection == 2){
-transform.GetComponent(Level_Select).GrandPrixOnly = false;
-gd.transform.GetComponent(SinglePlayer_Script).type = RaceStyle.TimeTrial;
-gd.type = RaceStyle.TimeTrial;
-StartCoroutine("StartSinglePlayer");
-State = 14;
-}
-
-currentSelection = 0;
-controlLock = true;
-}
-
-
-
-}
-
-if(State == 3){ //Difficulty Selector
-
-if(Input.GetAxis(gd.pcn[0]+"Cancel") != 0 && controlLock == false){
-State = 2;
-currentSelection = 0;
-controlLock = true;
-}
-
-if(gd.unlockedInsane)
-Options = ["50cc","100cc","150cc","Insane"];
-else
-Options = ["50cc","100cc","150cc"];
-
-for(i = 0;i < Options.Length;i++){
-OptionsTexture = Resources.Load("UI Textures/New Main Menu/State 3/" + Options[i],Texture2D); 
-SelectedOptionsTexture = Resources.Load("UI Textures/New Main Menu/State 3/" + Options[i]+"_Sel",Texture2D); 
-
-var ratio = (Screen.width/20f)/OptionsTexture.height;
-
-if(currentSelection == i)
-GUI.DrawTexture(Rect(Screen.width/10f,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),SelectedOptionsTexture,ScaleMode.ScaleToFit);
-else
-GUI.DrawTexture(Rect(Screen.width/10f,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),OptionsTexture,ScaleMode.ScaleToFit);
-
-}
-
-if(Input.GetAxis(gd.pcn[0]+"Submit") != 0 && controlLock == false){
-
-gd.transform.GetComponent(SinglePlayer_Script).Difficulty = currentSelection;
-
-StartCoroutine("StartSinglePlayer");
-
-State = 14;
-
-controlLock = true;
-}
-
-
-
-}
-
-if(State == 4){ //Multiplayer Menu
-
-if(Input.GetAxis(gd.pcn[0]+"Cancel") != 0 && controlLock == false){
-State = 1;
-currentSelection = 0;
-controlLock = true;
-}
-
-Options = ["Quick Race","Host","Join"];
-
-for(i = 0;i < Options.Length;i++){
-OptionsTexture = Resources.Load("UI Textures/New Main Menu/State 4/" + Options[i],Texture2D); 
-SelectedOptionsTexture = Resources.Load("UI Textures/New Main Menu/State 4/" + Options[i]+"_Sel",Texture2D); 
-
-ratio = (Screen.width/20f)/OptionsTexture.height;
-
-if(currentSelection == i)
-GUI.DrawTexture(Rect(Screen.width/10f,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),SelectedOptionsTexture,ScaleMode.ScaleToFit);
-else
-GUI.DrawTexture(Rect(Screen.width/10f,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),OptionsTexture,ScaleMode.ScaleToFit);
-
-}
-
-if(Input.GetAxis(gd.pcn[0]+"Submit") != 0 && controlLock == false){
-
-if(currentSelection == 1)
-State = 5;
-
-if(currentSelection == 2)
-State = 6;
-
-currentSelection = 0;
-controlLock = true;
-}
-
-
-
-}
-
-if(State == 5){ //Host Menu
-
-if(Input.GetAxis(gd.pcn[0]+"Cancel") != 0 && controlLock == false){
-State = 4;
-currentSelection = 0;
-controlLock = true;
-}
-
-if(!Automatic)
-Options = ["Port","Password","Bots","AutomaticServer","Start Server"];
-else
-Options = ["Port","Password","Bots","AutomaticServer","MinPlayers","Start Server"];
-
-for(i = 0;i < Options.Length;i++){
-OptionsTexture = Resources.Load("UI Textures/New Main Menu/State 5/" + Options[i],Texture2D); 
-SelectedOptionsTexture = Resources.Load("UI Textures/New Main Menu/State 5/" + Options[i]+"_Sel",Texture2D); 
-
-ratio = (Screen.width/20f)/OptionsTexture.height;
-
-if(currentSelection == i)
-GUI.DrawTexture(Rect(Screen.width/10f,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),SelectedOptionsTexture,ScaleMode.ScaleToFit);
-else
-GUI.DrawTexture(Rect(Screen.width/10f,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),OptionsTexture,ScaleMode.ScaleToFit);
-
-if(i == 0){
-if(currentSelection == i){
-HostPortText = GUI.TextField(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),HostPort.ToString());
-int.TryParse(HostPortText,HostPort);
-}else
-GUI.Label(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),HostPort.ToString());
-}
-
-if(i == 1){
-if(currentSelection == i)
-HostPassword = GUI.TextField(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),HostPassword);
-else
-GUI.Label(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),HostPassword.ToString());
-}
-
-if(i >=2){
-var YesTexture = Resources.Load("UI Textures/New Main Menu/State 5/Yes",Texture2D); 
-var SelectedYesTexture = Resources.Load("UI Textures/New Main Menu/State 5/Yes_Sel",Texture2D); 
-
-var NoTexture = Resources.Load("UI Textures/New Main Menu/State 5/No",Texture2D); 
-var SelectedNoTexture = Resources.Load("UI Textures/New Main Menu/State 5/No_Sel",Texture2D); 
-
-if(i == 2){
-if(WithBots == true)
-GUI.DrawTexture(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),YesTexture,ScaleMode.ScaleToFit);
-else
-GUI.DrawTexture(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),NoTexture,ScaleMode.ScaleToFit);
-}
-
-if(i == 3){
-if(Automatic == true)
-GUI.DrawTexture(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),YesTexture,ScaleMode.ScaleToFit);
-else
-GUI.DrawTexture(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),NoTexture,ScaleMode.ScaleToFit);
-}
-
-if(Automatic && i == 4){
-if(currentSelection == i){
-MinPlayersText = GUI.TextField(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),MinPlayers.ToString());
-int.TryParse(MinPlayersText,MinPlayers);
-}else
-GUI.Label(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),MinPlayers.ToString());
-}
-
-
-}
-
-}
-
-if(Input.GetAxis(gd.pcn[0]+"Submit") != 0 && controlLock == false){
-
-if(currentSelection == 2)
-WithBots = !WithBots;
-
-if(currentSelection == 3)
-Automatic = !Automatic;
-
-if(Options[currentSelection] == "Start Server")
-StartCoroutine("StartServer");
-
-controlLock = true;
-}
-
-
-
-}
-
-if(State == 6){ //Join Menu
-
-if(Input.GetAxis(gd.pcn[0]+"Cancel") != 0 && controlLock == false){
-State = 4;
-currentSelection = 0;
-controlLock = true;
-}
-
-Options = ["IPAddress","Port","Password","Connect"];
-
-for(i = 0;i < Options.Length;i++){
-OptionsTexture = Resources.Load("UI Textures/New Main Menu/State 6/" + Options[i],Texture2D); 
-SelectedOptionsTexture = Resources.Load("UI Textures/New Main Menu/State 6/" + Options[i]+"_Sel",Texture2D); 
-
-ratio = (Screen.width/20f)/OptionsTexture.height;
-
-if(currentSelection == i)
-GUI.DrawTexture(Rect(Screen.width/10f,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),SelectedOptionsTexture,ScaleMode.ScaleToFit);
-else
-GUI.DrawTexture(Rect(Screen.width/10f,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),OptionsTexture,ScaleMode.ScaleToFit);
-
-
-if(i == 0)
-if(currentSelection == i)
-NetworkIP = GUI.TextField(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),NetworkIP);
-else
-GUI.Label(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),NetworkIP);
-
-if(i == 1)
-if(currentSelection == i){
-NetworkPortText = GUI.TextField(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),NetworkPort.ToString());
-int.TryParse(NetworkPortText,NetworkPort);
-}else
-GUI.Label(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),NetworkPort.ToString());
-
-if(i == 2)
-if(currentSelection == i)
-NetworkPassword = GUI.TextField(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),NetworkPassword.ToString());
-else
-GUI.Label(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),NetworkPassword);
-
-
-}
-
-if(Input.GetAxis(gd.pcn[0]+"Submit") != 0 && controlLock == false){
-
-if(currentSelection == 3){
-if(NetworkPassword == "" || NetworkPassword == null)
-Network.Connect(NetworkIP, NetworkPort);
-else
-Network.Connect(NetworkIP, NetworkPort,NetworkPassword);
-
-State = 14;
-}
-
-currentSelection = 0;
-controlLock = true;
-}
-
-
-
-}
-
-if(State == 7){
-
-var BoardTexture : Texture2D = Resources.Load("UI Textures/GrandPrix Positions/Backing",Texture2D);
-var BoardRect : Rect = Rect(Screen.width/2f - Screen.width/4f,Screen.height/2f - ((Screen.height/16f)*3f)/2f,Screen.width/2f ,(Screen.height/16f)*3f);
-
-GUI.DrawTexture(BoardRect,BoardTexture);
-
-var OutlineRect : Rect = Rect(Screen.width/2f - Screen.width/4f,Screen.height/2f - ((Screen.height/16f)*1f),Screen.width/2f ,(Screen.height/16f)*2f);
-
-OutLineLabel(OutlineRect,"Can't connect to Server! " + errorText,1);
-
-if((Input.GetAxis(gd.pcn[0]+"Submit") != 0 || Input.GetAxis(gd.pcn[0]+"Cancel") != 0) && controlLock == false){
-State = 6;
-controlLock = true;
-}
-
-
-}
-
-if(State == 8){ //Options ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-if(Input.GetAxis(gd.pcn[0]+"Cancel") != 0 && controlLock == false){
-
-for(g = 0; g < Screen.resolutions.Length; g++){
-if(Screen.resolutions[g] == Screen.currentResolution){
-ScreenR = g;
-break;
-}
-}
-
-FullScreen = Screen.fullScreen;
-Quality = QualitySettings.GetQualityLevel();
-
-State = 1;
-currentSelection = 0;
-controlLock = true;
-}
-
-Options = ["Resolution","FullScreen","Quality","PlayerName","ResetEverything","SaveChanges","Back"];
-
-for(i = 0;i < Options.Length;i++){
-OptionsTexture = Resources.Load("UI Textures/New Main Menu/State 8/" + Options[i],Texture2D); 
-SelectedOptionsTexture = Resources.Load("UI Textures/New Main Menu/State 8/" + Options[i]+"_Sel",Texture2D); 
-
-ratio = (Screen.width/20f)/OptionsTexture.height;
-
-if(currentSelection == i)
-GUI.DrawTexture(Rect(Screen.width/10f,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),SelectedOptionsTexture,ScaleMode.ScaleToFit);
-else
-GUI.DrawTexture(Rect(Screen.width/10f,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),OptionsTexture,ScaleMode.ScaleToFit);
-
-if(i == 0){
-
-OutLineLabel2(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),Screen.resolutions[ScreenR].width + " x " + Screen.resolutions[ScreenR].height,2,Color.black);
-
-}
-
-if(i == 3){
-if(currentSelection == 3)
-playerName = GUI.TextField(Rect(Screen.width/10f + (OptionsTexture.width * ratio),(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),playerName.ToString());
-else
-GUI.Label(Rect(Screen.width/10f + (OptionsTexture.width * ratio),(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),playerName);
-}
-
-if(currentSelection == 0){
-if(Input.GetAxis(gd.pcn[0]+"Horizontal") != 0 && HorizontalLock == false){
-
-ScreenR += Mathf.Sign(Input.GetAxis(gd.pcn[0]+"Horizontal"));
-
-if(ScreenR >= Screen.resolutions.Length)
-ScreenR = 0;
-
-if(ScreenR < 0)
-ScreenR = Screen.resolutions.Length-1;
-
-HorizontalLock = true;
-HoriWait();
-}
-}
-
-if(i == 1){
-
-YesTexture = Resources.Load("UI Textures/New Main Menu/State 5/Yes",Texture2D); 
-NoTexture = Resources.Load("UI Textures/New Main Menu/State 5/No",Texture2D); 
-
-if(FullScreen == true)
-GUI.DrawTexture(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),YesTexture,ScaleMode.ScaleToFit);
-else
-GUI.DrawTexture(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),NoTexture,ScaleMode.ScaleToFit);
-
-}
-
-if(i == 2){
-
-OutLineLabel2(Rect(Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f),QualitySettings.names[Quality],2,Color.black);
-
-}
-
-if(currentSelection == 2){
-if(Input.GetAxis(gd.pcn[0]+"Horizontal") != 0 && HorizontalLock == false){
-
-Quality += Mathf.Sign(Input.GetAxis(gd.pcn[0]+"Horizontal"));
-
-if(Quality >= QualitySettings.names.Length)
-Quality = 0;
-
-if(Quality < 0)
-Quality = QualitySettings.names.Length - 1;
-
-HorizontalLock = true;
-HoriWait();
-}
-}
-
-if(Input.GetAxis(gd.pcn[0]+"Submit") != 0 && controlLock == false){
-
-if(currentSelection == 1)
-FullScreen = !FullScreen;
-
-if(currentSelection == 4){
-gd.ResetEverything();
-}
-
-if(currentSelection == 5){
-Screen.SetResolution(Screen.resolutions[ScreenR].width,Screen.resolutions[ScreenR].height,FullScreen);
-QualitySettings.SetQualityLevel(Quality);
-}
-
-if(currentSelection == 6){
-for(g = 0; g < Screen.resolutions.Length; g++){
-if(Screen.resolutions[g] == Screen.currentResolution)
-ScreenR = g;
-g = Screen.resolutions.Length + 1;
-}
-
-FullScreen = Screen.fullScreen;
-Quality = QualitySettings.GetQualityLevel();
-
-PlayerPrefs.SetString("playerName",playerName);
-
-State = 1;
-currentSelection = 0;
-controlLock = true;
-}
-
-controlLock = true;
-}
-}
-
-
-
-
-}
-
-if(State == 9){
-
-var Credits : String[] = ["Ross - Project Manager / Developer","Robo_Chiz - Lead Programmer / Networking",
-"Mysca - Level Design / UI","Beardbotnik - Character Design / Graphics Designer", "Tom - Animation", "Pico - Music",
-"Yogscart is a non-profit fan game and is in no way affiliated with the Yogscast or the Youth Olympic Games", "We hope you enjoyed the alpha"];
-
-Logo = Resources.Load("UI Textures/Main Menu/Logo",Texture2D);
-LogoWidth = Screen.width/2f;
-Ratio = LogoWidth/Logo.width;
-LogoRect = Rect(Screen.width/2f - LogoWidth/2f,creditsHeight,LogoWidth,Logo.height * Ratio);
-
-GUI.DrawTexture(LogoRect,Logo);
-
-for(var cred : int = 0; cred < Credits.Length; cred++)
-GUI.Label(Rect(Screen.width/2f - LogoWidth/2f,creditsHeight + (Logo.height * Ratio * (cred+1)) ,LogoWidth,Logo.height * Ratio),Credits[cred]);
-
-creditsHeight -= Time.deltaTime*30f;
-
-if(Input.GetAxis(gd.pcn[0] + "Cancel") != 0 && !controlLock){
-controlLock = true;
-State = 1;
-}
-
-
-}
-
-if(State == 14){//Single Player Race
-
+if(submitBool)
+transform.FindChild("Background").audio.PlayOneShot(Resources.Load("Music & Sounds/SFX/confirm",AudioClip));
+
+if(cancelBool)
+transform.FindChild("Background").audio.PlayOneShot(Resources.Load("Music & Sounds/SFX/back",AudioClip));
+
+switch(State) {
+    case Menu.StartScreen:
+    
+    	Options = [];
+    
+        var PressStart : Texture2D = Resources.Load("UI Textures/New Main Menu/Press Start",Texture2D); 
+		var PressStartWidth : float = Screen.width/3f;
+		var PressStartRatio : float = PressStartWidth/PressStart.width;
+		var PressStartRect = Rect(sideScroll + Screen.width/20f * 2.5f,Screen.height * (4f/6f),PressStartWidth,PressStart.height * PressStartRatio);
+
+		GUI.DrawTexture(PressStartRect,PressStart);
+
+		//Update Version
+
+		var VersionRect : Rect = Rect(sideScroll +  Screen.width/20f * 2.5f,Screen.height * (5f/6f),PressStartWidth,PressStart.height * PressStartRatio);
+		if(www1 != null ){
+			if(www1.isDone == false)
+				OutLineLabel(VersionRect,version + " [Checking]",2);
+			else if(Error)
+				OutLineLabel(VersionRect,version + " [NO Internet Connection]",2);
+			else if(version == www1.text)
+				OutLineLabel(VersionRect,www1.text,2);
+			else
+				OutLineLabel(VersionRect,version + " [UPDATE AVAILABLE]",2);
+		}else{
+				OutLineLabel(VersionRect,version + " I AM ERROR!",2);
+		}
+		
+		if(submitBool)
+			ChangeState(Menu.MainMenu);
+
+	break;
+	
+	case Menu.MainMenu:
+		Options = ["SinglePlayer","Multiplayer","Options","Credits","Quit"];
+		stateLocation = "State 1";
+		
+		if(cancelBool)
+			ChangeState(Menu.StartScreen);
 			
-}	
+		if(submitBool)
+		{
+			switch(currentSelection){
+			case 0:
+			ChangeState(Menu.LocalMenu);		
+			break;
+			case 1:
+			FlashRed();
+			//ChangeState(Menu.Multiplayer);		
+			break;
+			case 2:
+			ChangeState(Menu.Options);		
+			break;
+			case 3:
+			creditsHeight = Screen.height;
+			ChangeState(Menu.Credits);		
+			break;
+			case 4:
+			Application.Quit();	
+			break;
+			}
+		
+		}
+		
+	break;
+	
+	case Menu.LocalMenu:
+		Options = ["Grand Prix","Custom Race","Time Trial","Back"];
+		stateLocation = "State 2";
+		
+		if(cancelBool)
+			ChangeState(Menu.MainMenu);
+			
+		if(submitBool)
+		{
+			switch(currentSelection){
+			case 0:
+			transform.GetComponent(Level_Select).GrandPrixOnly = true;
+			gd.transform.GetComponent(SinglePlayer_Script).type = RaceStyle.CustomRace;
+			ChangeState(Menu.DifficultyMenu);
+			break;
+			case 1:
+			transform.GetComponent(Level_Select).GrandPrixOnly = false;
+			gd.transform.GetComponent(SinglePlayer_Script).type = RaceStyle.GrandPrix;
+			ChangeState(Menu.DifficultyMenu);
+			break;
+			case 2:
+			transform.GetComponent(Level_Select).GrandPrixOnly = false;
+			gd.transform.GetComponent(SinglePlayer_Script).type = RaceStyle.TimeTrial;
+			StartCoroutine("StartSinglePlayer");
+			locked = true;
+			ChangeState(Menu.CharacterSelect);
+			break;
+			case 3:
+			ChangeState(Menu.MainMenu);	
+			break;			
+			}
+		
+		}
+		
+	break;
+	
+	case Menu.DifficultyMenu:
+		
+		if(gd.unlockedInsane)
+		Options = ["50cc","100cc","150cc","Insane","Back"];
+		else
+		Options = ["50cc","100cc","150cc","Back"];
+		
+		stateLocation = "State 3";
+		
+		if(cancelBool)
+			ChangeState(Menu.LocalMenu);
+			
+		if(submitBool)
+		{
+		
+			if((gd.unlockedInsane && currentSelection != 4) || (!gd.unlockedInsane && currentSelection != 3))
+			{
+				gd.transform.GetComponent(SinglePlayer_Script).Difficulty = currentSelection;
+				StartCoroutine("StartSinglePlayer");
+				locked = true;
+				ChangeState(Menu.CharacterSelect);
+			}
+			else
+			{
+				ChangeState(Menu.LocalMenu);
+			}
+		
+		}
+		
+	break;
+	
+	case Menu.CharacterSelect:
+		Options = [];
+		stateLocation = "State 14";
+	break;
+	
+	case Menu.Credits:
+		Options = [];
+		stateLocation = "State 9";
+		
+		if(cancelBool)
+			ChangeState(Menu.MainMenu);
+			
+		if(submitBool)
+			ChangeState(Menu.MainMenu);
+			
+		var Credits : String[] = ["Ross - Project Manager / Developer","Robo_Chiz - Lead Programmer / Networking",
+		"Mysca - Level Design / UI","Beardbotnik - Character Design / Graphics Designer", "Tom - Animation", "Pico - Music",
+		"Yogscart is a non-profit fan game and is in no way affiliated with the Yogscast or the Youth Olympic Games", "We hope you enjoyed the alpha"];
+		
+		LogoWidth = Screen.width/2f;
+		Ratio = LogoWidth/Logo.width;
+		LogoRect = Rect(Screen.width/2f - LogoWidth/2f,creditsHeight,LogoWidth,Logo.height * Ratio);
 
-//Get Vertical Input
-if(Options != null && Options.Length > 0){
-if(Input.GetAxis(gd.pcn[0]+"Vertical") != 0&& VerticalLock == false){
+		GUI.DrawTexture(LogoRect,Logo);
 
-currentSelection -= Mathf.Sign(Input.GetAxis(gd.pcn[0]+"Vertical"));
+		for(var cred : int = 0; cred < Credits.Length; cred++)
+			OutLineLabel(Rect(Screen.width/2f - LogoWidth/2f,creditsHeight + (Logo.height * Ratio * (cred+1)) ,LogoWidth,Logo.height * Ratio),Credits[cred],2);
 
+		creditsHeight -= Time.deltaTime*40f;
+		
+	break;
+	
+	case Menu.Options:
+		Options = ["Resolution","FullScreen","Quality","PlayerName","ResetEverything","SaveChanges","Back"];
+		stateLocation = "State 8";
+		
+		if(cancelBool)
+		{
+			GetOptionSettings();
+			ChangeState(Menu.MainMenu);
+		}	
+		if(submitBool)
+		{
+			switch(currentSelection){
+			case 1:
+			if(FullScreen)
+			FullScreen = false;
+			else
+			FullScreen = true;
+			break;
+			case 4:
+			gd.ResetEverything();
+			PlayerPrefs.SetString("playerName","Player");
+			GetOptionSettings();
+			gd.Popup("All Grand Prix, Time Trial, Character, Hat, Kart, Wheel and Player data has been reset.");
+			Debug.Log("Deleted!");
+			break;
+			case 5:
+			Screen.SetResolution(Screen.resolutions[ScreenR].width,Screen.resolutions[ScreenR].height,FullScreen);
+			QualitySettings.SetQualityLevel(Quality);
+			PlayerPrefs.SetString("playerName",playerName);
+			gd.Popup("Your changes have been saved!");
+			Debug.Log("Done!");
+			break;
+			case 6:
+			GetOptionSettings();
+			ChangeState(Menu.MainMenu);
+			break;
+		
+			}
+		
+		}
+		
+	break;
 
-if(currentSelection >= Options.Length)
-currentSelection = 0;
-
-if(currentSelection < 0)
-currentSelection = Options.Length-1;
-
-VerticalLock = true;
-VertWait();
 }
+
+	if(gd.pcn[0].GetInput("Vertical") != 0 && VerticalLock == false){
+
+		VerticalLock = true;
+
+		var vinput = -Mathf.Sign(gd.pcn[0].GetInput("Vertical"));
+
+		currentSelection += vinput;
+		
+		if(currentSelection < 0)
+			currentSelection = Options.Length - 1;
+		
+		if(currentSelection >= Options.Length)
+			currentSelection = 0;
+		
+		
+	}
+	
+	if(gd.pcn[0].GetInput("Vertical") == 0)
+		VerticalLock = false;
+
+	
+	for(var i : int = 0;i < Options.Length;i++){
+		
+		var OptionsTexture : Texture2D = Resources.Load("UI Textures/New Main Menu/" + stateLocation + "/" + Options[i],Texture2D); 
+		var SelectedOptionsTexture : Texture2D = Resources.Load("UI Textures/New Main Menu/" + stateLocation + "/" + Options[i]+"_Sel",Texture2D); 
+		var ratio = (Screen.width/20f)/OptionsTexture.height;
+		
+		var drawRect : Rect = Rect(sideScroll + Screen.width/20f,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f);
+
+		if(currentSelection == i)
+			GUI.DrawTexture(drawRect,SelectedOptionsTexture,ScaleMode.ScaleToFit);
+		else
+			GUI.DrawTexture(drawRect,OptionsTexture,ScaleMode.ScaleToFit);
+			
+		if(WithinBounds(drawRect))
+		currentSelection = i;
+		
+		if(State == Menu.Options)
+		{
+			var IconHeight = Screen.width/20f;
+		
+			if(gd.pcn[0].GetInput("Horizontal") != 0 && HorizontalLock == false){
+
+				HorizontalLock = true;
+
+				var hinput = Mathf.Sign(gd.pcn[0].GetInput("Horizontal"));
+				
+				if(currentSelection == 0){
+					ScreenR += hinput;
+			
+					if(ScreenR < 0)
+						ScreenR = Screen.resolutions.Length - 1;
+			
+					if(ScreenR >= Screen.resolutions.Length)
+						ScreenR = 0;
+				}
+				
+				if(currentSelection == 2){
+					Quality += hinput;
+			
+					if(Quality < 0)
+						Quality = QualitySettings.names.Length - 1;
+			
+					if(Quality >=  QualitySettings.names.Length)
+						Quality = 0;
+				}
+		
+		
+			}
+	
+			if(gd.pcn[0].GetInput("Horizontal") == 0)
+				HorizontalLock = false;
+
+		
+		
+		
+			if(i == 0){
+				var resRect : Rect = Rect(sideScroll + Screen.width/10f + OptionsTexture.width * ratio,(IconHeight*(i+5)),OptionsTexture.width * ratio,IconHeight);
+				
+				if(WithinBounds(resRect))
+					currentSelection = 0;
+					
+				OutLineLabel2(resRect,Screen.resolutions[ScreenR].width + " x " + Screen.resolutions[ScreenR].height,2,Color.black);
+				
+				var leftarrowResRect : Rect = Rect(sideScroll + Screen.width/10f + OptionsTexture.width * ratio - IconHeight,(IconHeight*(i+5)),IconHeight,IconHeight);
+				var rightarrowResRect : Rect = Rect(sideScroll + Screen.width/10f + (OptionsTexture.width * ratio)*2 - IconHeight,(IconHeight*(i+5)),IconHeight,IconHeight);
+				
+				if(WithinBounds(leftarrowResRect) && submitBool)
+				{
+					ScreenR -= 1;
+					
+					if(ScreenR < 0)
+					ScreenR = Screen.resolutions.Length - 1;
+					
+				}
+				
+				if(WithinBounds(rightarrowResRect) && submitBool)
+				{
+					ScreenR += 1;
+					
+					if(ScreenR >= Screen.resolutions.Length)
+					ScreenR = 0;
+					
+				}
+				
+				GUI.DrawTexture(leftarrowResRect,Resources.Load("UI Textures/New Main Menu/Left_Arrow",Texture2D));
+				GUI.DrawTexture(rightarrowResRect,Resources.Load("UI Textures/New Main Menu/Right_Arrow",Texture2D));
+				
+			}
+			
+			if(i == 1){
+
+				var YesTexture = Resources.Load("UI Textures/New Main Menu/State 5/Yes",Texture2D); 
+				var NoTexture = Resources.Load("UI Textures/New Main Menu/State 5/No",Texture2D); 
+				var yesnoRect : Rect = Rect(sideScroll + Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f);
+
+				if(WithinBounds(yesnoRect))
+					currentSelection = 1;
+					
+
+				if(FullScreen == true)
+					GUI.DrawTexture(yesnoRect,YesTexture,ScaleMode.ScaleToFit);
+				else
+					GUI.DrawTexture(yesnoRect,NoTexture,ScaleMode.ScaleToFit);
+
+			}
+			
+			if(i == 2){
+			
+				var qualityRect : Rect = Rect(sideScroll + Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f);
+			
+				if(WithinBounds(qualityRect))
+					currentSelection = 2;
+			
+				OutLineLabel2(qualityRect,QualitySettings.names[Quality],2,Color.black);
+				
+				var leftarrowqualityRect : Rect = Rect(sideScroll + Screen.width/10f + OptionsTexture.width * ratio - IconHeight,(IconHeight*(i+5)),IconHeight,IconHeight);
+				var rightarrowqualityRect : Rect = Rect(sideScroll + Screen.width/10f + (OptionsTexture.width * ratio)*2 - IconHeight,(IconHeight*(i+5)),IconHeight,IconHeight);
+				
+				if(WithinBounds(leftarrowqualityRect) && submitBool)
+				{
+					Quality -= 1;
+					
+					if(Quality < 0)
+					Quality = QualitySettings.names.Length - 1;
+					
+				}
+				
+				if(WithinBounds(rightarrowqualityRect) && submitBool)
+				{
+					Quality += 1;
+					
+					if(Quality >= QualitySettings.names.Length)
+					Quality = 0;
+					
+				}
+				
+				GUI.DrawTexture(leftarrowqualityRect,Resources.Load("UI Textures/New Main Menu/Left_Arrow",Texture2D));
+				GUI.DrawTexture(rightarrowqualityRect,Resources.Load("UI Textures/New Main Menu/Right_Arrow",Texture2D));
+				
+			}
+			
+			if(i == 3){
+			
+				var playerNameRect : Rect = Rect(sideScroll + Screen.width/10f + (OptionsTexture.width * ratio),(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f);
+			
+				if(WithinBounds(playerNameRect))
+					currentSelection = 3;
+				
+				if(currentSelection == 3)
+					playerName = GUI.TextField(playerNameRect,playerName.ToString());
+				else
+					GUI.Label(playerNameRect,playerName);
+			}
+
+		}
+		
+
+	}
+
+
+//if(submitBool && controlLock == false)
+//audio.PlayOneShot(ConfirmSound);
+
+//if(State > 0)
+//if(cancelBool && controlLock == false)
+///audio.PlayOneShot(BackSound);
+
+
 }
 
-OutLineLabel(Rect(Screen.width/10f,(Screen.width/20f*(i+5)),300,Screen.width/20f),"[Locked]",2,LockedColourAlpha);
+OutLineLabel(Rect(Screen.width/20f,(Screen.width/20f*(i+5)),100,Screen.width/20f),"[Locked]",2,LockedColourAlpha);
 
-}
-}
-
-function VertWait(){
-yield WaitForSeconds(0.2);
-VerticalLock = false;
-}
-
-function HoriWait(){
-yield WaitForSeconds(0.2);
-HorizontalLock = false;
 }
 
 function FlashRed(){
@@ -771,18 +631,13 @@ Flashing = false;
 
 }
 
-function Return(){
+function Return()
+{
+locked = false;
 StopCoroutine("StartSinglePlayer");
-
-controlLock = true;
-
-if(sps.type != RaceStyle.TimeTrial)
-State = 3;
-else
-State = 2;
-
-gd.allowedToChange = true;
-
+transform.GetComponent(newCharacterSelect).hidden = true;
+transform.GetComponent(Level_Select).hidden = true;
+ChangeState(Menu.LocalMenu);
 }
 
 function StartSinglePlayer(){
@@ -803,71 +658,6 @@ sps.enabled = true;
 gd.BlackOut = true;	
 			
 }
-
-function StartServer(){
-
-State = 14;
-
-gd.allowedToChange = false;
-
-while(gd.pcn.Length > 1)
-gd.RemoveController(gd.pcn[1]);
-
-while(gd.currentChoices.Length == 0){
-transform.GetComponent(newCharacterSelect).hidden = false;
-transform.GetComponent(Level_Select).hidden = true;
-yield;
-}
-
-gd.BlackOut = true;
-
-yield WaitForSeconds(0.6);
-
-if(HostPassword != "" || HostPassword != null)
-Network.incomingPassword = HostPassword;
-
-var useNat = !Network.HavePublicAddress();
-Network.InitializeServer(200, 25000, useNat);
-
-if(!conscious)
-MasterServer.RegisterHost("YogscartRace", "Surprise Server", "Best game ever!");
-
-HS.Bots = WithBots;
-HS.Automatic = Automatic;
-HS.MinPlayers = MinPlayers;
-HS.conscious = conscious;
-HS.enabled = true;
-HS.ResetServer();
-
-if(conscious)
-HS.AddHost(gd.currentChoices[0].character,gd.currentChoices[0].hat,gd.currentChoices[0].kart,gd.currentChoices[0].wheel);
-
-}	
-
-function OnConnectedToServer() {
-StartConnection();
-}
-
-function StartConnection(){
-
-gd.allowedToChange = false;
-
-while(gd.currentChoices.Length == 0){
-transform.GetComponent(newCharacterSelect).hidden = false;
-yield;
-}
-
-gd.transform.networkView.RPC("ReadyPlayer",RPCMode.Server);
-
-CS.enabled = true;
-}
-
-var errorText : String;
-
-function OnFailedToConnect(error: NetworkConnectionError) {
-		errorText = error.ToString();
-		State = 7;
-	}
 	
 
 function OutLineLabel(pos : Rect, text : String,Distance : float){
@@ -916,5 +706,22 @@ if(Input.mousePosition.x >= Area.x && Input.mousePosition.x <= Area.x + Area.wid
 return true;
 else
 return false;
+
+}
+
+function GetOptionSettings()
+{
+
+for(var i : int = 0; i < Screen.resolutions.Length; i++)
+{
+if(Screen.resolutions[i] == Screen.currentResolution){
+ScreenR = i;
+break;
+}
+}
+
+FullScreen = Screen.fullScreen;
+Quality = QualitySettings.GetQualityLevel();
+playerName = PlayerPrefs.GetString("playerName","Player");
 
 }

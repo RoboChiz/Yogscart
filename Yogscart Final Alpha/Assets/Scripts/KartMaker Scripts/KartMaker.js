@@ -64,6 +64,8 @@ kb.rigidbody.angularDrag = 10;
 
 kb.AddComponent(AudioSource);
 kartBody.FindChild("Kart Body").gameObject.AddComponent(AudioSource);
+kb.GetComponent(AudioSource).playOnAwake = false;
+kartBody.GetComponent(AudioSource).playOnAwake = false;
 
 kb.AddComponent(DeathCatch);
 kb.GetComponent(DeathCatch).DeathParticles = kartBody.FindChild("Kart Body").FindChild("Particles").FindChild("Death Particles").particleSystem;

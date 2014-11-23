@@ -148,7 +148,7 @@ function OnGUI () {
 GUI.skin = Resources.Load("GUISkins/Main Menu", GUISkin);
 var sps : SinglePlayer_Script = transform.GetComponent(SinglePlayer_Script);
 
-if(Input.GetAxisRaw(gd.pcn[0]+"Submit") == 0)
+if(gd.pcn[0].GetGDInput("Submit") == 0)
 controlLock = false;
 
 if(activeraceAlpha)
@@ -257,10 +257,20 @@ var BoxHeight : float = Screen.height / 16f;
 if(type == RaceStyle.TimeTrial)
 OutLineLabel(Rect(20 + BoxWidth/2f,Screen.height - 20 - (BoxHeight*1.5),BoxWidth*1.75f + 10,BoxHeight),OverallTimer.ToString(),2);
 
-if(Input.GetAxisRaw(gd.pcn[0]+"Pause") != 0 && pausedLock == false){
+if(gd.pcn[0].GetGDInput("Pause") != 0 && pausedLock == false){
 Paused = !Paused;
 pausedLock = true;
 controlLock = true;
+
+if(Paused && gd.pcn[0].GetState() == InputState.Open)
+{
+gd.SetAllPCN(InputState.GDOnly);
+}
+
+if(!Paused && gd.pcn[0].GetState() == InputState.GDOnly)
+{
+gd.SetAllPCN(InputState.Open);
+}
 
 if(!Network.isClient && !Network.isServer){
 if(Paused)
@@ -270,7 +280,7 @@ Time.timeScale = 1f;
 }
 }
 
-if(Input.GetAxisRaw(gd.pcn[0]+"Pause") == 0)
+if(gd.pcn[0].GetGDInput("Pause") == 0)
 pausedLock = false;
 
 
@@ -352,7 +362,7 @@ GUI.DrawTexture(Rect(Screen.width/2f - Screen.height/16f,Screen.height/16f * 14.
 else
 GUI.DrawTexture(Rect(Screen.width/2f - Screen.height/16f,Screen.height/16f * 14.4,Screen.width/2f ,Screen.height/16f*1.75),PressStart1,ScaleMode.ScaleToFit);
 
-if(Input.GetAxis(gd.pcn[0]+"Submit") != 0 && controlLock == false){
+if(gd.pcn[0].GetInput("Submit") != 0 && controlLock == false){
 State = Testing.NextMenu;
 controlLock = true;
 }
@@ -393,7 +403,7 @@ GUI.DrawTexture(optionRect,optionTexture,ScaleMode.ScaleToFit);
 }
 
 if(type != RaceStyle.Online){
-if(Input.GetAxis(gd.pcn[0]+"Submit") != 0 && controlLock == false){
+if(gd.pcn[0].GetInput("Submit") != 0 && controlLock == false){
 
 if(currentSelection == 0 && controlLock == false){
 State = Testing.Loading;
@@ -424,9 +434,9 @@ controlLock = true;
 
 }
 
-if(Input.GetAxis(gd.pcn[0]+"Vertical") != 0 && keyLock == false){
+if(gd.pcn[0].GetInput("Vertical") != 0 && keyLock == false){
 
-currentSelection -= Mathf.Sign(Input.GetAxis(gd.pcn[0]+"Vertical"));
+currentSelection -= Mathf.Sign(gd.pcn[0].GetInput("Vertical"));
 
 if(currentSelection < 0)
 currentSelection = Options.Length-1;
@@ -470,7 +480,7 @@ GUI.DrawTexture(optionRect,optionTexture,ScaleMode.ScaleToFit);
 
 }
 
-if(Input.GetAxisRaw(gd.pcn[0]+"Submit") != 0 && Input.GetAxisRaw(gd.pcn[0]+"Pause") == 0 && controlLock == false){
+if(gd.pcn[0].GetGDInput("Submit") != 0 && gd.pcn[0].GetGDInput("Pause") == 0 && controlLock == false){
 
 if(currentSelection == 0 && controlLock == false){
 Paused = !Paused;
@@ -500,6 +510,7 @@ StartNextRace();
 if(currentSelection == 3 && controlLock == false){
 State = Testing.Race;
 Time.timeScale = 1f;
+
 gd.Exit();
 controlLock = true;
 }
@@ -518,9 +529,9 @@ controlLock = true;
 
 }
 
-if(Input.GetAxisRaw(gd.pcn[0]+"Vertical") != 0 && keyLock == false){
+if(gd.pcn[0].GetGDInput("Vertical") != 0 && keyLock == false){
 
-currentSelection -= Mathf.Sign(Input.GetAxisRaw(gd.pcn[0]+"Vertical"));
+currentSelection -= Mathf.Sign(gd.pcn[0].GetGDInput("Vertical"));
 
 if(currentSelection < 0)
 currentSelection = Options.Length-1;
@@ -531,7 +542,7 @@ currentSelection = 0;
 keyLock = true;
 }
 
-if(Input.GetAxisRaw(gd.pcn[0]+"Vertical") == 0)
+if(gd.pcn[0].GetGDInput("Vertical") == 0)
 keyLock = false;
 
 }
@@ -587,7 +598,7 @@ SPRacers[i].rep.GetComponent(Racer_AI).Stupidity = SPRacers[i].aiStupidity;
 SPRacers[i].rep.gameObject.AddComponent(kartInput);
 SPRacers[i].rep.gameObject.AddComponent(kartInfo);
 //Adjust Scripts
-SPRacers[i].rep.GetComponent(kartInput).InputName = gd.pcn[SPRacers[i].HumanID];
+SPRacers[i].rep.GetComponent(kartInput).InputName = gd.pcn[SPRacers[i].HumanID].inputName;
 //Add Camera
 var IngameCam = Instantiate(Resources.Load("Prefabs/Cameras",Transform),td.PositionPoints[0].rep.position,Quaternion.identity);
 IngameCam.name = "InGame Cams";
@@ -652,76 +663,6 @@ Players += 1;
 }
 
 }
-
-}
-
-function SpawnKart(character : int, hat : int, kart : int, wheel : int,pos : int){
-
-//Find Position to spawn racer
-var SpawnPosition : Vector3;
-var rot : Quaternion = td.PositionPoints[0].rep.rotation;
-
-
-	var centre : Vector3;
-	centre = td.PositionPoints[0].rep.transform.position;
-	
-
-	var pos1 : Vector3;
-	pos1 = centre + (rot*Vector3.forward*(td.Scale*1.5f)*1.5f);
-
-
-if(type == RaceStyle.TimeTrial){ //Time Trial
-
-var y1 : Vector3 = rot*(Vector3.right* td.Scale);
-
-SpawnPosition = td.PositionPoints[0].rep.position + y1;  
-
-}else{ //Normal Race
-
-var startPos : Vector3 = td.PositionPoints[0].rep.position + (rot*Vector3.forward*(td.Scale*1.5f)*-1.5f);
-
-var x2 : Vector3 = rot*(Vector3.forward*(pos%3)*(td.Scale*1.5f)+(Vector3.forward*.75f*td.Scale));
-var y2 : Vector3 = rot*(Vector3.right*(pos + 1)* td.Scale);
-
-SpawnPosition = startPos + x2 + y2;  
-
-}
-
-var clone : Transform;
-clone = Instantiate(gd.Karts[kart].Models[character],SpawnPosition,td.PositionPoints[0].rep.rotation * Quaternion.Euler(0,-90,0));
-
-td = GameObject.Find("Track Manager").GetComponent(TrackData);
-clone.localScale = Vector3(td.Scale,td.Scale,td.Scale);
-
-if(gd.Hats[hat].Model != null){
-var HatObject = Instantiate(gd.Hats[hat].Model,clone.position,Quaternion.identity);
-
-if(clone.GetComponent(QA).objects[0] != null){
-HatObject.position = clone.GetComponent(QA).objects[0].position;
-HatObject.rotation = clone.GetComponent(QA).objects[0].rotation;
-HatObject.parent = clone.GetComponent(QA).objects[0];
-}
-}
-
-var Wheels = new Transform[4];
-
-for(var j : int = 0; j < Wheels.Length;j++){
-Wheels[j] = clone.GetComponent(QA).objects[j+1];
-
-var nWheel : Transform = Instantiate(gd.Wheels[wheel].Models[j],Wheels[j].position,Wheels[j].rotation);
-nWheel.parent = Wheels[j].parent;
-nWheel.name = Wheels[j].name;
-nWheel.localScale = Wheels[j].localScale;
-
-clone.GetComponent(kartScript).MeshWheels[j] = nWheel;
-
-Destroy(Wheels[j].gameObject);
-
-clone.GetComponent(QA).objects[j+1] = nWheel;
-
-}
-
-return clone;
 
 }
 
@@ -1310,66 +1251,6 @@ function FinishNetworkRace(){
 	}
 	}
 	
-@RPC
-function KartSpawn(viewID : NetworkViewID,pos : int, character : int, hat : int, kart : int, wheel : int,info : NetworkMessageInfo){
-
-while(gd.BlackOut)
-yield;
-
-//Find Position to spawn racer
-var SpawnPosition : Vector3;
-var rot : Quaternion = td.PositionPoints[0].rep.rotation;
-
-var x2 : Vector3 = rot*(Vector3.forward*(pos%3)*(td.Scale*1.5f)+(Vector3.forward*.75f*td.Scale));
-var y2 : Vector3 = rot*(Vector3.right*(pos + 1)* td.Scale);
-
-SpawnPosition = td.PositionPoints[0].rep.position + x2 + y2;  
-
-var clone : Transform;
-clone = Instantiate(gd.Karts[kart].Models[character],SpawnPosition,rot);
-clone.tag = "Spectated";
-clone.networkView.viewID = viewID;
-
-if(gd.Hats[hat].Model != null){
-var HatObject = Instantiate(gd.Hats[hat].Model,clone.position,Quaternion.identity);
-
-if(clone.GetComponent(QA).objects[0] != null){
-HatObject.position = clone.GetComponent(QA).objects[0].position;
-HatObject.rotation = clone.GetComponent(QA).objects[0].rotation;
-HatObject.parent = clone.GetComponent(QA).objects[0];
-}
-}
-
-var Wheels = new Transform[4];
-
-for(var j : int = 0; j < Wheels.Length;j++){
-Wheels[j] = clone.GetComponent(QA).objects[j+1];
-
-var nWheel : Transform = Instantiate(gd.Wheels[wheel].Models[j],Wheels[j].position,Wheels[j].rotation);
-nWheel.parent = Wheels[j].parent;
-nWheel.name = Wheels[j].name;
-nWheel.localScale = Wheels[j].localScale;
-
-clone.GetComponent(kartScript).MeshWheels[j] = nWheel;
-
-Destroy(Wheels[j].gameObject);
-
-clone.GetComponent(QA).objects[j+1] = nWheel;
-
-}
-
-clone.GetComponent(kartScript).locked = false;
-
-if(Network.isServer){
-SPRacers[pos] = new PlayerRacer();
-SPRacers[pos].timer = new Timer();
-SPRacers[pos].Character = character;
-SPRacers[pos].Hat = hat;
-SPRacers[pos].Kart = kart;
-SPRacers[pos].Wheel = wheel;
-SPRacers[pos].rep = clone;
-}
-}
 	
 	
 //////////////////////////////////////////////////////////////////////////////////////////////Addiontal GUI Functions //////////////////////////////////////////////////////////////////////////////////////////////

@@ -132,8 +132,6 @@ function SetupYourKart(i : int){
 	gameObject.AddComponent(Race_Master);
 	transform.GetComponent(Race_Master).type = RaceStyle.Online;
 
-	me.rep = SpawnKart(me.Character,me.Hat,me.Kart,me.Wheel,i);
-
 	var viewID = Network.AllocateViewID();
 	me.rep.GetComponent(NetworkView).viewID = viewID;
 		
@@ -141,7 +139,7 @@ function SetupYourKart(i : int){
 	me.rep.gameObject.AddComponent(kartInput);
 	me.rep.gameObject.AddComponent(kartInfo);
 	me.rep.GetComponent(Position_Finding).position = i; 
-	me.rep.GetComponent(kartInput).InputName = gd.pcn[0];
+	me.rep.GetComponent(kartInput).InputName = gd.pcn[0].inputName;
 	
 	if(Network.isServer){
 	transform.GetComponent(Race_Master).SPRacers = transform.GetComponent(Host).RacingPlayers;
@@ -179,7 +177,7 @@ function KartSpawn(viewID : NetworkViewID,character : int, hat : int, kart : int
 while(loadingLevel)
 yield;
 
-var toWatch = SpawnKart(character,hat,kart,wheel,0);
+var toWatch : Transform;
 toWatch.tag = "Spectated";
 toWatch.GetComponent(NetworkView).viewID = viewID;
 
@@ -194,63 +192,6 @@ transform.GetComponent(Race_Master).SPRacers[pos].rep = toWatch;
 
 }
 
-function SpawnKart(character : int, hat : int, kart : int, wheel : int,pos : int){
-
-td = GameObject.Find("Track Manager").GetComponent(TrackData);
-//Find Position to spawn racer
-	var SpawnPosition : Vector3;
-	var rot : Quaternion = td.PositionPoints[0].rep.rotation;
-	
-	var centre : Vector3;
-	centre = td.PositionPoints[0].rep.transform.position;
-	
-
-	var pos1 : Vector3;
-	pos1 = centre + (rot*Vector3.forward*(td.Scale*1.5f)*1.5f);
-
-
-		var startPos : Vector3 = td.PositionPoints[0].rep.position + (rot*Vector3.forward*(td.Scale*1.5f)*-1.5f);
-
-		var x2 : Vector3 = rot*(Vector3.forward*(pos%3)*(td.Scale*1.5f)+(Vector3.forward*.75f*td.Scale));
-		var y2 : Vector3 = rot*(Vector3.right*(pos + 1)* td.Scale);
-
-		SpawnPosition = startPos + x2 + y2;  
-
-	var clone : Transform;
-	clone = Instantiate(gd.Karts[kart].Models[character],SpawnPosition,td.PositionPoints[0].rep.rotation * Quaternion.Euler(0,-90,0));
-	clone.localScale = Vector3(td.Scale,td.Scale,td.Scale);
-
-	if(gd.Hats[hat].Model != null){
-		var HatObject = Instantiate(gd.Hats[hat].Model,clone.position,Quaternion.identity);
-
-		if(clone.GetComponent(QA).objects[0] != null){
-			HatObject.position = clone.GetComponent(QA).objects[0].position;
-			HatObject.rotation = clone.GetComponent(QA).objects[0].rotation;
-			HatObject.parent = clone.GetComponent(QA).objects[0];
-		}
-	}
-
-	var Wheels = new Transform[4];
-
-	for(var j : int = 0; j < Wheels.Length;j++){
-		Wheels[j] = clone.GetComponent(QA).objects[j+1];
-
-		var nWheel : Transform = Instantiate(gd.Wheels[wheel].Models[j],Wheels[j].position,Wheels[j].rotation);
-		nWheel.parent = Wheels[j].parent;
-		nWheel.name = Wheels[j].name;
-		nWheel.localScale = Wheels[j].localScale;
-
-		clone.GetComponent(kartScript).MeshWheels[j] = nWheel;
-
-		Destroy(Wheels[j].gameObject);
-
-		clone.GetComponent(QA).objects[j+1] = nWheel;
-
-	}
-
-	return clone;
-
-}
 
 ///////////////////////////////////////////////////////// Useful Functions /////////////////////////////////////////////////////////
 

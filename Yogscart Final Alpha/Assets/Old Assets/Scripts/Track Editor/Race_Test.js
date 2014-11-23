@@ -467,7 +467,28 @@ for(var i : int = 0; i < SPRacers.Length;i++){
 
 SPRacers[i].timer = new Timer();
 
-SPRacers[i].rep = SpawnKart(SPRacers[i].Character,SPRacers[i].Hat,SPRacers[i].Kart,SPRacers[i].Wheel,i);
+var km = gd.transform.GetComponent(KartMaker);
+SPRacers[i].rep = km.SpawnKart(KartType.Local,SPRacers[i].Kart,SPRacers[i].Wheel,SPRacers[i].Character,SPRacers[i].Hat);
+
+//Find Spawn Position
+var SpawnPosition : Vector3;
+var rot : Quaternion = td.PositionPoints[0].rep.rotation;
+var centre : Vector3;
+	centre = td.PositionPoints[0].rep.transform.position;
+	var pos1 : Vector3;
+	pos1 = centre + (rot*Vector3.forward*(td.Scale*1.5f)*1.5f);
+if(type == RaceStyle.TimeTrial){ //Time Trial
+var y1 : Vector3 = rot*(Vector3.right* td.Scale);
+SpawnPosition = td.PositionPoints[0].rep.position + y1;  
+}else{ //Normal Race
+var startPos : Vector3 = td.PositionPoints[0].rep.position + (rot*Vector3.forward*(td.Scale*1.5f)*-1.5f);
+var x2 : Vector3 = rot*(Vector3.forward*(i%3)*(td.Scale*1.5f)+(Vector3.forward*.75f*td.Scale));
+var y2 : Vector3 = rot*(Vector3.right*(i + 1)* td.Scale);
+SpawnPosition = startPos + x2 + y2;  
+}
+
+SPRacers[i].rep.position = SpawnPosition;
+SPRacers[i].rep.rotation = td.PositionPoints[0].rep.rotation * Quaternion.Euler(0,-90,0);
 
 if(type != RaceStyle.TimeTrial)
 SPRacers[i].rep.GetComponent(Position_Finding).position = i;
@@ -480,7 +501,7 @@ SPRacers[i].rep.GetComponent(Racer_AI).Stupidity = SPRacers[i].aiStupidity;
 SPRacers[i].rep.gameObject.AddComponent(kartInput);
 SPRacers[i].rep.gameObject.AddComponent(kartInfo);
 //Adjust Scripts
-SPRacers[i].rep.GetComponent(kartInput).InputName = gd.pcn[SPRacers[i].HumanID];
+SPRacers[i].rep.GetComponent(kartInput).InputName = gd.pcn[SPRacers[i].HumanID].inputName;
 //Add Camera
 var IngameCam = Instantiate(Resources.Load("Prefabs/Cameras",Transform),td.PositionPoints[0].rep.position,Quaternion.identity);
 IngameCam.name = "InGame Cams";
@@ -545,114 +566,6 @@ Players += 1;
 }
 
 }
-
-}
-
-function SetUpMyKart(i : int){
-
-	var rc = transform.GetComponent(Race_Client).me;
-
-	transform.GetComponent(Race_Client).me.rep = SpawnKart(rc.Character,rc.Hat,rc.Kart,rc.Wheel,i);
-
-	var viewID = Network.AllocateViewID();
-	
-	transform.GetComponent(Race_Client).me.rep.GetComponent(NetworkView).viewID = viewID;
-		
-	//Add Script
-	transform.GetComponent(Race_Client).me.rep.gameObject.AddComponent(kartInput);
-	transform.GetComponent(Race_Client).me.rep.gameObject.AddComponent(kartInfo);
-	transform.GetComponent(Race_Client).me.rep.GetComponent(Position_Finding).position = i; 
-	transform.GetComponent(Race_Client).me.rep.GetComponent(kartInput).InputName = gd.pcn[0];
-	
-	//Add Camera
-	var IngameCam = Instantiate(Resources.Load("Prefabs/Cameras",Transform),td.PositionPoints[0].rep.position,Quaternion.identity);
-		IngameCam.name = "InGame Cams";
-
-		transform.GetComponent(Race_Client).me.rep.GetComponent(kartInput).camLocked = true;
-		transform.GetComponent(Race_Client).me.rep.GetComponent(kartInput).frontCamera = IngameCam.GetChild(1).camera;
-		transform.GetComponent(Race_Client).me.rep.GetComponent(kartInput).backCamera = IngameCam.GetChild(0).camera;
-
-		IngameCam.GetChild(0).GetComponent(Kart_Camera).Target = transform.GetComponent(Race_Client).me.rep;
-		IngameCam.GetChild(1).GetComponent(Kart_Camera).Target = transform.GetComponent(Race_Client).me.rep;
-		transform.GetComponent(Race_Client).me.cameras = IngameCam;
-		transform.GetComponent(Race_Client).me.cameras = IngameCam;
-		
-	networkView.RPC("KartSpawn",RPCMode.OthersBuffered,viewID,i,transform.GetComponent(Race_Client).me.Character,transform.GetComponent(Race_Client).me.Hat,transform.GetComponent(Race_Client).me.Kart,transform.GetComponent(Race_Client).me.Wheel);
-	
-	if(Network.isServer){
-	SPRacers[i].timer = new Timer();
-	SPRacers[i].rep = transform.GetComponent(Race_Client).me.rep;
-	}
-	
-}
-
-function SpawnKart(character : int, hat : int, kart : int, wheel : int,pos : int){
-
-//Find Position to spawn racer
-var SpawnPosition : Vector3;
-var rot : Quaternion = td.PositionPoints[0].rep.rotation;
-
-
-	var centre : Vector3;
-	centre = td.PositionPoints[0].rep.transform.position;
-	
-
-	var pos1 : Vector3;
-	pos1 = centre + (rot*Vector3.forward*(td.Scale*1.5f)*1.5f);
-
-
-if(type == RaceStyle.TimeTrial){ //Time Trial
-
-var y1 : Vector3 = rot*(Vector3.right* td.Scale);
-
-SpawnPosition = td.PositionPoints[0].rep.position + y1;  
-
-}else{ //Normal Race
-
-var startPos : Vector3 = td.PositionPoints[0].rep.position + (rot*Vector3.forward*(td.Scale*1.5f)*-1.5f);
-
-var x2 : Vector3 = rot*(Vector3.forward*(pos%3)*(td.Scale*1.5f)+(Vector3.forward*.75f*td.Scale));
-var y2 : Vector3 = rot*(Vector3.right*(pos + 1)* td.Scale);
-
-SpawnPosition = startPos + x2 + y2;  
-
-}
-
-var clone : Transform;
-clone = Instantiate(gd.Karts[kart].Models[character],SpawnPosition,td.PositionPoints[0].rep.rotation * Quaternion.Euler(0,-90,0));
-
-td = GameObject.Find("Track Manager").GetComponent(TrackData);
-clone.localScale = Vector3(td.Scale,td.Scale,td.Scale);
-
-if(gd.Hats[hat].Model != null){
-var HatObject = Instantiate(gd.Hats[hat].Model,clone.position,Quaternion.identity);
-
-if(clone.GetComponent(QA).objects[0] != null){
-HatObject.position = clone.GetComponent(QA).objects[0].position;
-HatObject.rotation = clone.GetComponent(QA).objects[0].rotation;
-HatObject.parent = clone.GetComponent(QA).objects[0];
-}
-}
-
-var Wheels = new Transform[4];
-
-for(var j : int = 0; j < Wheels.Length;j++){
-Wheels[j] = clone.GetComponent(QA).objects[j+1];
-
-var nWheel : Transform = Instantiate(gd.Wheels[wheel].Models[j],Wheels[j].position,Wheels[j].rotation);
-nWheel.parent = Wheels[j].parent;
-nWheel.name = Wheels[j].name;
-nWheel.localScale = Wheels[j].localScale;
-
-clone.GetComponent(kartScript).MeshWheels[j] = nWheel;
-
-Destroy(Wheels[j].gameObject);
-
-clone.GetComponent(QA).objects[j+1] = nWheel;
-
-}
-
-return clone;
 
 }
 
@@ -1150,68 +1063,6 @@ function FinishRace(){
 	
 	}
 	}
-	
-@RPC
-function KartSpawn(viewID : NetworkViewID,pos : int, character : int, hat : int, kart : int, wheel : int,info : NetworkMessageInfo){
-
-while(gd.BlackOut)
-yield;
-
-//Find Position to spawn racer
-var SpawnPosition : Vector3;
-var rot : Quaternion = td.PositionPoints[0].rep.rotation;
-
-var x2 : Vector3 = rot*(Vector3.forward*(pos%3)*(td.Scale*1.5f)+(Vector3.forward*.75f*td.Scale));
-var y2 : Vector3 = rot*(Vector3.right*(pos + 1)* td.Scale);
-
-SpawnPosition = td.PositionPoints[0].rep.position + x2 + y2;  
-
-var clone : Transform;
-clone = Instantiate(gd.Karts[kart].Models[character],SpawnPosition,rot);
-clone.tag = "Spectated";
-clone.networkView.viewID = viewID;
-
-if(gd.Hats[hat].Model != null){
-var HatObject = Instantiate(gd.Hats[hat].Model,clone.position,Quaternion.identity);
-
-if(clone.GetComponent(QA).objects[0] != null){
-HatObject.position = clone.GetComponent(QA).objects[0].position;
-HatObject.rotation = clone.GetComponent(QA).objects[0].rotation;
-HatObject.parent = clone.GetComponent(QA).objects[0];
-}
-}
-
-var Wheels = new Transform[4];
-
-for(var j : int = 0; j < Wheels.Length;j++){
-Wheels[j] = clone.GetComponent(QA).objects[j+1];
-
-var nWheel : Transform = Instantiate(gd.Wheels[wheel].Models[j],Wheels[j].position,Wheels[j].rotation);
-nWheel.parent = Wheels[j].parent;
-nWheel.name = Wheels[j].name;
-nWheel.localScale = Wheels[j].localScale;
-
-clone.GetComponent(kartScript).MeshWheels[j] = nWheel;
-
-Destroy(Wheels[j].gameObject);
-
-clone.GetComponent(QA).objects[j+1] = nWheel;
-
-}
-
-clone.GetComponent(kartScript).locked = false;
-
-if(Network.isServer){
-SPRacers[pos] = new PlayerRacer();
-SPRacers[pos].timer = new Timer();
-SPRacers[pos].Character = character;
-SPRacers[pos].Hat = hat;
-SPRacers[pos].Kart = kart;
-SPRacers[pos].Wheel = wheel;
-SPRacers[pos].rep = clone;
-}
-}
-	
 	
 //////////////////////////////////////////////////////////////////////////////////////////////Addiontal GUI Functions //////////////////////////////////////////////////////////////////////////////////////////////
 

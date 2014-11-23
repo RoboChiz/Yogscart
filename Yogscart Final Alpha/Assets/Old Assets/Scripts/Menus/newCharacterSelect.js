@@ -15,7 +15,6 @@ private var kartSelected : boolean[];
 private var cursorPosition : Vector2[];
 
 private var inputLock : boolean[];
-private var submitinputLock : boolean[];
 private var choicesPerColumn : int;
 
 private var loadedCharacter : int[];
@@ -35,7 +34,6 @@ ResetEverything();
 
 for(var i : int = 0; i < 4;i++){
 choice[i] = new LoadOut();
-submitinputLock[i] = true;
 
 loadedCharacter[i] = -1;
 loadedHat[i] = -1;
@@ -77,7 +75,7 @@ loadedCharacter[i] = choice[i].character;
 }
 
 if(loadedModels[i] != null)
-loadedModels[i].Rotate(Vector3.up,-Input.GetAxis(gd.pcn[i]+"Rotate") * Time.fixedDeltaTime * rotSpeed);
+loadedModels[i].Rotate(Vector3.up,-gd.pcn[i].GetInput("Rotate") * Time.fixedDeltaTime * rotSpeed);
 
 }
 
@@ -110,7 +108,7 @@ loadedHat[i] = choice[i].hat;
 }
 
 if(loadedModels[i] != null)
-loadedModels[i].Rotate(Vector3.up,-Input.GetAxis(gd.pcn[i]+"Rotate") * Time.fixedDeltaTime * rotSpeed);
+loadedModels[i].Rotate(Vector3.up,-gd.pcn[i].GetInput("Rotate") * Time.fixedDeltaTime * rotSpeed);
 
 }
 
@@ -136,7 +134,7 @@ loadedWheel[i] = choice[i].wheel;
 }
 
 if(loadedModels[i] != null)
-loadedModels[i].Rotate(Vector3.up,-Input.GetAxis(gd.pcn[i]+"Rotate") * Time.fixedDeltaTime * rotSpeed);
+loadedModels[i].Rotate(Vector3.up,-gd.pcn[i].GetInput("Rotate") * Time.fixedDeltaTime * rotSpeed);
 
 }
 
@@ -266,8 +264,54 @@ cam.rect = Rect(nRect.x,nRect.y,nRect.z,nRect.w);
 
 }
 
+var hiddenFloat : float = 0;
+private var animated : boolean;
+var scrollTime : float = 0.5f;
+
+function HideTitles(hide : boolean)
+{
+
+var startTime = Time.realtimeSinceStartup;
+var iconWidth : float = (Screen.width/2f)/5;
+
+var toScroll : float;
+var fromScroll : float;
+
+if(hide)
+{
+toScroll = -(iconWidth*6f);
+fromScroll = 10;
+}
+else
+{
+toScroll = 10;
+fromScroll = -(iconWidth*6f);
+}
+
+while(Time.realtimeSinceStartup-startTime  < scrollTime){
+hiddenFloat = Mathf.Lerp(fromScroll,toScroll,(Time.realtimeSinceStartup-startTime)/scrollTime);
+yield;
+}
+
+}
+
 function OnGUI () {
-if(!hidden){
+
+if(hidden)
+{
+if(!animated){
+HideTitles(true);
+animated = true;
+}
+}
+else
+{
+if(animated)
+{
+HideTitles(false);
+animated = false;
+}
+}
 
 GUI.skin = Resources.Load("GUISkins/Main Menu",GUISkin);
 
@@ -279,14 +323,12 @@ var Heightratio : float = ((Screen.width/3f)/1000f)*200f;
 
 var BoardTexture = Resources.Load("UI Textures/GrandPrix Positions/Backing2",Texture2D);
 var BoardHeight : float = iconWidth*6f + 10;
-var BoardRect = Rect(10,Screen.height/2f - BoardHeight/2f + Heightratio,iconWidth*5f + 20 ,BoardHeight - Heightratio);
+var BoardRect = Rect(hiddenFloat + 10,Screen.height/2f - BoardHeight/2f + Heightratio,iconWidth*5f + 20 ,BoardHeight - Heightratio);
 var startHeight = Screen.height/2f - BoardHeight/2f + 10 + Heightratio;
 
 GUI.DrawTexture(BoardRect,BoardTexture);
 
-if(gd.pcn.Length == 0)
-for(var g : int = 0; g < 4;g++)
-submitinputLock[g] = true;
+if(!hidden){
 
 if(state == 0){ //Character Select
 
@@ -295,7 +337,7 @@ gd.allowedToChange = true;
 }else{
 gd.allowedToChange = false;
 while(gd.pcn.Length > 1)
-gd.RemoveController(gd.pcn[1]);
+gd.RemoveController(gd.pcn[1].inputName);
 }
 
 stateTexture = Resources.Load("UI Textures/New Character Select/char",Texture2D);
@@ -307,7 +349,7 @@ for(var j : int = 0; j < 5;j++){
 
 if((i*5) + j < gd.Characters.Length){
 
-var iconRect : Rect = Rect(20 + (j*iconWidth),startHeight + (i*iconWidth),iconWidth,iconWidth);
+var iconRect : Rect = Rect(hiddenFloat + 20 + (j*iconWidth),startHeight + (i*iconWidth),iconWidth,iconWidth);
 
 var icon : Texture2D;
 if(gd.Characters[characterCounter].Unlocked == true)
@@ -329,8 +371,13 @@ break;
 //Render Cursor
 for(var c : int = 0; c < gd.pcn.Length;c++){
 
-if(Input.GetAxis(gd.pcn[c] + "Submit") == 0 && Input.GetAxis(gd.pcn[c] + "Cancel") == 0 )
-submitinputLock[c] = false;
+if(!hidden){
+var submitInput : float = gd.pcn[c].GetInput("Submit");
+var submitBool = (submitInput != 0);
+
+var cancelInput : float = gd.pcn[c].GetInput("Cancel");
+var cancelBool = (cancelInput != 0);
+}
 
 var selectedchar = choice[c].character;
 
@@ -338,18 +385,18 @@ var CharacterSelection : Vector2 = Vector2(selectedchar%5,selectedchar/5);
 
 cursorPosition[c] = Vector2.Lerp(cursorPosition[c],CharacterSelection,Time.deltaTime*cursorSpeed);
 
-var CursorRect : Rect = Rect(20 + cursorPosition[c].x * iconWidth,startHeight + cursorPosition[c].y * iconWidth,iconWidth,iconWidth);
+var CursorRect : Rect = Rect(hiddenFloat + 20 + cursorPosition[c].x * iconWidth,startHeight + cursorPosition[c].y * iconWidth,iconWidth,iconWidth);
 var CursorTexture : Texture2D = Resources.Load("UI Textures/Cursors/Cursor_"+c,Texture2D);
 GUI.DrawTexture(CursorRect,CursorTexture);
 
 
 //Get new Input
 if(ready[c] == false){
-if(Input.GetAxis(gd.pcn[c] + "Horizontal") != 0 && inputLock[c] == false){
+if(gd.pcn[c].GetInput("Horizontal") != 0 && inputLock[c] == false){
 
 inputLock[c] = true;
 
-var hinput = Mathf.Sign(Input.GetAxis(gd.pcn[c] + "Horizontal"));
+var hinput = Mathf.Sign(gd.pcn[c].GetInput("Horizontal"));
 
 var iconsInRow : int;
 if((CharacterSelection.y+1)*5 <= gd.Characters.length)
@@ -370,11 +417,11 @@ choice[c].character = (CharacterSelection.y)*5 + iconsInRow - 1;
 
 }
 
-if(Input.GetAxis(gd.pcn[c] + "Vertical") != 0 && inputLock[c] == false){
+if(gd.pcn[c].GetInput("Vertical") != 0 && inputLock[c] == false){
 
 inputLock[c] = true;
 
-var vinput = -Mathf.Sign(Input.GetAxis(gd.pcn[c] + "Vertical"));
+var vinput = -Mathf.Sign(gd.pcn[c].GetInput("Vertical"));
 
 if(vinput > 0){
 if(CharacterSelection.y == choicesPerColumn-1 || choice[c].character + 5 >= gd.Characters.Length)
@@ -400,31 +447,25 @@ choice[c].character += (vinput*5);
 }
 
 
-if(Input.GetAxis(gd.pcn[c] + "Submit") != 0 && gd.Characters[choice[c].character].Unlocked == true && submitinputLock[c] == false){
+if(submitBool && gd.Characters[choice[c].character].Unlocked == true){
 ready[c] = true;
-submitinputLock[c] = true;
 }
 
-if(Input.GetAxis(gd.pcn[c] + "Cancel") != 0 && submitinputLock[c] == false){
+if(cancelBool){
 Resetready();
-submitinputLock[c] = true;
 transform.GetComponent(Main_Menu).Return();
 hidden = true;
 }
 
 }else{
 
-if(Input.GetAxis(gd.pcn[c] + "Cancel") != 0 && submitinputLock[c] == false){
+if(cancelBool){
 ready[c] = false;
-submitinputLock[c] = true;
 }
 
 }
 
 choice[c].character = NumClamp(choice[c].character,0,gd.Characters.Length);
-
-if(Input.GetAxis(gd.pcn[c] + "Horizontal") == 0 && Input.GetAxis(gd.pcn[c] + "Vertical") == 0)
-inputLock[c] = false;
 
 }
 }
@@ -468,8 +509,13 @@ break;
 //Render Cursor
 for(c = 0; c < gd.pcn.Length;c++){
 
-if(Input.GetAxis(gd.pcn[c] + "Submit") == 0 && Input.GetAxis(gd.pcn[c] + "Cancel") == 0 )
-submitinputLock[c] = false;
+if(!hidden){
+submitInput = gd.pcn[c].GetInput("Submit");
+submitBool = (submitInput != 0);
+
+cancelInput = gd.pcn[c].GetInput("Cancel");
+cancelBool = (cancelInput != 0);
+}
 
 var selectedhat = choice[c].hat;
 
@@ -484,11 +530,11 @@ GUI.DrawTexture(CursorRect,CursorTexture);
 
 //Get new Input
 if(ready[c] == false){
-if(Input.GetAxis(gd.pcn[c] + "Horizontal") != 0 && inputLock[c] == false){
+if(gd.pcn[c].GetInput("Horizontal") != 0 && inputLock[c] == false){
 
 inputLock[c] = true;
 
-hinput = Mathf.Sign(Input.GetAxis(gd.pcn[c] + "Horizontal"));
+hinput = Mathf.Sign(gd.pcn[c].GetInput("Horizontal"));
 
 if((HatSelection.y+1)*5 <= gd.Hats.length)
 iconsInRow = 5;
@@ -508,11 +554,11 @@ choice[c].hat = (HatSelection.y)*5 + iconsInRow - 1;
 
 }
 
-if(Input.GetAxis(gd.pcn[c] + "Vertical") != 0 && inputLock[c] == false){
+if(gd.pcn[c].GetInput("Vertical") != 0 && inputLock[c] == false){
 
 inputLock[c] = true;
 
-vinput = -Mathf.Sign(Input.GetAxis(gd.pcn[c] + "Vertical"));
+vinput = -Mathf.Sign(gd.pcn[c].GetInput("Vertical"));
 
 if(vinput > 0){
 if(HatSelection.y == choicesPerColumn-1 || choice[c].hat + 5 >= gd.Hats.Length)
@@ -538,29 +584,25 @@ choice[c].hat += (vinput*5);
 }
 
 
-if(Input.GetAxis(gd.pcn[c] + "Submit") != 0 && gd.Hats[choice[c].hat].Unlocked == true && submitinputLock[c] == false){
+if(submitBool && gd.Hats[choice[c].hat].Unlocked == true){
 ready[c] = true;
-submitinputLock[c] = true;
 }
 
-if(Input.GetAxis(gd.pcn[c] + "Cancel") != 0 && submitinputLock[c] == false){
+if(cancelBool){
 Resetready();
-submitinputLock[c] = true;
-
 state = 0;
 }
 
 }else{
 
-if(Input.GetAxis(gd.pcn[c] + "Cancel") != 0 && submitinputLock[c] == false){
+if(cancelBool){
 ready[c] = false;
-submitinputLock[c] = true;
 }
 }
 
 choice[c].hat = NumClamp(choice[c].hat,0,gd.Hats.Length);
 
-if(Input.GetAxis(gd.pcn[c] + "Horizontal") == 0 && Input.GetAxis(gd.pcn[c] + "Vertical") == 0)
+if(gd.pcn[c].GetInput("Horizontal") == 0 && gd.pcn[c].GetInput("Vertical") == 0)
 inputLock[c] = false;
 
 }
@@ -669,11 +711,18 @@ GUI.DrawTexture(wheelRect,CursorTexture);
 
 GUI.EndGroup();
 
-if(Input.GetAxis(gd.pcn[c] + "Vertical") != 0 && inputLock[c] == false && ready[c] == false){
+var submitInput : float = gd.pcn[c].GetInput("Submit");
+var submitBool = (submitInput != 0);
+
+var cancelInput : float = gd.pcn[c].GetInput("Cancel");
+var cancelBool = (cancelInput != 0);
+
+
+if(gd.pcn[c].GetInput("Vertical") != 0 && inputLock[c] == false && ready[c] == false){
 
 inputLock[c] = true;
 
-var vinput = -Mathf.Sign(Input.GetAxis(gd.pcn[c] + "Vertical"));
+var vinput = -Mathf.Sign(gd.pcn[c].GetInput("Vertical"));
 
 if(!kartSelected[c]){
 
@@ -688,26 +737,21 @@ choice[c].wheel = NumClamp(choice[c].wheel,0,gd.Wheels.Length);
 }
 }
 
-if(Input.GetAxis(gd.pcn[c] + "Submit") != 0 && submitinputLock[c] == false){
+if(submitBool){
 
 if(kartSelected[c] == false)
 kartSelected[c] = true;
 else
 ready[c] = true;
 
-submitinputLock[c] = true;
-
 }
 
 
 
-if(Input.GetAxis(gd.pcn[c] + "Horizontal") == 0 && Input.GetAxis(gd.pcn[c] + "Vertical") == 0)
+if(gd.pcn[c].GetInput("Horizontal") == 0 && gd.pcn[c].GetInput("Vertical") == 0)
 inputLock[c] = false;
 
-if(Input.GetAxis(gd.pcn[c] + "Submit") == 0 && Input.GetAxis(gd.pcn[c] + "Cancel") == 0 )
-submitinputLock[c] = false;
-
-if(Input.GetAxis(gd.pcn[c] + "Cancel") != 0 && submitinputLock[c] == false){
+if(cancelBool){
 if(ready[c] == true)
 ready[c] = false;
 else{
@@ -718,8 +762,6 @@ Resetready();
 state = 1;
 }
 }
-
-submitinputLock[c] = true;
 
 }
 
@@ -746,7 +788,6 @@ state = 2;
 
 ready = new boolean[4];
 inputLock = new boolean[4];
-submitinputLock = new boolean[4];
 kartSelected = new boolean[4];
 cursorPosition = new Vector2[4];
 
@@ -763,9 +804,6 @@ for(var i : int = 0; i < gd.Characters.Length;i++){
 if(i%5 == 0)
 choicesPerColumn += 1;
 }
-
-for(var j : int = 0; j < 4;j++)
-submitinputLock[j] = true;
 
 }
 
