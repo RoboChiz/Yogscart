@@ -170,6 +170,20 @@ var nMaxSpeed : float = Mathf.Lerp(lastMaxSpeed,MaxSpeed-(1f-lapisAmount/10f),Ti
 
 ExpectedSpeed = Mathf.Clamp(ExpectedSpeed,-nMaxSpeed,nMaxSpeed);
 
+//Calculate if off track
+var offTrack : int = 0;
+for(var wheelCount : int = 0; wheelCount < Wheels.Length; wheelCount++)
+{
+var hit : RaycastHit;
+if(Physics.Raycast(Wheels[wheelCount].transform.position,-Wheels[wheelCount].transform.up,hit,1) && hit.transform.tag != "Drivable"){
+offTrack += 1;
+}
+}
+
+if(offTrack >= Wheels.Length/2f)
+ExpectedSpeed = Mathf.Clamp(ExpectedSpeed,-nMaxSpeed/4f,nMaxSpeed/4f);
+
+
 if(isBoosting){
 nMaxSpeed = MaxSpeed + BoostAddition;
 ExpectedSpeed = MaxSpeed + BoostAddition;
@@ -328,8 +342,6 @@ var BoostSound = Resources.Load("Music & Sounds/SFX/boost",AudioClip);
 
 audio.PlayOneShot(BoostSound,3);
 
-Debug.Log("Started Boost");
-
 for(var i : int = 0; i < flameParticles.Length; i++)
 flameParticles[i].Play();
 
@@ -340,7 +352,6 @@ flameParticles[i].Stop();
 
 isBoosting = false;
 
-Debug.Log("Finished Boost");
 }
 }
 
@@ -369,8 +380,6 @@ var t : float = 0;
 
 var Ani = transform.FindChild("Kart Body").FindChild("Character").GetComponent(Animator);
 Ani.SetBool("Hit",true);
-
-Debug.Log(t);
 
 while(t < spinTime){
 transform.rigidbody.velocity = Vector3.Lerp(transform.rigidbody.velocity,Vector3(0,rigidbody.velocity.y,0),Time.deltaTime);

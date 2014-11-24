@@ -139,7 +139,7 @@ function SetupYourKart(i : int){
 	me.rep.gameObject.AddComponent(kartInput);
 	me.rep.gameObject.AddComponent(kartInfo);
 	me.rep.GetComponent(Position_Finding).position = i; 
-	me.rep.GetComponent(kartInput).InputName = gd.pcn[0].inputName;
+	//me.rep.GetComponent(kartInput).InputName = gd.pcn[0].inputName;
 	
 	if(Network.isServer){
 	transform.GetComponent(Race_Master).SPRacers = transform.GetComponent(Host).RacingPlayers;

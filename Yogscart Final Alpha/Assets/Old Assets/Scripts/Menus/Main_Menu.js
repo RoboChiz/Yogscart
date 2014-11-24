@@ -1,6 +1,7 @@
 ﻿#pragma strict
 
 private var gd : CurrentGameData;
+private var im : InputManager;
 private var sps : SinglePlayer_Script;
 
 var version : String;
@@ -20,6 +21,7 @@ var LockedColourAlpha : Color = Color.red;
 private var www1 : WWW;
 private var Error : boolean = false;
 
+var scrolling : boolean;
 private var sideScroll : int;
 var scrollTime : float = 5f;
 
@@ -63,70 +65,13 @@ background.pixelInset = Rect(0,0,Screen.width,Screen.height);
 
 }
 
-function HideTitles(hide : boolean)
-{
-
-var startTime = Time.realtimeSinceStartup;
-
-var toScroll : float;
-var fromScroll : float;
-
-if(hide)
-{
-toScroll = -Screen.width/2f - Screen.width/20f;
-fromScroll = 0;
-}
-else
-{
-toScroll = 0;
-fromScroll = -Screen.width/2f - Screen.width/20f;
-}
-
-while(Time.realtimeSinceStartup-startTime  < scrollTime){
-titlesideScroll = Mathf.Lerp(fromScroll,toScroll,(Time.realtimeSinceStartup-startTime)/scrollTime);
-yield;
-}
-
-}
-
-function ChangeState(nextStage : Menu)
-{
-
-gd.SetAllPCN(InputState.Locked);
-
-var startTime = Time.realtimeSinceStartup;
-
-var toScroll = -Screen.width/2f;
-
-while(Time.realtimeSinceStartup-startTime  < scrollTime){
-sideScroll = Mathf.Lerp(0,toScroll,(Time.realtimeSinceStartup-startTime)/scrollTime);
-yield;
-}
-
-sideScroll = toScroll;
-
-State = nextStage;
-currentSelection = 0;
-
-startTime = Time.realtimeSinceStartup;
-
-while(Time.realtimeSinceStartup-startTime  < scrollTime){
-sideScroll = Mathf.Lerp(toScroll,0,(Time.realtimeSinceStartup-startTime)/scrollTime);
-yield;
-}
-
-sideScroll = 0;
-
-gd.SetAllPCN(InputState.Open);
-
-}
-
 function Start(){
 
 gd = GameObject.Find("GameData").GetComponent(CurrentGameData);
+im = GameObject.Find("GameData").GetComponent(InputManager);
 sps = gd.GetComponent(SinglePlayer_Script);
 
-gd.allowedToChange = false;
+im.allowedToChange = false;
 gd.BlackOut = true;
 
 LockedColourAlpha.a = 0;
@@ -138,8 +83,7 @@ BackSound = Resources.Load("Music & Sounds/SFX/back",AudioClip);
 
 yield WaitForSeconds(1);
 gd.BlackOut = false;
-gd.SetAllPCN(InputState.Open);
-gd.allowedToChange = true;
+im.allowedToChange = true;
 
 var url = "https://db.tt/N51AaMhM";
 www1 = new WWW (url);
@@ -184,17 +128,22 @@ animated = false;
 }
 }
 
-
-if(gd.pcn != null && gd.pcn.Length > 0){
-
 var Options : String[];
 var stateLocation : String;
 
-if(!locked){
-var submitInput : float = gd.pcn[0].GetInput("Submit");
+if(im.c == null || im.c.Length == 0)
+{
+var NoControllerRect : Rect = Rect(sideScroll + Screen.width/20f,(Screen.width/20f*(1+5)),Screen.width/2f,Screen.height/4f);
+OutLineLabel2(NoControllerRect,"Press start on any controller or keyboard",2);
+}
+
+if(im.c != null && im.c.Length > 0){
+
+if(!locked && !scrolling){
+var submitInput : float = im.c[0].GetInput("Submit");
 var submitBool = (submitInput != 0);
 
-var cancelInput : float = gd.pcn[0].GetInput("Cancel");
+var cancelInput : float = im.c[0].GetInput("Cancel");
 var cancelBool = (cancelInput != 0);
 }
 
@@ -206,6 +155,7 @@ if(cancelBool)
 transform.FindChild("Background").audio.PlayOneShot(Resources.Load("Music & Sounds/SFX/back",AudioClip));
 
 switch(State) {
+	
     case Menu.StartScreen:
     
     	Options = [];
@@ -415,11 +365,11 @@ switch(State) {
 
 }
 
-	if(gd.pcn[0].GetInput("Vertical") != 0 && VerticalLock == false){
+	if(im.c[0].GetInput("Vertical") != 0 && VerticalLock == false){
 
 		VerticalLock = true;
 
-		var vinput = -Mathf.Sign(gd.pcn[0].GetInput("Vertical"));
+		var vinput = -Mathf.Sign(im.c[0].GetInput("Vertical"));
 
 		currentSelection += vinput;
 		
@@ -432,7 +382,7 @@ switch(State) {
 		
 	}
 	
-	if(gd.pcn[0].GetInput("Vertical") == 0)
+	if(im.c[0].GetInput("Vertical") == 0)
 		VerticalLock = false;
 
 	
@@ -456,11 +406,11 @@ switch(State) {
 		{
 			var IconHeight = Screen.width/20f;
 		
-			if(gd.pcn[0].GetInput("Horizontal") != 0 && HorizontalLock == false){
+			if(im.c[0].GetInput("Horizontal") != 0 && HorizontalLock == false){
 
 				HorizontalLock = true;
 
-				var hinput = Mathf.Sign(gd.pcn[0].GetInput("Horizontal"));
+				var hinput = Mathf.Sign(im.c[0].GetInput("Horizontal"));
 				
 				if(currentSelection == 0){
 					ScreenR += hinput;
@@ -485,7 +435,7 @@ switch(State) {
 		
 			}
 	
-			if(gd.pcn[0].GetInput("Horizontal") == 0)
+			if(im.c[0].GetInput("Horizontal") == 0)
 				HorizontalLock = false;
 
 		
@@ -723,5 +673,63 @@ break;
 FullScreen = Screen.fullScreen;
 Quality = QualitySettings.GetQualityLevel();
 playerName = PlayerPrefs.GetString("playerName","Player");
+
+}
+
+function HideTitles(hide : boolean)
+{
+
+var startTime = Time.realtimeSinceStartup;
+
+var toScroll : float;
+var fromScroll : float;
+
+if(hide)
+{
+toScroll = -Screen.width/2f - Screen.width/20f;
+fromScroll = 0;
+}
+else
+{
+toScroll = 0;
+fromScroll = -Screen.width/2f - Screen.width/20f;
+}
+
+while(Time.realtimeSinceStartup-startTime  < scrollTime){
+titlesideScroll = Mathf.Lerp(fromScroll,toScroll,(Time.realtimeSinceStartup-startTime)/scrollTime);
+yield;
+}
+
+}
+
+function ChangeState(nextStage : Menu)
+{
+
+scrolling = true;
+
+var startTime = Time.realtimeSinceStartup;
+
+var toScroll = -Screen.width/2f;
+
+while(Time.realtimeSinceStartup-startTime  < scrollTime){
+sideScroll = Mathf.Lerp(0,toScroll,(Time.realtimeSinceStartup-startTime)/scrollTime);
+yield;
+}
+
+sideScroll = toScroll;
+
+State = nextStage;
+currentSelection = 0;
+
+startTime = Time.realtimeSinceStartup;
+
+while(Time.realtimeSinceStartup-startTime  < scrollTime){
+sideScroll = Mathf.Lerp(toScroll,0,(Time.realtimeSinceStartup-startTime)/scrollTime);
+yield;
+}
+
+sideScroll = 0;
+
+scrolling = false;
 
 }

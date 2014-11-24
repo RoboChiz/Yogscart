@@ -27,6 +27,7 @@ private var Votes : Vector2[];
 private var controlLock : boolean;
 
 private var gd : CurrentGameData;
+private var im : InputManager;
 private var td : TrackData;
 private var rc : Race_Client;
 
@@ -35,6 +36,8 @@ private var Ready : boolean;
 function ResetServer(){
 
 gd = transform.GetComponent(CurrentGameData);
+im = transform.GetComponent(InputManager);
+
 rc = transform.GetComponent(Race_Client);
 
 humanCount = 0;
@@ -81,7 +84,7 @@ lastLevelPrefix += 1;
 
 function OnGUI(){
 
-if(Input.GetAxis(gd.pcn[0]+"Submit") == 0 && Input.GetAxis(gd.pcn[0] + "Cancel") == 0)
+if(Input.GetAxis(im.c[0].inputName+"Submit") == 0 && Input.GetAxis(im.c[0].inputName + "Cancel") == 0)
 controlLock = false;
 
 //Debug GUI
@@ -106,7 +109,7 @@ GUI.Label(Rect(10,10 + 25 + (25*i),250,25),"[BOT]");
 if(State == Phase.Lobby){
 
 if(!Ready){
-if(Input.GetAxis(gd.pcn[0] + "Submit") != 0 && controlLock == false){
+if(Input.GetAxis(im.c[0].inputName + "Submit") != 0 && controlLock == false){
 Ready = true;
 networkView.RPC ("Countdowner", RPCMode.All,5);
 LevelSelectTimer();
@@ -114,7 +117,7 @@ controlLock = true;
 }
 }
 
-if(Input.GetAxis(gd.pcn[0] + "Cancel") != 0 && controlLock == false){
+if(Input.GetAxis(im.c[0].inputName + "Cancel") != 0 && controlLock == false){
 CloseServer();
 controlLock = true;
 }

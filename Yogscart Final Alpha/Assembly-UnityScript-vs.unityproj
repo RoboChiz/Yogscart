@@ -84,7 +84,6 @@
      <Compile Include="Assets\Old Assets\Scripts\Menus\NewCharacter_Test.js" />
      <Compile Include="Assets\Old Assets\Scripts\Menus\Title Rotate.js" />
      <Compile Include="Assets\Old Assets\Scripts\Menus\newCharacterSelect.js" />
-     <Compile Include="Assets\Old Assets\Scripts\Menus\oldMain_Menu.js" />
      <Compile Include="Assets\Old Assets\Scripts\Networking 2\Client.js" />
      <Compile Include="Assets\Old Assets\Scripts\Networking 2\Host.js" />
      <Compile Include="Assets\Old Assets\Scripts\Networking\Countdown.js" />
@@ -116,6 +115,7 @@
      <Compile Include="Assets\Resources\Karts\Dyne\Scripts\Pulse.js" />
      <Compile Include="Assets\Resources\Music &amp; Sounds\Event_Cannon.js" />
      <Compile Include="Assets\Scripts\CurrentGameData.js" />
+     <Compile Include="Assets\Scripts\InputManager.js" />
      <Compile Include="Assets\Scripts\KartMaker Scripts\CharacterSkeleton.js" />
      <Compile Include="Assets\Scripts\KartMaker Scripts\KartMaker.js" />
      <Compile Include="Assets\Scripts\KartMaker Scripts\KartSkeleton.js" />

@@ -409,7 +409,7 @@ GUI.Label(Rect(10,10 + 25 + (25*i),250,25),"IN-RACE [BOT]");
 
 if(State == Phase.Lobby){
 
-if(!Automatic && Input.GetAxis(gd.pcn[0] + "Submit") != 0)
+if(!Automatic)
 StartCoroutine("StartLevelSelect");
 
 }

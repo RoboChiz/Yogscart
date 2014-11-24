@@ -10,9 +10,11 @@ var type : RaceStyle;
 var Difficulty : int;
 
 private var gd : CurrentGameData;
+private var im : InputManager;
 
 function Awake(){
 gd = GameObject.Find("GameData").GetComponent(CurrentGameData);
+im = GameObject.Find("GameData").GetComponent(InputManager);
 }
 
 @HideInInspector
@@ -47,7 +49,7 @@ rm.type = type;
 var copy = new Array();
 
 if(type != RaceStyle.TimeTrial){
-for(var i : int = 0;i < 12 - gd.pcn.Length;i++){
+for(var i : int = 0;i < 12 - im.c.Length;i++){
 var AIRacer = new PlayerRacer();
 AIRacer.Human = false;
 AIRacer.HumanID = -1;
@@ -70,7 +72,7 @@ copy.Push(AIRacer);
 }
 }
 
-for(i = 0;i < gd.pcn.Length;i++){
+for(i = 0;i < im.c.Length;i++){
 if(type != RaceStyle.TimeTrial || (type == RaceStyle.TimeTrial && i == 0)){
 var nRacer = new PlayerRacer();
 nRacer.Human = true;

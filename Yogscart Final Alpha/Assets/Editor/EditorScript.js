@@ -85,11 +85,11 @@ public class TrackDataEditor extends Editor{
  			gd.name = "GameData";
  			gd.gameObject.AddComponent(Race_Test);
  			
- 			gd.GetComponent(CurrentGameData).pcn = new nInput[1];
+ 			gd.GetComponent(InputManager).c = new InputController[1];
  			if(Input.GetJoystickNames().Length > 0)
- 			gd.GetComponent(CurrentGameData).pcn[0] = new nInput("C1_");
+ 			gd.GetComponent(InputManager).c[0] = new InputController("C1_");
  			else
- 			gd.GetComponent(CurrentGameData).pcn[0] = new nInput("Key_");
+ 			gd.GetComponent(InputManager).c[0] = new InputController("Key_");
  			
  			if(i == 0)
  			gd.GetComponent(Race_Test).type = RaceStyle.CustomRace;

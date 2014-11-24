@@ -8,6 +8,7 @@ var State = Testing.Race;
 
 private var td : TrackData;
 private var gd : CurrentGameData;
+private var im : InputManager;
 
 private var CountdownText : int;
 private var CountdownRect : Rect;
@@ -38,11 +39,11 @@ var Player1 : int;
 
 @HideInInspector
 var currentSelection : int;
-private var controlLock : boolean;
 private var keyLock : boolean;
 
 function Start(){
 gd = transform.GetComponent(CurrentGameData);
+im = transform.GetComponent(InputManager);
 td = GameObject.Find("Track Manager").GetComponent(TrackData);
 
 if(td.IntroPans != null && td.IntroPans.Length > 0 && td.PositionPoints != null && td.PositionPoints.Length > 0){
@@ -126,9 +127,6 @@ function OnGUI () {
 GUI.skin = Resources.Load("GUISkins/Main Menu", GUISkin);
 var sps : SinglePlayer_Script = transform.GetComponent(SinglePlayer_Script);
 
-if(Input.GetAxisRaw(gd.pcn[0]+"Submit") == 0)
-controlLock = false;
-
 if(activeraceAlpha)
 raceGUIAlpha = Mathf.Lerp(raceGUIAlpha,256,Time.deltaTime * 5f);
 else
@@ -208,10 +206,8 @@ var BoxHeight : float = Screen.height / 16f;
 if(type == RaceStyle.TimeTrial)
 OutLineLabel(Rect(20 + BoxWidth/2f,Screen.height - 20 - (BoxHeight*1.5),BoxWidth*1.75f + 10,BoxHeight),OverallTimer.ToString(),2);
 
-if(Input.GetAxisRaw(gd.pcn[0]+"Pause") != 0 && pausedLock == false){
+if(im.c[0].GetRawInput("Pause") != 0){
 Paused = !Paused;
-pausedLock = true;
-controlLock = true;
 
 if(!Network.isClient && !Network.isServer){
 if(Paused)
@@ -220,9 +216,6 @@ else
 Time.timeScale = 1f;
 }
 }
-
-if(Input.GetAxisRaw(gd.pcn[0]+"Pause") == 0)
-pausedLock = false;
 
 
 }
@@ -311,30 +304,26 @@ GUI.DrawTexture(optionRect,optionTexture,ScaleMode.ScaleToFit);
 }
 
 if(type != RaceStyle.Online){
-if(Input.GetAxis(gd.pcn[0]+"Submit") != 0 && controlLock == false){
+if(im.c[0].GetInput("Submit") != 0){
 
-if(currentSelection == 0 && controlLock == false){
+if(currentSelection == 0){
 State = Testing.Loading;
 StartNextRace();
 }
 
 if(type == RaceStyle.GrandPrix || type == RaceStyle.CustomRace){
 
-if(currentSelection == 1 && controlLock == false){
-}
-if(currentSelection == 2 && controlLock == false){
+if(currentSelection == 2){
 State = Testing.Race;
 gd.Exit();
-controlLock = true;
 }
 }
 
 if(type == RaceStyle.TimeTrial){
 
-if(currentSelection == 4 && controlLock == false){
+if(currentSelection == 4){
 State = Testing.Race;
 gd.Exit();
-controlLock = true;
 }
 
 }
@@ -342,9 +331,9 @@ controlLock = true;
 
 }
 
-if(Input.GetAxis(gd.pcn[0]+"Vertical") != 0 && keyLock == false){
+if(im.c[0].GetInput("Vertical") != 0 && keyLock == false){
 
-currentSelection -= Mathf.Sign(Input.GetAxis(gd.pcn[0]+"Vertical"));
+currentSelection -= Mathf.Sign(im.c[0].GetInput("Vertical"));
 
 if(currentSelection < 0)
 currentSelection = Options.Length-1;
@@ -387,17 +376,16 @@ GUI.DrawTexture(optionRect,optionTexture,ScaleMode.ScaleToFit);
 
 }
 
-if(Input.GetAxisRaw(gd.pcn[0]+"Submit") != 0 && Input.GetAxisRaw(gd.pcn[0]+"Pause") == 0 && controlLock == false){
+if(im.c[0].GetRawInput("Submit") != 0 && im.c[0].GetRawInput("Pause") != 0){
 
-if(currentSelection == 0 && controlLock == false){
+if(currentSelection == 0){
 Paused = !Paused;
 Time.timeScale = 1f;
-controlLock = true;
 }
 
 if(type == RaceStyle.TimeTrial){
 
-if(currentSelection == 1 && controlLock == false){
+if(currentSelection == 1){
 Time.timeScale = 1f;
 State = Testing.Loading;
 	
@@ -414,30 +402,28 @@ State = Testing.Loading;
 StartNextRace();
 }
 
-if(currentSelection == 3 && controlLock == false){
+if(currentSelection == 3){
 State = Testing.Race;
 Time.timeScale = 1f;
 gd.Exit();
-controlLock = true;
 }
 
 }
 
 if(type != RaceStyle.TimeTrial){
 
-if(currentSelection == 2 && controlLock == false){
+if(currentSelection == 2){
 State = Testing.Race;
 Time.timeScale = 1f;
 gd.Exit();
-controlLock = true;
 }
 }
 
 }
 
-if(Input.GetAxisRaw(gd.pcn[0]+"Vertical") != 0 && keyLock == false){
+if(im.c[0].GetRawInput("Vertical") != 0 && keyLock == false){
 
-currentSelection -= Mathf.Sign(Input.GetAxisRaw(gd.pcn[0]+"Vertical"));
+currentSelection -= Mathf.Sign(im.c[0].GetRawInput("Vertical"));
 
 if(currentSelection < 0)
 currentSelection = Options.Length-1;
@@ -448,7 +434,7 @@ currentSelection = 0;
 keyLock = true;
 }
 
-if(Input.GetAxisRaw(gd.pcn[0]+"Vertical") == 0)
+if(im.c[0].GetRawInput("Vertical") == 0)
 keyLock = false;
 
 }
@@ -458,7 +444,6 @@ lastTime = Time.realtimeSinceStartup;
 }
 
 private var Paused : boolean = false;
-private var pausedLock : boolean = false;;
 
 //////////////////////////////////////////////////////////////////////////////////////////////Character Spawning Functions //////////////////////////////////////////////////////////////////////////////////////////////
 function SetUpKarts(){ //Single Player Only
@@ -501,7 +486,7 @@ SPRacers[i].rep.GetComponent(Racer_AI).Stupidity = SPRacers[i].aiStupidity;
 SPRacers[i].rep.gameObject.AddComponent(kartInput);
 SPRacers[i].rep.gameObject.AddComponent(kartInfo);
 //Adjust Scripts
-SPRacers[i].rep.GetComponent(kartInput).InputName = gd.pcn[SPRacers[i].HumanID].inputName;
+SPRacers[i].rep.GetComponent(kartInput).InputName = im.c[SPRacers[i].HumanID].inputName;
 //Add Camera
 var IngameCam = Instantiate(Resources.Load("Prefabs/Cameras",Transform),td.PositionPoints[0].rep.position,Quaternion.identity);
 IngameCam.name = "InGame Cams";
@@ -515,7 +500,7 @@ IngameCam.GetChild(1).GetComponent(Kart_Camera).Target = SPRacers[i].rep;
 SPRacers[i].cameras = IngameCam;
 
 if(type != RaceStyle.TimeTrial){
-if(gd.pcn.Length > 2){
+if(im.c.Length > 2){
 if(SPRacers[i].HumanID == 0)
 SPRacers[i].rep.GetComponent(kartInfo).screenPos = ScreenType.TopLeft;
 if(SPRacers[i].HumanID == 1)
@@ -525,14 +510,14 @@ SPRacers[i].rep.GetComponent(kartInfo).screenPos = ScreenType.BottomLeft;
 if(SPRacers[i].HumanID == 3)
 SPRacers[i].rep.GetComponent(kartInfo).screenPos = ScreenType.BottomRight;
 }
-if(gd.pcn.Length == 2){
+if(im.c.Length == 2){
 if(SPRacers[i].HumanID == 0)
 SPRacers[i].rep.GetComponent(kartInfo).screenPos = ScreenType.Top;
 if(SPRacers[i].HumanID == 1)
 SPRacers[i].rep.GetComponent(kartInfo).screenPos = ScreenType.Bottom;
 }
 
-if(gd.pcn.Length == 3){
+if(im.c.Length == 3){
 var obj = new GameObject();
 obj.AddComponent(Camera);
 obj.AddComponent(AudioListener);
@@ -900,7 +885,6 @@ function FinishRace(){
 				
 	}
 	
-	controlLock = true;
 	State = Testing.ScoreBoard;
 
 }

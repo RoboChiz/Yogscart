@@ -2,13 +2,13 @@
 
 private var rm : Race_Master;
 private var gd : CurrentGameData;
+private var im : InputManager;
 
 var Pans : CameraPoint[];
 
 var rep : Transform[];
 
 private var skipScene : boolean;
-var controlLock : boolean = true;
 
 private var Alpha : float = 0;
 
@@ -25,18 +25,13 @@ i = 13;
 }
 }
 
-if(skipScene == true && Input.GetAxisRaw(gd.pcn[0]+"Submit") !=0  && controlLock == false){
+if(skipScene == true && im.c[0].GetInput("Submit") != 0){
 gd.Exit();
-controlLock = true;
 }
 
-if(skipScene == false && Input.GetAxisRaw(gd.pcn[0]+"Submit") !=0 && controlLock == false){
+if(skipScene == false && im.c[0].GetInput("Submit") != 0){
 skipScene = true;
-controlLock = true;
 }
-
-if(Input.GetAxisRaw(gd.pcn[0]+"Submit") == 0)
-controlLock = false;
 
 if(skipScene)
 Alpha = Mathf.Lerp(Alpha,255,Time.deltaTime*10f);
@@ -97,6 +92,7 @@ GUI.DrawTexture(Rect(Screen.width/2f - Screen.height/16f,Screen.height/16f * 14.
 function Start () {
 rm = GameObject.Find("GameData").GetComponent(Race_Master);
 gd = GameObject.Find("GameData").GetComponent(CurrentGameData);
+im = GameObject.Find("GameData").GetComponent(InputManager);
 
 rep = new Transform[12];
 

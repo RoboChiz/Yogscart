@@ -8,7 +8,6 @@ var NormalPercent : float = 0.25f;
 var MaxPercent : float = 0.3f;
 
 var Done : boolean;
-var InputLock : boolean = true;
 
 function Start () {
 NewIcon();
@@ -45,11 +44,8 @@ var newIconRect : Rect = Rect(Screen.width/2f - newIconWidth/2f,Screen.height/2f
 
 GUI.DrawTexture(newIconRect,test);					
 	
-var gd = GameObject.Find("GameData").GetComponent(CurrentGameData);					
-
-if(Input.GetAxis(gd.pcn[0] + "Submit") == 0 && Input.GetAxis(gd.pcn[0] + "Cancel") == 0)
-InputLock = false;													
+var im = GameObject.Find("GameData").GetComponent(InputManager);														
 																																							
-if(Done && (Input.GetAxis(gd.pcn[0] + "Submit") != 0 || Input.GetAxis(gd.pcn[0] + "Cancel") != 0) && !InputLock)
+if(Done && (im.c[0].GetRawInput("Submit") != 0 || im.c[0].GetRawInput("Cancel") != 0))
 Destroy(this); 																											
 }

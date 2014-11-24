@@ -17,6 +17,7 @@ private var nTarget : Vector3;
 private var targestPos : int = -1;
 
 private var usedItem : boolean = false;
+private var lastAngle : float;
 
 function Awake(){
 td = GameObject.Find("Track Manager").GetComponent(TrackData);
@@ -94,6 +95,9 @@ ks.throttle = 0.5;
 ks.throttle = 1;
 }
 
+if(ks.drift == true && lastAngle < angle)
+ks.drift = false;
+
 var testangle : float = Vector3.Angle(transform.forward,NeededDirection);
 if(testangle >= 135){
 steering = 1;
@@ -129,6 +133,8 @@ ks.throttle = 1;
 if(Stupidity > 7 && ks.startBoosting <= 3)
 ks.throttle = 1;
 }
+
+lastAngle = angle;
 
 }
 

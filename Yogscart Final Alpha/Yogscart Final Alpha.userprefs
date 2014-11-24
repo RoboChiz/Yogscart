@@ -1,11 +1,11 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Old Assets\Scripts\Menus\Main_Menu.js">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Old Assets\Scripts\Menus\newCharacterSelect.js">
     <Files>
-      <File FileName="Assets\Scripts\CurrentGameData.js" Line="103" Column="60" />
-      <File FileName="Assets\Old Assets\Scripts\Menus\Main_Menu.js" Line="492" Column="5" />
-      <File FileName="Assets\Old Assets\Scripts\Menus\oldMain_Menu.js" Line="792" Column="1" />
-      <File FileName="Assets\Old Assets\Scripts\Menus\newCharacterSelect.js" Line="14" Column="23" />
+      <File FileName="Assets\Scripts\InputManager.js" Line="10" Column="1" />
+      <File FileName="Assets\Old Assets\Scripts\Menus\Main_Menu.js" Line="137" Column="25" />
+      <File FileName="Assets\Scripts\CurrentGameData.js" Line="55" Column="22" />
+      <File FileName="Assets\Old Assets\Scripts\Menus\newCharacterSelect.js" Line="475" Column="3" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

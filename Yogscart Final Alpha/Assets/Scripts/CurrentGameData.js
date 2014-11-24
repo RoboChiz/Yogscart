@@ -54,10 +54,7 @@ var RaceState : int = -1;
 
 var Difficulty : int;
 
-//@HideInInspector
-var allowedToChange : boolean;
-
-var pcn : nInput[];
+var im : InputManager;
 
 var popupText : String[];
 
@@ -74,8 +71,7 @@ private var ColourAlpha : Color = Color.white;
 		
 		LoadEverything();
 		
-		iconHeights = new int[4];
-		showIcon = new boolean[4];
+		im = transform.GetComponent(InputManager);
 		
 		}
 		
@@ -95,7 +91,6 @@ private var ColourAlpha : Color = Color.white;
 		}
 	
 		private var iconHeights : int[];
-		private var showIcon : boolean[];
 		private var inputLock : boolean;
 		
 		function OnGUI () {
@@ -131,8 +126,6 @@ private var ColourAlpha : Color = Color.white;
 		
 		if(BlackOut)
 		{
-		
-			SetAllPCN(InputState.Locked);
 			
 			if(!isPlaying)
 			{
@@ -152,80 +145,10 @@ private var ColourAlpha : Color = Color.white;
 		}
 		
 		
-		for(var i : int; i < 4; i++){
-		
-		var idealSize = Screen.height/6f;
-		
-		if(showIcon[i])
-		iconHeights[i] = Mathf.Lerp(iconHeights[i],idealSize,Time.deltaTime * 3f);
-		else
-		iconHeights[i] = Mathf.Lerp(iconHeights[i],0,Time.deltaTime * 3f);
-		
-		var iconRect : Rect = Rect(10 + (i*idealSize),Screen.height - iconHeights[i],idealSize,idealSize);
-		
-		if(pcn!= null && pcn.Length > i){
-		var Icon : Texture2D;
-		if(pcn[i].inputName == "Key_")
-		Icon = Resources.Load("UI Textures/Controls/Keyboard",Texture2D);
-		else
-		Icon = Resources.Load("UI Textures/Controls/Xbox",Texture2D);
-		
-		GUI.Box(iconRect,Icon);
-		
-		}else
-		GUI.Box(iconRect,"Player " + (i+1) + " has left!");
-		
-		}
-		
-		if(!inputLock && allowedToChange){
-		if((pcn == null || pcn.Length < 4)){
-		if(Input.GetAxis("Key_Submit")&&!inputLock)
-		AddController("Key_");
-		
-		if(Input.GetAxis("C1_Submit")&&!inputLock)
-		AddController("C1_");
-		
-		if(Input.GetAxis("C2_Submit")&&!inputLock)
-		AddController("C2_");
-		
-		if(Input.GetAxis("C3_Submit")&&!inputLock)
-		AddController("C3_");
-		
-		if(Input.GetAxis("C4_Submit")&&!inputLock)
-		AddController("C4_");
-		
-		}
-		
-		if(pcn != null){
-		if(Input.GetAxis("Key_Leave")&&!inputLock)
-		RemoveController("Key_");
-		
-		if(Input.GetAxis("C1_Leave")&&!inputLock)
-		RemoveController("C1_");
-		
-		if(Input.GetAxis("C2_Leave")&&!inputLock)
-		RemoveController("C2_");
-		
-		if(Input.GetAxis("C3_Leave")&&!inputLock)
-		RemoveController("C3_");
-		
-		if(Input.GetAxis("C4_Leave")&&!inputLock)
-		RemoveController("C4_");
-		
-		}
-		}
-		
-		for(var j : int = 0; j < pcn.Length; j++)
-		{
-		if(pcn[j].state != InputState.Locked && Input.GetAxis(pcn[j].inputName + "Submit") == 0 && Input.GetAxis(pcn[j].inputName + "Cancel") == 0)
-		pcn[j].controlLock = false;
-		}
-		
-		
 		if(popupText != null && popupText.Length > 0)
 		{
 		
-		SetAllPCN(InputState.GDOnly);
+		Time.timeScale = 0f;
 		
 		var BoxWidth : int = Screen.width / 3f;
 		var BoxHeight : int = Screen.height / 3f;
@@ -234,15 +157,11 @@ private var ColourAlpha : Color = Color.white;
 		
 		GUI.Box(boxRect,popupText[0]);
 		
-		if(pcn.Length > 0){
+		if(im.c != null && im.c.Length > 0){
 		
-		if(pcn[0].GetGDInput("Submit") != 0)
+		if(im.c[0].GetRawInput("Submit") != 0)
 		{
 			removePopUp();
-			
-			if(popupText.Length == 0)
-			SetAllPCN(InputState.Open);
-			
 		}
 		}
 		
@@ -353,74 +272,8 @@ private var ColourAlpha : Color = Color.white;
 		
 		}
 
-
-function AddController(input : String){
-inputLock = true;
-var alreadyIn : boolean;
-if(pcn != null)
-for(var i : int = 0; i < pcn.Length; i++)
-if(pcn[i].inputName == input){
-alreadyIn = true;
-i = 5;
-}
-
-
-if(!alreadyIn){
-var copy = new Array();
-
-if(pcn != null)
-copy = pcn;
-
-var newInput = new nInput(input);
-
-copy.Push(newInput);
-
-
-var toShow : int = copy.length-1;
-while(showIcon[toShow] == true)
-yield;
-
-pcn = copy;
-
-showIcon[toShow] = true;
-yield WaitForSeconds(1);
-showIcon[toShow] = false;
-
-}
-inputLock = false;
-}
-
-function RemoveController(input : String){
-inputLock = true;
-
-var copy = new Array();
-var toShow : int = -1;
-
-for(var i : int = 0; i < pcn.Length; i++)
-if(pcn[i].inputName != input)
-copy.Push(pcn[i]);
-else
-toShow = i;
-
-if(toShow != -1){
-while(showIcon[toShow] == true)
-yield;
-
-pcn = copy;
-
-showIcon[toShow] = true;
-yield WaitForSeconds(1);
-showIcon[toShow] = false;
-}
-
-inputLock = false;
-
-}
-
 function Popup(promptText : String)
 {
-
-SetAllPCN(InputState.GDOnly);
 
 var copy = new Array();
 
@@ -439,13 +292,9 @@ var copy = new Array();
 copy = popupText;
 copy.RemoveAt(0);
 popupText = copy;
-}
 
-function SetAllPCN(type : InputState)
-{
-for(var i : int; i < pcn.Length; i ++){
-pcn[i].SetState(type);
-}
+Time.timeScale = 1f;
+
 }
 
 //Classes
@@ -541,79 +390,9 @@ public class Timer
   
 }
 
-public class nInput
-{
-	var inputName: String;
-	var state : InputState;
-	var controlLock : boolean;
-
-	function nInput(name : String)
-	{
-		inputName = name;
-		state = InputState.Open;
-		controlLock = true;
-	}
-	
-	public function SetState(nstate : InputState)
-	{
-		state = nstate;
-	}
-	
-	public function GetState()
-	{
-		return state;
-	}
-	
-	//Returns the input so long as Open.
-	public function GetInput(inputString : String)
-	{
-	
-		var returnFloat : float = 0;
-	
-		if(state == InputState.Open)
-		{
-		
-		if((inputString != "Submit" && inputString != "Cancel") || ((inputString == "Submit" || inputString == "Cancel") && !controlLock))
-		returnFloat = Input.GetAxis(inputName + inputString);
-		
-		if((inputString == "Submit" || inputString == "Cancel") && returnFloat != 0)
-		controlLock = true;
-		
-		}
-
-		return returnFloat;
-	
-	}
-	
-	//Returns the input so long as it is not locked. Only use for functions in GameData.
-	public function GetGDInput(inputString : String)
-	{
-	
-		var returnFloat : float = 0;
-	
-		if(state != InputState.Locked)
-		{
-		
-		if((inputString != "Submit" && inputString != "Cancel") || ((inputString == "Submit" || inputString == "Cancel") && !controlLock))
-		returnFloat = Input.GetAxis(inputName + inputString);
-		
-		if((inputString == "Submit" || inputString == "Cancel") && returnFloat != 0)
-		controlLock = true;
-		
-		}
-
-		return returnFloat;
-	
-	}
-}
-
-enum InputState{Locked,Open,GDOnly};
-
 function Exit(){
+Time.timeScale = 1f;
 BlackOut = true;
-
-for(var i : int = 0; i < pcn.Length; i++)
-pcn[i].SetState(InputState.Open);
 
 Network.SetLevelPrefix(0);
 
@@ -623,7 +402,7 @@ yield WaitForSeconds(1);
 Application.LoadLevel(1);
 yield;
 
-GameObject.Find("GameData").GetComponent(CurrentGameData).pcn = pcn;
+GameObject.Find("GameData").GetComponent(InputManager).c = transform.GetComponent(InputManager).c;
 Destroy(this.gameObject);
 }
  

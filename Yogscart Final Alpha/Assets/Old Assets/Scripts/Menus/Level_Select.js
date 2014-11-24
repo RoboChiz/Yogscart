@@ -3,6 +3,7 @@
 private var currentCup : int;
 private var currentTrack : int;
 private var gd : CurrentGameData;
+private var im : InputManager;
 private var sps : SinglePlayer_Script;
 
 private var stickLockH : boolean;
@@ -17,6 +18,7 @@ var GrandPrixOnly : boolean;
 private var Alpha : float;
 function Awake(){
 gd = GameObject.Find("GameData").GetComponent(CurrentGameData);
+im = GameObject.Find("GameData").GetComponent(InputManager);
 sps = GameObject.Find("GameData").GetComponent(SinglePlayer_Script);
 }
 
@@ -31,16 +33,16 @@ GUI.skin = Resources.Load("GUISkins/Main Menu", GUISkin);
 GUI.color = Color(256,256,256,Alpha);
 
 if(!hidden){
-var submitInput = gd.pcn[0].GetInput("Submit");
+var submitInput = im.c[0].GetInput("Submit");
 var submitBool = (submitInput != 0);
 
-var cancelInput = gd.pcn[0].GetInput("Cancel");
+var cancelInput = im.c[0].GetInput("Cancel");
 var cancelBool = (cancelInput != 0);
 }
 
 if(hidden == false){
 //Do Input
-if(gd.pcn[0].GetInput("Vertical") != 0 && stickLockV == false && !GrandPrixOnly){
+if(im.c[0].GetInput("Vertical") != 0 && stickLockV == false && !GrandPrixOnly){
 stickLockV = true; 
 ButtonWaitV();
 TypeSelecion = !TypeSelecion;
@@ -57,8 +59,8 @@ transform.GetComponent(Main_Menu).StartCoroutine("StartSinglePlayer");
 
 if(TypeSelecion){ //Track Selection
 
-if(gd.pcn[0].GetInput("Horizontal") != 0 && stickLockH == false){
-currentTrack += Mathf.Sign(gd.pcn[0].GetInput("Horizontal"));
+if(im.c[0].GetInput("Horizontal") != 0 && stickLockH == false){
+currentTrack += Mathf.Sign(im.c[0].GetInput("Horizontal"));
 if(currentTrack < 0)
 currentTrack = 3;
 
@@ -75,8 +77,8 @@ Finished();
 
 }else{
 
-if(gd.pcn[0].GetInput("Horizontal") != 0 && stickLockH == false){
-currentCup += Mathf.Sign(gd.pcn[0].GetInput("Horizontal"));
+if(im.c[0].GetInput("Horizontal") != 0 && stickLockH == false){
+currentCup += Mathf.Sign(im.c[0].GetInput("Horizontal"));
 if(currentCup < 0)
 currentCup = gd.Tournaments.Length-1;
 

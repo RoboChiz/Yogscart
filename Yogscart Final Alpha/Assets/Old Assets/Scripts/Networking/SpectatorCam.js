@@ -5,14 +5,14 @@ var currentSpec : int = 0;
 
 private var velocity = Vector3.zero;
 private var gd : CurrentGameData;
+private var im : InputManager;
 
 @HideInInspector
 var locked : boolean;
 
-private var controlLock : boolean;
-
 function Start(){
 gd = GameObject.Find("GameData").GetComponent(CurrentGameData);
+im = GameObject.Find("GameData").GetComponent(InputManager);
 }
 
 function RandomSort(){
@@ -39,17 +39,14 @@ var Target = specObjects[currentSpec].transform;
 transform.GetComponent(Kart_Camera).Target = Target;
 
 if(!locked){
-if(Input.GetAxis(gd.pcn[0]+"Submit") != 0 && controlLock == false){
+if(im.c[0].GetInput("Submit") != 0){
 currentSpec += 1;
 
 if(currentSpec >= specObjects.Length)
 currentSpec = 0;
 
-controlLock = true;
 }
 
-if(Input.GetAxis(gd.pcn[0]+"Submit") == 0)
-controlLock = false;
 }
 
 transform.GetComponent(Kart_Camera).Angle += Time.deltaTime*20;

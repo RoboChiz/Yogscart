@@ -66,9 +66,9 @@ transform.FindChild("Kart Body").audio.Play();
 renderItemHeight = -size ;
 
 var counter : int = 0;
-var startTime : float = Time.realtimeSinceStartup;
+var startTime : float = Time.timeSinceLevelLoad;
 
-while((Time.realtimeSinceStartup-startTime) < 1.7){
+while((Time.timeSinceLevelLoad-startTime) < 1.7){
 
 renderItem = gd.PowerUps[counter].Icon;
 
@@ -138,11 +138,11 @@ Destroy(clone.gameObject);
 
 function Scroll(){
 
-var nstartTime : float = Time.realtimeSinceStartup;
+var nstartTime : float = Time.timeSinceLevelLoad;
 
-while((Time.realtimeSinceStartup-nstartTime) < 0.2 ){
+while((Time.timeSinceLevelLoad-nstartTime) < 0.2 ){
 
-renderItemHeight = Mathf.Lerp(-size,size,(Time.realtimeSinceStartup-nstartTime)/0.2);
+renderItemHeight = Mathf.Lerp(-size,size,(Time.timeSinceLevelLoad-nstartTime)/0.2);
 
 yield;
 
@@ -155,11 +155,11 @@ function Stop(){
 transform.FindChild("Kart Body").audio.clip = Resources.Load("Music & Sounds/Powerup2",AudioClip);
 transform.FindChild("Kart Body").audio.Play();
 
-var nstartTime : float = Time.realtimeSinceStartup;
+var nstartTime : float = Time.timeSinceLevelLoad;
 
-while((Time.realtimeSinceStartup-nstartTime) < 0.2 ){
+while((Time.timeSinceLevelLoad-nstartTime) < 0.2 ){
 
-renderItemHeight = Mathf.Lerp(-size,0,(Time.realtimeSinceStartup-nstartTime)/0.2);
+renderItemHeight = Mathf.Lerp(-size,0,(Time.timeSinceLevelLoad-nstartTime)/0.2);
 
 yield;
 

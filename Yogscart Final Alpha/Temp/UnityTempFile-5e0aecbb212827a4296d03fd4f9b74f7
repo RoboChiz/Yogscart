@@ -1,0 +1,124 @@
+-debug
+-target:library
+-i:UnityEngine
+-i:System.Collections
+-base:UnityEngine.MonoBehaviour
+-nowarn:BCW0016
+-nowarn:BCW0003
+-method:Main
+-out:Temp/Assembly-UnityScript.dll
+-x-type-inference-rule-attribute:UnityEngineInternal.TypeInferenceRuleAttribute
+-define:UNITY_4_5_5
+-define:UNITY_4_5
+-define:UNITY_STANDALONE_WIN
+-define:ENABLE_MICROPHONE
+-define:ENABLE_TEXTUREID_MAP
+-define:ENABLE_UNITYEVENTS
+-define:ENABLE_NEW_HIERARCHY 
+-define:ENABLE_AUDIO_FMOD
+-define:UNITY_STANDALONE
+-define:ENABLE_MONO
+-define:ENABLE_TERRAIN
+-define:ENABLE_SUBSTANCE
+-define:ENABLE_GENERICS
+-define:INCLUDE_WP8SUPPORT
+-define:ENABLE_MOVIES
+-define:ENABLE_WWW
+-define:ENABLE_IMAGEEFFECTS
+-define:INCLUDE_WP_BLUE_SUPPORT
+-define:ENABLE_WEBCAM
+-define:INCLUDE_METROSUPPORT
+-define:RENDER_SOFTWARE_CURSOR
+-define:ENABLE_NETWORK
+-define:ENABLE_PHYSICS
+-define:ENABLE_CACHING
+-define:ENABLE_CLOTH
+-define:ENABLE_2D_PHYSICS
+-define:ENABLE_SHADOWS
+-define:ENABLE_AUDIO
+-define:ENABLE_NAVMESH_CARVING
+-define:ENABLE_DUCK_TYPING
+-define:ENABLE_SINGLE_INSTANCE_BUILD_SETTING
+-define:ENABLE_PROFILER
+-define:UNITY_EDITOR
+-define:UNITY_EDITOR_WIN
+-define:UNITY_TEAM_LICENSE
+-define:UNITY_PRO_LICENSE
+-r:D:/Unity/Editor/Data/Managed/UnityEngine.dll
+-r:Library/ScriptAssemblies/Assembly-UnityScript-firstpass.dll
+-r:D:/Unity/Editor/Data/Managed/UnityEditor.dll
+-i:UnityEditor
+"Assets/Beardbotnik's Shader/Walk Script.js"
+"Assets/Old Assets/ImageEffects/Examples/Billboard.js"
+"Assets/Old Assets/ImageEffects/Scripts/AA.js"
+"Assets/Old Assets/ImageEffects/Scripts/Bloom.js"
+"Assets/Old Assets/ImageEffects/Scripts/Blur.js"
+"Assets/Old Assets/ImageEffects/Scripts/ColorBalance.js"
+"Assets/Old Assets/ImageEffects/Scripts/FisheyeEffect.js"
+"Assets/Old Assets/ImageEffects/Scripts/GodRays.js"
+"Assets/Old Assets/ImageEffects/Scripts/IndieEffects.js"
+"Assets/Old Assets/ImageEffects/Scripts/Negative.js"
+"Assets/Old Assets/ImageEffects/Scripts/VignetteBlur.js"
+"Assets/Old Assets/Models/ParticleScale.js"
+"Assets/Old Assets/Scenes/Mario Kart/DK mountain/dkCannon Test.js"
+"Assets/Old Assets/Scenes/Menus/Intro/IntroScript.js"
+"Assets/Old Assets/Scenes/Tracks/Sipsco/AnimatedTextureUV.js"
+"Assets/Old Assets/Scenes/Tracks/Sipsco/Underwater.js"
+"Assets/Old Assets/Scripts/Character Scripts/Blink_Script.js"
+"Assets/Old Assets/Scripts/Character Scripts/QA.js"
+"Assets/Old Assets/Scripts/Kart Scripts/Camera_Control.js"
+"Assets/Old Assets/Scripts/Kart Scripts/ColliderForce.js"
+"Assets/Old Assets/Scripts/Kart Scripts/Kart_Camera.js"
+"Assets/Old Assets/Scripts/Kart Scripts/NetworkUpdate.js"
+"Assets/Old Assets/Scripts/Kart Scripts/Position_Finding.js"
+"Assets/Old Assets/Scripts/Kart Scripts/Racer_AI.js"
+"Assets/Old Assets/Scripts/Kart Scripts/colliderTest.js"
+"Assets/Old Assets/Scripts/Kart Scripts/kartAI.js"
+"Assets/Old Assets/Scripts/Kart Scripts/kartAnimation.js"
+"Assets/Old Assets/Scripts/Kart Scripts/kartInput.js"
+"Assets/Old Assets/Scripts/Kart Scripts/mobileInput.js"
+"Assets/Old Assets/Scripts/KartSystem V3/kartInfo.js"
+"Assets/Old Assets/Scripts/Menus/Level_Select.js"
+"Assets/Old Assets/Scripts/Menus/LobbyAI.js"
+"Assets/Old Assets/Scripts/Menus/LobbyHandler.js"
+"Assets/Old Assets/Scripts/Menus/Main_Menu.js"
+"Assets/Old Assets/Scripts/Menus/NewCharacter.js"
+"Assets/Old Assets/Scripts/Menus/NewCharacter_Test.js"
+"Assets/Old Assets/Scripts/Menus/Title Rotate.js"
+"Assets/Old Assets/Scripts/Menus/newCharacterSelect.js"
+"Assets/Old Assets/Scripts/Networking 2/Client.js"
+"Assets/Old Assets/Scripts/Networking 2/Host.js"
+"Assets/Old Assets/Scripts/Networking/Countdown.js"
+"Assets/Old Assets/Scripts/Networking/KartUpdate.js"
+"Assets/Old Assets/Scripts/Networking/SpectatorCam.js"
+"Assets/Old Assets/Scripts/Networking/VotingScreen.js"
+"Assets/Old Assets/Scripts/New Race Scripts/Ending_CutScene.js"
+"Assets/Old Assets/Scripts/New Race Scripts/Race_Client.js"
+"Assets/Old Assets/Scripts/New Race Scripts/Race_Host.js"
+"Assets/Old Assets/Scripts/New Race Scripts/Race_Master.js"
+"Assets/Old Assets/Scripts/Powers Up/Clucky_FireEgg.js"
+"Assets/Old Assets/Scripts/Powers Up/Clucky_Model.js"
+"Assets/Old Assets/Scripts/Powers Up/Item Scripts/Dirt Block.js"
+"Assets/Old Assets/Scripts/Powers Up/Item Scripts/Speed_Boost.js"
+"Assets/Old Assets/Scripts/Powers Up/Item_Box.js"
+"Assets/Old Assets/Scripts/Powers Up/Lapis_Item.js"
+"Assets/Old Assets/Scripts/Powers Up/Lapis_Script.js"
+"Assets/Old Assets/Scripts/Powers Up/Rotate.js"
+"Assets/Old Assets/Scripts/Powers Up/kartItem.js"
+"Assets/Old Assets/Scripts/Race Scripts/SinglePlayer_Script.js"
+"Assets/Old Assets/Scripts/Track Editor/Camera_Test.js"
+"Assets/Old Assets/Scripts/Track Editor/DeathCatch.js"
+"Assets/Old Assets/Scripts/Track Editor/DynamiCamera.js"
+"Assets/Old Assets/Scripts/Track Editor/InEngineRender.js"
+"Assets/Old Assets/Scripts/Track Editor/LapPointHandler.js"
+"Assets/Old Assets/Scripts/Track Editor/PositionPointHandler.js"
+"Assets/Old Assets/Scripts/Track Editor/Race_Test.js"
+"Assets/Old Assets/Scripts/Track Editor/TrackData.js"
+Assets/Resources/Karts/Dyne/Scripts/Pulse.js
+"Assets/Resources/Music & Sounds/Event_Cannon.js"
+Assets/Scripts/CurrentGameData.js
+Assets/Scripts/InputManager.js
+"Assets/Scripts/KartMaker Scripts/CharacterSkeleton.js"
+"Assets/Scripts/KartMaker Scripts/KartMaker.js"
+"Assets/Scripts/KartMaker Scripts/KartSkeleton.js"
+Assets/Scripts/kartScript.js
