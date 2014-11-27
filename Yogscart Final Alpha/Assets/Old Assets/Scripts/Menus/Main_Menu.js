@@ -128,6 +128,15 @@ animated = false;
 }
 }
 
+var specialLine : String;
+if(gd.gameTag == User.Backer)
+specialLine = "Jingle Jam Backer";
+if(gd.gameTag == User.VIP)
+specialLine = "VIP";
+
+if(specialLine != null)
+OutLineLabel2(Rect(Screen.width - 10 - (specialLine.Length*avg)/2f,Screen.height - Screen.height/20f - 10,(specialLine.Length*avg)/2f,Screen.height/20f),specialLine,2);
+
 var Options : String[];
 var stateLocation : String;
 
@@ -202,8 +211,7 @@ switch(State) {
 			ChangeState(Menu.LocalMenu);		
 			break;
 			case 1:
-			FlashRed();
-			//ChangeState(Menu.Multiplayer);		
+			FlashRed();	
 			break;
 			case 2:
 			ChangeState(Menu.Options);		
@@ -233,17 +241,19 @@ switch(State) {
 			switch(currentSelection){
 			case 0:
 			transform.GetComponent(Level_Select).GrandPrixOnly = true;
-			gd.transform.GetComponent(SinglePlayer_Script).type = RaceStyle.CustomRace;
+			gd.transform.GetComponent(SinglePlayer_Script).type = RaceStyle.GrandPrix;
 			ChangeState(Menu.DifficultyMenu);
 			break;
 			case 1:
 			transform.GetComponent(Level_Select).GrandPrixOnly = false;
-			gd.transform.GetComponent(SinglePlayer_Script).type = RaceStyle.GrandPrix;
+			gd.transform.GetComponent(SinglePlayer_Script).type = RaceStyle.CustomRace;
 			ChangeState(Menu.DifficultyMenu);
 			break;
 			case 2:
 			transform.GetComponent(Level_Select).GrandPrixOnly = false;
 			gd.transform.GetComponent(SinglePlayer_Script).type = RaceStyle.TimeTrial;
+			im.RemoveOtherControllers();
+			im.allowedToChange = false;
 			StartCoroutine("StartSinglePlayer");
 			locked = true;
 			ChangeState(Menu.CharacterSelect);
@@ -253,6 +263,27 @@ switch(State) {
 			break;			
 			}
 		
+		}
+		
+	break;
+	
+		case Menu.Multiplayer:
+		Options = ["Quick Race","Back"];
+		stateLocation = "State 4";
+		
+		if(cancelBool)
+			ChangeState(Menu.MainMenu);
+			
+		if(submitBool)
+		{
+			switch(currentSelection){
+			case 0:
+
+			break;
+			case 1:
+			ChangeState(Menu.MainMenu);
+			break;	
+			}
 		}
 		
 	break;
@@ -349,6 +380,9 @@ switch(State) {
 			Screen.SetResolution(Screen.resolutions[ScreenR].width,Screen.resolutions[ScreenR].height,FullScreen);
 			QualitySettings.SetQualityLevel(Quality);
 			PlayerPrefs.SetString("playerName",playerName);
+			
+			PlayerPrefs.SetInt("overallLapisCount",gd.overallLapisCount);
+			
 			gd.Popup("Your changes have been saved!");
 			Debug.Log("Done!");
 			break;
@@ -399,7 +433,7 @@ switch(State) {
 		else
 			GUI.DrawTexture(drawRect,OptionsTexture,ScaleMode.ScaleToFit);
 			
-		if(WithinBounds(drawRect))
+		if(im.WithinBounds(drawRect,true))
 		currentSelection = i;
 		
 		if(State == Menu.Options)
@@ -444,7 +478,7 @@ switch(State) {
 			if(i == 0){
 				var resRect : Rect = Rect(sideScroll + Screen.width/10f + OptionsTexture.width * ratio,(IconHeight*(i+5)),OptionsTexture.width * ratio,IconHeight);
 				
-				if(WithinBounds(resRect))
+				if(im.WithinBounds(resRect,true))
 					currentSelection = 0;
 					
 				OutLineLabel2(resRect,Screen.resolutions[ScreenR].width + " x " + Screen.resolutions[ScreenR].height,2,Color.black);
@@ -452,7 +486,7 @@ switch(State) {
 				var leftarrowResRect : Rect = Rect(sideScroll + Screen.width/10f + OptionsTexture.width * ratio - IconHeight,(IconHeight*(i+5)),IconHeight,IconHeight);
 				var rightarrowResRect : Rect = Rect(sideScroll + Screen.width/10f + (OptionsTexture.width * ratio)*2 - IconHeight,(IconHeight*(i+5)),IconHeight,IconHeight);
 				
-				if(WithinBounds(leftarrowResRect) && submitBool)
+				if(im.WithinBounds(leftarrowResRect,true) && submitBool)
 				{
 					ScreenR -= 1;
 					
@@ -461,7 +495,7 @@ switch(State) {
 					
 				}
 				
-				if(WithinBounds(rightarrowResRect) && submitBool)
+				if(im.WithinBounds(rightarrowResRect,true) && submitBool)
 				{
 					ScreenR += 1;
 					
@@ -481,7 +515,7 @@ switch(State) {
 				var NoTexture = Resources.Load("UI Textures/New Main Menu/State 5/No",Texture2D); 
 				var yesnoRect : Rect = Rect(sideScroll + Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f);
 
-				if(WithinBounds(yesnoRect))
+				if(im.WithinBounds(yesnoRect,true))
 					currentSelection = 1;
 					
 
@@ -496,7 +530,7 @@ switch(State) {
 			
 				var qualityRect : Rect = Rect(sideScroll + Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f);
 			
-				if(WithinBounds(qualityRect))
+				if(im.WithinBounds(qualityRect,true))
 					currentSelection = 2;
 			
 				OutLineLabel2(qualityRect,QualitySettings.names[Quality],2,Color.black);
@@ -504,7 +538,7 @@ switch(State) {
 				var leftarrowqualityRect : Rect = Rect(sideScroll + Screen.width/10f + OptionsTexture.width * ratio - IconHeight,(IconHeight*(i+5)),IconHeight,IconHeight);
 				var rightarrowqualityRect : Rect = Rect(sideScroll + Screen.width/10f + (OptionsTexture.width * ratio)*2 - IconHeight,(IconHeight*(i+5)),IconHeight,IconHeight);
 				
-				if(WithinBounds(leftarrowqualityRect) && submitBool)
+				if(im.WithinBounds(leftarrowqualityRect,true) && submitBool)
 				{
 					Quality -= 1;
 					
@@ -513,7 +547,7 @@ switch(State) {
 					
 				}
 				
-				if(WithinBounds(rightarrowqualityRect) && submitBool)
+				if(im.WithinBounds(rightarrowqualityRect,true) && submitBool)
 				{
 					Quality += 1;
 					
@@ -531,7 +565,7 @@ switch(State) {
 			
 				var playerNameRect : Rect = Rect(sideScroll + Screen.width/10f + (OptionsTexture.width * ratio),(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f);
 			
-				if(WithinBounds(playerNameRect))
+				if(im.WithinBounds(playerNameRect,true))
 					currentSelection = 3;
 				
 				if(currentSelection == 3)
@@ -585,12 +619,15 @@ function Return()
 {
 locked = false;
 StopCoroutine("StartSinglePlayer");
+im.allowedToChange = true;
 transform.GetComponent(newCharacterSelect).hidden = true;
 transform.GetComponent(Level_Select).hidden = true;
 ChangeState(Menu.LocalMenu);
 }
 
 function StartSinglePlayer(){
+
+gd.CheckforNewStuff();
 
 while(gd.currentChoices.Length == 0){
 transform.GetComponent(newCharacterSelect).hidden = false;
@@ -648,16 +685,6 @@ GUI.Label(pos,text,nstyle);
 
 }
 
-
-function WithinBounds(Area : Rect){
-
-if(Input.mousePosition.x >= Area.x && Input.mousePosition.x <= Area.x + Area.width 
-&&  Screen.height-Input.mousePosition.y >= Area.y &&  Screen.height-Input.mousePosition.y <= Area.y + Area.height)
-return true;
-else
-return false;
-
-}
 
 function GetOptionSettings()
 {

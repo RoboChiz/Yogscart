@@ -144,13 +144,13 @@ function OnGUI()
 		}
 		
 	//Calculate or Reset buttonLock on all controllers
+	var cursorPresent : boolean;
+	
 	for(i = 0; i < c.Length; i++)
 	{
 	
-		if(c[0].inputName != "Key_")
-			Screen.lockCursor = true;
-		else
-			Screen.lockCursor = false;
+	if(c[i].inputName == "Key_")
+	cursorPresent = true;
 	
 		if(Input.GetAxisRaw(c[i].inputName + "Submit") == 0 && Input.GetAxisRaw(c[i].inputName + "Cancel") == 0)
 			c[i].buttonLock = false;
@@ -160,6 +160,11 @@ function OnGUI()
 			
 		
 	}
+	
+	if(!cursorPresent)
+		Screen.lockCursor = true;
+	else
+		Screen.lockCursor = false;
 		
 
 }
@@ -229,6 +234,17 @@ function RemoveController(input : String){
 	c = copy;
 	
 	inputLock = false;
+
+}
+
+function WithinBounds(Area : Rect,p1required : boolean)
+{
+
+if((!p1required || (p1required && c[0].inputName == "Key_")) && (Input.mousePosition.x >= Area.x && Input.mousePosition.x <= Area.x + Area.width 
+&&  Screen.height-Input.mousePosition.y >= Area.y &&  Screen.height-Input.mousePosition.y <= Area.y + Area.height))
+return true;
+else
+return false;
 
 }
 

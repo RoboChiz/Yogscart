@@ -47,5 +47,11 @@ GUI.DrawTexture(newIconRect,test);
 var im = GameObject.Find("GameData").GetComponent(InputManager);														
 																																							
 if(Done && (im.c[0].GetRawInput("Submit") != 0 || im.c[0].GetRawInput("Cancel") != 0))
-Destroy(this); 																											
+{
+Time.timeScale = 1f;
+Destroy(this); 		
+}else{
+Time.timeScale = 0f;
+}
+																									
 }

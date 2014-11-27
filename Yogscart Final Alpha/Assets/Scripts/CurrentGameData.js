@@ -1,7 +1,10 @@
 ﻿#pragma strict
 
-enum User{Player,Dev,Vip};
+enum User{Player,Backer,VIP};
 var gameTag : User;
+
+var overallLapisCount : int;
+var lastoverallLapisCount : int;
 
 //Tracks 
 @HideInInspector
@@ -233,8 +236,74 @@ private var ColourAlpha : Color = Color.white;
 		Wheels[n].Unlocked = false;
 		}
 		}
-			
+		
+		overallLapisCount = PlayerPrefs.GetInt("overallLapisCount",0);
+		lastoverallLapisCount = PlayerPrefs.GetInt("lastoverallLapisCount",0);
+				
+		
+}
+
+function CheckforNewStuff()
+{
+
+		if(PlayerPrefs.GetFloat("NewCharacter?",0) == 1)
+		{			
+				while(BlackOut == true)
+				yield;
+		
+				PlayerPrefs.SetFloat("NewCharacter?",0);
+				UnlockNewCharacter();
+
 		}
+
+		if(overallLapisCount >= lastoverallLapisCount + 50)
+		{
+		
+		while(BlackOut == true)
+		yield;
+		
+		UnlockNewHat();
+		PlayerPrefs.SetInt("lastoverallLapisCount",lastoverallLapisCount+50);
+		}	
+		
+		LoadEverything();
+}
+		
+function UnlockNewCharacter()
+{
+	//Unlock Character
+	var copy = new Array();
+	
+	for(var n = 0; n < Characters.Length;n++){
+	if(Characters[n].Unlocked == false)
+	copy.Push(n);	
+	}
+	
+	if(copy.length > 0){
+		var unlockedCharacter = Random.Range(0,copy.length);
+		PlayerPrefs.SetInt(Characters[copy[unlockedCharacter]].Name,1);
+		
+	Popup("You have unlocked a new Character!");
+	}
+}
+
+function UnlockNewHat()
+{
+	//Unlock Character
+	var copy = new Array();
+	
+	for(var n = 0; n < Hats.Length;n++){
+	if(Hats[n].Unlocked == false)
+	copy.Push(n);	
+	}
+	
+	if(copy.length > 0){
+		var unlockedHat = Random.Range(0,copy.length);
+		PlayerPrefs.SetInt(Hats[copy[unlockedHat]].Name,1);
+		
+	Popup("You have unlocked a new Hat!");
+	}
+}
 		
 		function ResetEverything(){
 		
@@ -267,6 +336,8 @@ private var ColourAlpha : Color = Color.white;
 		PlayerPrefs.SetInt(Wheels[n].Name,0);
 		}
 		
+		PlayerPrefs.SetInt("overallLapisCount",0);
+		PlayerPrefs.SetInt("lastoverallLapisCount",0);
 		
 		LoadEverything();
 		
@@ -341,6 +412,7 @@ public class PowerUp
     var Model : Transform;
     
     var type : ItemType;
+    var DestroyAfterUse : boolean;
     
 	var likelihood : int[];
 

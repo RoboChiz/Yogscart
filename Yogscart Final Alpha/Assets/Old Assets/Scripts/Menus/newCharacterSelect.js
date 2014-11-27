@@ -14,7 +14,7 @@ private var ready : boolean[];
 private var kartSelected : boolean[];
 private var cursorPosition : Vector2[];
 
-private var inputLock : boolean[];
+var inputLock : boolean[];
 private var choicesPerColumn : int;
 
 private var loadedCharacter : int[];
@@ -25,11 +25,15 @@ private var loadedModels : Transform[];
 
 private var gd : CurrentGameData;
 private var im : InputManager;
+private var iconWidth : float;
 
 function Start () {
 
 gd = GameObject.Find("GameData").GetComponent(CurrentGameData);
 im = GameObject.Find("GameData").GetComponent(InputManager);
+
+hiddenFloat = -(iconWidth*6f);
+iconWidth = (Screen.width/2f)/5;
 
 choice = new LoadOut[4];
 loadedModels = new Transform[4];
@@ -58,6 +62,11 @@ if(!hidden){
 for(var i : int = 0;i < im.c.Length;i++){
 
 if(state == 0){
+
+if(gd.transform.GetComponent(SinglePlayer_Script).type != RaceStyle.TimeTrial)
+im.allowedToChange = true;
+else
+im.allowedToChange = false;
 
 if(loadedCharacter[i] != choice[i].character){
 
@@ -276,7 +285,6 @@ function HideTitles(hide : boolean)
 {
 
 var startTime = Time.realtimeSinceStartup;
-var iconWidth : float = (Screen.width/2f)/5;
 
 var toScroll : float;
 var fromScroll : float;
@@ -297,9 +305,21 @@ hiddenFloat = Mathf.Lerp(fromScroll,toScroll,(Time.realtimeSinceStartup-startTim
 yield;
 }
 
+if(hide)
+hiddenFloat = -(iconWidth*6f);
+else
+hiddenFloat = 10;
+
 }
 
 function OnGUI () {
+
+var avg = ((Screen.height + Screen.width)/2f)/30f;
+
+GUI.skin = Resources.Load("GUISkins/Main Menu", GUISkin);
+
+GUI.skin.label.fontSize = avg;
+GUI.skin.customStyles[4].fontSize = avg;
 
 if(hidden)
 {
@@ -321,7 +341,7 @@ GUI.skin = Resources.Load("GUISkins/Main Menu",GUISkin);
 
 var stateTexture : Texture2D;
 
-var iconWidth : float = (Screen.width/2f)/5;
+iconWidth = (Screen.width/2f)/5;
 
 var Heightratio : float = ((Screen.width/3f)/1000f)*200f;
 
@@ -336,9 +356,13 @@ if(!hidden){
 
 if(state == 0){ //Character Select
 
-im.allowedToChange = true;
-
 stateTexture = Resources.Load("UI Textures/New Character Select/char",Texture2D);
+
+if(Input.GetJoystickNames().Length+1 > im.c.Length && im.c.Length < 4)
+{
+OutLineLabel(Rect(Screen.width/2f,Screen.height - (avg*2f),Screen.width/2f,avg),"Multiple Controllers Detected",2);
+OutLineLabel(Rect(Screen.width/2f,Screen.height - avg,Screen.width/2f,avg),"Press Start to Join",2);
+}
 
 var characterCounter : int;
 
@@ -356,6 +380,10 @@ else
 icon = Resources.Load("UI Textures/Character Icons/question_mark",Texture2D);
 
 GUI.DrawTexture(iconRect,icon);
+
+for(var playerCount : int = 0; playerCount < im.c.Length; playerCount++)
+if(im.c[playerCount].inputName == "Key_" && im.WithinBounds(iconRect,false) && !ready[playerCount] )
+choice[playerCount].character = characterCounter;
 
 characterCounter += 1;
 
@@ -387,6 +415,8 @@ var CursorRect : Rect = Rect(hiddenFloat + 20 + cursorPosition[c].x * iconWidth,
 var CursorTexture : Texture2D = Resources.Load("UI Textures/Cursors/Cursor_"+c,Texture2D);
 GUI.DrawTexture(CursorRect,CursorTexture);
 
+if(im.c[c].GetInput("Horizontal") == 0 && im.c[c].GetInput("Vertical") == 0)
+inputLock[c] = false;
 
 //Get new Input
 if(ready[c] == false){
@@ -494,6 +524,10 @@ else
 haticon = Resources.Load("UI Textures/Character Icons/question_mark",Texture2D);
 
 GUI.DrawTexture(haticonRect,haticon);
+
+for(var hatCount : int = 0; hatCount < im.c.Length; hatCount++)
+if(im.c[hatCount].inputName == "Key_" && im.WithinBounds(haticonRect,false) && !ready[hatCount] )
+choice[hatCount].hat = hatCounter;
 
 hatCounter += 1;
 
@@ -656,7 +690,7 @@ Resetready();
 
 function kartSelect(c : int,pos : int){
 
-var iconWidth : float = (Screen.width/2f)/5;
+iconWidth = (Screen.width/2f)/5;
 var Heightratio : float = ((Screen.width/3f)/1000f)*200f;
 var BoardHeight : float = iconWidth*6f + 10 - Heightratio;
 
@@ -699,6 +733,33 @@ var wheelRect : Rect = Rect(areaRect.width/2f,areaRect.height/2f - idealheight/2
 GUI.DrawTexture(kartRect,kartIcon,ScaleMode.ScaleToFit);
 GUI.DrawTexture(wheelRect,wheelIcon,ScaleMode.ScaleToFit);
 
+var kartUpRect : Rect = Rect(0,areaRect.height/2f - idealheight/2f - idealheight/4f,idealWidth,idealheight/4f);
+var kartDownRect : Rect = Rect(0,areaRect.height/2f + idealheight/2f,idealWidth,idealheight/4f);
+GUI.DrawTexture(kartUpRect,Resources.Load("UI Textures/New Main Menu/Up_Arrow",Texture2D),ScaleMode.ScaleToFit);
+GUI.DrawTexture(kartDownRect,Resources.Load("UI Textures/New Main Menu/Down_Arrow",Texture2D),ScaleMode.ScaleToFit);
+
+var wheelUpRect : Rect = Rect(areaRect.width/2f,areaRect.height/2f - idealheight/2f - idealheight/4f,idealWidth,idealheight/4f);
+var wheelDownRect : Rect = Rect(areaRect.width/2f,areaRect.height/2f + idealheight/2f,idealWidth,idealheight/4f);
+GUI.DrawTexture(wheelUpRect,Resources.Load("UI Textures/New Main Menu/Up_Arrow",Texture2D),ScaleMode.ScaleToFit);
+GUI.DrawTexture(wheelDownRect,Resources.Load("UI Textures/New Main Menu/Down_Arrow",Texture2D),ScaleMode.ScaleToFit);
+
+var kartUp = im.WithinBounds(Rect(areaRect.x+kartUpRect.x,areaRect.y+kartUpRect.y,kartUpRect.width,kartUpRect.height),false);
+var kartDown = im.WithinBounds(Rect(areaRect.x+kartDownRect.x,areaRect.y+kartDownRect.y,kartDownRect.width,kartDownRect.height),false);
+var wheelUp = im.WithinBounds(Rect(areaRect.x+wheelUpRect.x,areaRect.y+wheelUpRect.y,wheelUpRect.width,wheelUpRect.height),false);
+var wheelDown = im.WithinBounds(Rect(areaRect.x+wheelDownRect.x,areaRect.y+wheelDownRect.y,wheelDownRect.width,wheelDownRect.height),false);
+
+if(kartUp && im.c[c].GetInput("Submit"))
+	choice[c].kart = NumClamp(choice[c].kart + 1,0,gd.Karts.Length);
+
+if(kartDown && im.c[c].GetInput("Submit"))
+	choice[c].kart = NumClamp(choice[c].kart - 1,0,gd.Karts.Length);
+	
+if(wheelUp && im.c[c].GetInput("Submit"))
+	choice[c].wheel = NumClamp(choice[c].wheel + 1,0,gd.Karts.Length);
+
+if(wheelDown && im.c[c].GetInput("Submit"))
+	choice[c].wheel = NumClamp(choice[c].wheel - 1,0,gd.Karts.Length);	
+
 //Render Cursor
 var CursorTexture : Texture2D = Resources.Load("UI Textures/Cursors/Cursor_"+c,Texture2D);
 
@@ -715,6 +776,8 @@ var submitBool = (submitInput != 0);
 var cancelInput : float = im.c[c].GetInput("Cancel");
 var cancelBool = (cancelInput != 0);
 
+if(im.c[c].GetInput("Horizontal") == 0 && im.c[c].GetInput("Vertical") == 0)
+inputLock[c] = false;
 
 if(im.c[c].GetInput("Vertical") != 0 && inputLock[c] == false && ready[c] == false){
 
@@ -735,7 +798,7 @@ choice[c].wheel = NumClamp(choice[c].wheel,0,gd.Wheels.Length);
 }
 }
 
-if(submitBool){
+if(submitBool && !kartUp && !kartDown && !wheelUp && !wheelDown){
 
 if(kartSelected[c] == false)
 kartSelected[c] = true;
@@ -743,11 +806,6 @@ else
 ready[c] = true;
 
 }
-
-
-
-if(im.c[c].GetInput("Horizontal") == 0 && im.c[c].GetInput("Vertical") == 0)
-inputLock[c] = false;
 
 if(cancelBool){
 if(ready[c] == true)
@@ -824,5 +882,24 @@ val += (max-min);
 
 
 return val;
+
+}
+
+function OutLineLabel(pos : Rect, text : String,Distance : float){
+OutLineLabel(pos,text,Distance,Color.black);
+}
+
+function OutLineLabel(pos : Rect, text : String,Distance : float,Colour : Color){
+Distance = Mathf.Clamp(Distance,1,Mathf.Infinity);
+
+var style = new GUIStyle(GUI.skin.GetStyle("Label"));
+style.normal.textColor = Colour;
+GUI.Label(Rect(pos.x+Distance,pos.y,pos.width,pos.height),text,style);
+GUI.Label(Rect(pos.x,pos.y+Distance,pos.width,pos.height),text,style);
+GUI.Label(Rect(pos.x-Distance,pos.y,pos.width,pos.height),text,style);
+GUI.Label(Rect(pos.x,pos.y-Distance,pos.width,pos.height),text,style);
+var nstyle = new GUIStyle(GUI.skin.GetStyle("Label"));
+nstyle.normal.textColor.a = Colour.a;
+GUI.Label(pos,text,nstyle);
 
 }

@@ -19,7 +19,7 @@
 	<DebugType>full</DebugType>
 	<Optimize>false</Optimize>
 	<OutputPath>Temp\bin\Debug\</OutputPath>
-	<DefineConstants>DEBUG;TRACE;UNITY_4_5_5;UNITY_4_5;UNITY_STANDALONE_WIN;ENABLE_MICROPHONE;ENABLE_TEXTUREID_MAP;ENABLE_UNITYEVENTS;ENABLE_NEW_HIERARCHY ;ENABLE_AUDIO_FMOD;UNITY_STANDALONE;ENABLE_MONO;ENABLE_TERRAIN;ENABLE_SUBSTANCE;ENABLE_GENERICS;INCLUDE_WP8SUPPORT;ENABLE_MOVIES;ENABLE_WWW;ENABLE_IMAGEEFFECTS;INCLUDE_WP_BLUE_SUPPORT;ENABLE_WEBCAM;INCLUDE_METROSUPPORT;RENDER_SOFTWARE_CURSOR;ENABLE_NETWORK;ENABLE_PHYSICS;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_2D_PHYSICS;ENABLE_SHADOWS;ENABLE_AUDIO;ENABLE_NAVMESH_CARVING;ENABLE_DUCK_TYPING;ENABLE_SINGLE_INSTANCE_BUILD_SETTING;ENABLE_PROFILER;UNITY_EDITOR;UNITY_EDITOR_WIN;UNITY_TEAM_LICENSE;UNITY_PRO_LICENSE</DefineConstants>
+	<DefineConstants>DEBUG;TRACE;UNITY_4_5_5;UNITY_4_5;UNITY_64;UNITY_STANDALONE_WIN;ENABLE_MICROPHONE;ENABLE_TEXTUREID_MAP;ENABLE_UNITYEVENTS;ENABLE_NEW_HIERARCHY ;ENABLE_AUDIO_FMOD;UNITY_STANDALONE;ENABLE_MONO;ENABLE_TERRAIN;ENABLE_SUBSTANCE;ENABLE_GENERICS;INCLUDE_WP8SUPPORT;ENABLE_MOVIES;ENABLE_WWW;ENABLE_IMAGEEFFECTS;INCLUDE_WP_BLUE_SUPPORT;ENABLE_WEBCAM;INCLUDE_METROSUPPORT;RENDER_SOFTWARE_CURSOR;ENABLE_NETWORK;ENABLE_PHYSICS;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_2D_PHYSICS;ENABLE_SHADOWS;ENABLE_AUDIO;ENABLE_NAVMESH_CARVING;ENABLE_DUCK_TYPING;ENABLE_SINGLE_INSTANCE_BUILD_SETTING;ENABLE_PROFILER;UNITY_EDITOR;UNITY_EDITOR_WIN;UNITY_TEAM_LICENSE;UNITY_PRO_LICENSE</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
 	<NoWarn>0169</NoWarn>
@@ -81,7 +81,6 @@
      <Compile Include="Assets\Old Assets\Scripts\Menus\LobbyHandler.js" />
      <Compile Include="Assets\Old Assets\Scripts\Menus\Main_Menu.js" />
      <Compile Include="Assets\Old Assets\Scripts\Menus\NewCharacter.js" />
-     <Compile Include="Assets\Old Assets\Scripts\Menus\NewCharacter_Test.js" />
      <Compile Include="Assets\Old Assets\Scripts\Menus\Title Rotate.js" />
      <Compile Include="Assets\Old Assets\Scripts\Menus\newCharacterSelect.js" />
      <Compile Include="Assets\Old Assets\Scripts\Networking 2\Client.js" />
@@ -114,11 +113,14 @@
      <Compile Include="Assets\Old Assets\Scripts\Track Editor\TrackData.js" />
      <Compile Include="Assets\Resources\Karts\Dyne\Scripts\Pulse.js" />
      <Compile Include="Assets\Resources\Music &amp; Sounds\Event_Cannon.js" />
+     <Compile Include="Assets\Scripts\BoostPad.js" />
      <Compile Include="Assets\Scripts\CurrentGameData.js" />
      <Compile Include="Assets\Scripts\InputManager.js" />
      <Compile Include="Assets\Scripts\KartMaker Scripts\CharacterSkeleton.js" />
      <Compile Include="Assets\Scripts\KartMaker Scripts\KartMaker.js" />
      <Compile Include="Assets\Scripts\KartMaker Scripts\KartSkeleton.js" />
+     <Compile Include="Assets\Scripts\Powerups\Egg.js" />
+     <Compile Include="Assets\Scripts\Scrolling_Texture.js" />
      <Compile Include="Assets\Scripts\kartScript.js" />
      <None Include="Assets\Old Assets\Standard Assets\Toon Shading\Sources\Shaders\Toony-Basic.shader" />
      <None Include="Assets\Old Assets\Replay Tests\SjinsFarm_6_11_2014.txt" />

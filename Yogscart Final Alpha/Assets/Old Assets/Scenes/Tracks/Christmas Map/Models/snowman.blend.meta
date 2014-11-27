@@ -1,0 +1,143 @@
+fileFormatVersion: 2
+guid: 679880927d86c4a429219b18c968d68c
+ModelImporter:
+  serializedVersion: 16
+  fileIDToRecycleName:
+    100000: high_poly_body
+    100002: high_poly_button_left
+    100004: high_poly_button_right
+    100006: high_poly_carrot
+    100008: high_poly_hat
+    100010: high_poly_head
+    100012: high_poly_scarf
+    100014: high_poly_snow
+    100016: low_poly_body
+    100018: low_poly_body_alt_1
+    100020: low_poly_body_alt_2
+    100022: low_poly_carrot
+    100024: low_poly_hat
+    100026: low_poly_head
+    100028: low_poly_scarf
+    100030: low_poly_snow
+    100032: //RootNode
+    400000: high_poly_body
+    400002: high_poly_button_left
+    400004: high_poly_button_right
+    400006: high_poly_carrot
+    400008: high_poly_hat
+    400010: high_poly_head
+    400012: high_poly_scarf
+    400014: high_poly_snow
+    400016: low_poly_body
+    400018: low_poly_body_alt_1
+    400020: low_poly_body_alt_2
+    400022: low_poly_carrot
+    400024: low_poly_hat
+    400026: low_poly_head
+    400028: low_poly_scarf
+    400030: low_poly_snow
+    400032: //RootNode
+    2300000: high_poly_body
+    2300002: high_poly_button_left
+    2300004: high_poly_button_right
+    2300006: high_poly_carrot
+    2300008: high_poly_hat
+    2300010: high_poly_head
+    2300012: high_poly_scarf
+    2300014: high_poly_snow
+    2300016: low_poly_body
+    2300018: low_poly_body_alt_1
+    2300020: low_poly_body_alt_2
+    2300022: low_poly_carrot
+    2300024: low_poly_hat
+    2300026: low_poly_head
+    2300028: low_poly_scarf
+    2300030: low_poly_snow
+    3300000: high_poly_body
+    3300002: high_poly_button_left
+    3300004: high_poly_button_right
+    3300006: high_poly_carrot
+    3300008: high_poly_hat
+    3300010: high_poly_head
+    3300012: high_poly_scarf
+    3300014: high_poly_snow
+    3300016: low_poly_body
+    3300018: low_poly_body_alt_1
+    3300020: low_poly_body_alt_2
+    3300022: low_poly_carrot
+    3300024: low_poly_hat
+    3300026: low_poly_head
+    3300028: low_poly_scarf
+    3300030: low_poly_snow
+    4300000: low_poly_body_alt_2
+    4300002: low_poly_body_alt_1
+    4300004: low_poly_snow
+    4300006: low_poly_carrot
+    4300008: low_poly_scarf
+    4300010: low_poly_hat
+    4300012: low_poly_head
+    4300014: low_poly_body
+    4300016: high_poly_snow
+    4300018: high_poly_button_right
+    4300020: high_poly_button_left
+    4300022: high_poly_hat
+    4300024: high_poly_carrot
+    4300026: high_poly_scarf
+    4300028: high_poly_body
+    4300030: high_poly_head
+    7400000: Default Take
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationCompression: 1
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  additionalBone: 0
+  userData: 

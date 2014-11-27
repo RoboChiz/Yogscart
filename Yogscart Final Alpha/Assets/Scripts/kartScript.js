@@ -35,6 +35,8 @@ private var allowedBoost : boolean;
 private var spinOut : boolean;
 private var boostAmount : float;
 
+private var spinning : boolean;
+
 @HideInInspector
 var spinTime : float = 2f;
 
@@ -50,10 +52,12 @@ var pushDistance : float = 1f;
 var pushTime : float = 0.1f;
 private var Pushing : boolean;
 
+private var lastPosition : Vector3;
+
 function Awake(){
 //Precalulcate intensive constants
 MSdivided = (1/MaxSpeed);
-localScale = (transform.localScale.x + transform.localScale.y + transform.localScale.z)/3;
+localScale = 3;
 rigidbody.centerOfMass = transform.FindChild("Centre of Mass").localPosition;
 
 
@@ -127,9 +131,9 @@ isBoosting = false;
 //ExpectedSpeed -= 0.75f;
 }
 
-if(!Pushing){
+if(hit.transform.tag != "Kart" && !Pushing){
 Pushing = true;
-Push(hit.normal);
+//Push(hit.normal);
 }
 
 }
@@ -175,7 +179,7 @@ var offTrack : int = 0;
 for(var wheelCount : int = 0; wheelCount < Wheels.Length; wheelCount++)
 {
 var hit : RaycastHit;
-if(Physics.Raycast(Wheels[wheelCount].transform.position,-Wheels[wheelCount].transform.up,hit,1) && hit.transform.tag != "Drivable"){
+if(Physics.Raycast(Wheels[wheelCount].transform.position,-Wheels[wheelCount].transform.up,hit,1) && hit.transform.tag == "NotDrivable"){
 offTrack += 1;
 }
 }
@@ -192,21 +196,27 @@ ExpectedSpeed = MaxSpeed + BoostAddition;
 var relativeVelocity : Vector3 = transform.InverseTransformDirection(rigidbody.velocity);
 actualSpeed = relativeVelocity.z;
 
+var nExpectedSpeed = ExpectedSpeed * localScale;
+var nA  = (nExpectedSpeed-actualSpeed)/Time.fixedDeltaTime;
+
 //AS Physics about Velocity :D Take note!
 //V=U+AT
 //(V-U)/T
 //F=MA
+//s = ut + 0.5at²
 
-var nExpectedSpeed = ExpectedSpeed * localScale;
-
-var nA  = (nExpectedSpeed-actualSpeed)/Time.fixedDeltaTime;
 if(!isFalling)
 rigidbody.AddForce(transform.forward * rigidbody.mass * nA);
 
 lastMaxSpeed = nMaxSpeed;
 
-}
 
+var downHit : RaycastHit;
+if(Physics.Raycast(transform.position,Vector3.down,hit,10))
+if(Vector3.Angle(hit.normal,transform.up) > 10)
+SnapUp();
+
+}
 
 function ApplyThrottle(){
 
@@ -335,7 +345,6 @@ private var isBoosting : boolean;
 var BoostAddition : int = 3;
 
 function Boost(t : float){
-if(isBoosting == false){
 isBoosting = true;
 
 var BoostSound = Resources.Load("Music & Sounds/SFX/boost",AudioClip);
@@ -353,6 +362,16 @@ flameParticles[i].Stop();
 isBoosting = false;
 
 }
+
+function CancelBoost()
+{
+
+StopCoroutine("Boost");
+
+for(var i : int = 0; i < flameParticles.Length; i++)
+flameParticles[i].Stop();
+
+isBoosting = false;
 }
 
 function SnapUp(){
@@ -374,6 +393,13 @@ MeshWheels[i].Rotate(Vector3(Wheels[i].rpm/30f,0,0));
 
 function SpinOut(){
 
+if(!spinning)
+{
+
+spinning = true;
+
+CancelBoost();
+
 locked = true;
 
 var t : float = 0;
@@ -390,6 +416,10 @@ t += Time.deltaTime;
 
 Ani.SetBool("Hit",false);
 locked = false;
+
+spinning = false;
+
+}
 
 }
 

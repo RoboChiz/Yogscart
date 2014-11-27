@@ -9,7 +9,7 @@ function Start(){
 Origin = transform.position.y;
 }
 
-function Update () {
+function FixedUpdate () {
 
 transform.Rotate(Vector3.up,RotateSpeed);
 

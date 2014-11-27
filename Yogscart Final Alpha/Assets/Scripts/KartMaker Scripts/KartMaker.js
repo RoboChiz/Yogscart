@@ -5,10 +5,43 @@ enum KartType{Display,Local,Online,Spectator};
 
 private var gd : CurrentGameData;
 
+var DebugMode : boolean;
+var DebugPositions : Vector3[];
+
 function Start()
 {
 
 gd = transform.GetComponent(CurrentGameData);
+
+if(DebugMode)
+{
+var holder : Transform = SpawnKart(KartType.Local,0,0,0,0);
+holder.gameObject.AddComponent(kartInput);
+holder.GetComponent(kartScript).locked = false;
+holder.GetComponent(Position_Finding).enabled = false;
+holder.GetComponent(Position_Finding).position = 11;
+//Adjust Scripts
+var im = GameObject.Find("GameData").GetComponent(InputManager);
+holder.GetComponent(kartInput).InputName = im.c[0].inputName;
+//Add Camera
+var IngameCam = Instantiate(Resources.Load("Prefabs/Cameras",Transform),Vector3.zero,Quaternion.identity);
+IngameCam.name = "InGame Cams";
+
+holder.GetComponent(kartInput).camLocked = true;
+holder.GetComponent(kartInput).frontCamera = IngameCam.GetChild(1).camera;
+holder.GetComponent(kartInput).backCamera = IngameCam.GetChild(0).camera;
+
+IngameCam.GetChild(0).GetComponent(Kart_Camera).Target = holder;
+IngameCam.GetChild(1).GetComponent(Kart_Camera).Target = holder;
+
+for(var i : int = 0; i < DebugPositions.Length; i++)
+{
+var OtherKart : Transform = SpawnKart(KartType.Local,0,0,0,0);
+OtherKart.position = DebugPositions[i];
+OtherKart.GetComponent(Position_Finding).enabled = false;
+}
+
+}
 
 }
 
@@ -124,6 +157,7 @@ ks.DriftParticles[1] = kp.FindChild("Right Spark");
 if(kartType != KartType.Spectator){
 kb.AddComponent(Position_Finding);
 kb.AddComponent(kartItem);
+kb.GetComponent(kartItem).spawnDistance = kartSkel.ItemDrop;
 }
 
 }

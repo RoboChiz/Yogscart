@@ -32,10 +32,14 @@ frontCamera.enabled = true;
 }
 
 if(ki != null)
+{
 if(Input.GetAxis(InputName+ "Use Item")!=0)
 ki.input = true;
 else
 ki.input = false;
 
+ki.CluckyInput = Vector3(Input.GetAxis(InputName+ "Horizontal"),0,Input.GetAxis(InputName+ "Vertical"));
+
+}
 }
 

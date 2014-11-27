@@ -1,6 +1,7 @@
 ﻿ #pragma strict
 
 var input : boolean;
+var CluckyInput : Vector3 = Vector3(0,0,1);
 
 var inUse : boolean;
 var heldPowerUp : int = -1;
@@ -17,6 +18,9 @@ private var ki : kartInfo;
 private var pf : Position_Finding;
 
 private var size : float;
+var spawnDistance : float;
+
+var loadedClucky : Transform;
 
 function Awake(){
 if(this.enabled == true){
@@ -30,6 +34,20 @@ if(ki == null)
 ki = transform.GetComponent(kartInfo);
 if(pf == null)
 pf = transform.GetComponent(Position_Finding);
+}
+
+function FixedUpdate()
+{
+
+if(loadedClucky != null)
+{
+if(CluckyInput != Vector3.zero)
+{
+loadedClucky.position = transform.position + transform.TransformDirection(CluckyInput.normalized*spawnDistance);
+loadedClucky.rotation = Quaternion.LookRotation(loadedClucky.position-transform.position,Vector3.up);
+}
+}
+
 }
 
 function OnTriggerEnter (other : Collider) {
@@ -89,48 +107,52 @@ yield WaitForSeconds(2);
 
 heldPowerUp = nItem;
 
+if(heldPowerUp >= 5)
+{
+loadedClucky = Instantiate(Resources.Load("Prefabs/Power Ups/Clucky",Transform),transform.position - (transform.forward*spawnDistance),transform.rotation);
+loadedClucky.parent = transform;
+loadedClucky.name = "Clucky";
 }
 
-function UsePowerUp(){
-var clone : Transform ;
+}
 
-clone = Instantiate(gd.PowerUps[heldPowerUp].Model,transform.position - transform.forward ,transform.rotation);
+function UsePowerUp()
+{
+var clone : Transform ;
+if(loadedClucky != null)
+clone = Instantiate(gd.PowerUps[heldPowerUp].Model,loadedClucky.position,transform.rotation);
+else
+clone = Instantiate(gd.PowerUps[heldPowerUp].Model,transform.position - (transform.forward*spawnDistance),transform.rotation);
 
 clone.parent = transform;
 
 if(gd.PowerUps[heldPowerUp].type == ItemType.UsableAsShield){
 
 clone.parent = transform.FindChild("Kart Body");
-
 clone.rigidbody.isKinematic = true;
 
-heldPowerUp = -1;
-
-while(input == true && clone.parent != null){
+while(input == true && clone != null){
 yield;
 }
 
 if(clone != null){
-clone.parent = null;
 clone.rigidbody.isKinematic = false;
+clone.parent = null;
 }
 
-renderItem = null;
-inUse = false;
 }
 
-if(heldPowerUp != -1)
 if(gd.PowerUps[heldPowerUp].type != ItemType.MultipleUses){
 heldPowerUp = -1;
 inUse = false;
-}else{
-heldPowerUp -= 1;
-}
 
-if(heldPowerUp != -1)
-if(gd.PowerUps[heldPowerUp].type != ItemType.UsableAsShield){
-yield;
-Destroy(clone.gameObject);
+if(loadedClucky != null)
+Destroy(loadedClucky.gameObject);
+
+}
+else
+{
+heldPowerUp -= 1;
 }
 
 }

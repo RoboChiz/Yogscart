@@ -142,7 +142,7 @@ var reversing : boolean;
 
 function useItemRandom(){
 Debug.Log("Started Iteming!");
-yield WaitForSeconds(Random.Range(0,15));
+yield WaitForSeconds(Random.Range(5,20));
 ki.input = true;
 yield;
 yield;

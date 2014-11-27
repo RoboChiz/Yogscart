@@ -15,6 +15,9 @@ var BackRPosition : Vector3; //Represented by a Pink Box
 //Location of seat for Character Spawning
 var SeatPosition : Vector3; //Represented by a Grey Box
 
+var ItemDrop : float = 2f; //Represented by a Yellow Box
+
+
 var engineSound : AudioClip;
 
 	function OnDrawGizmos() {
@@ -39,5 +42,8 @@ var engineSound : AudioClip;
 		
 		Gizmos.color = Color.gray;
 		Gizmos.DrawCube(transform.position + SeatPosition,Vector3(ChairSize,ChairWidth,ChairSize));
+		
+		Gizmos.color = Color.yellow;
+		Gizmos.DrawCube(transform.position - (transform.forward*ItemDrop),Vector3(ChairSize,ChairSize,ChairSize));
 		
 	}

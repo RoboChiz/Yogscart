@@ -4,10 +4,10 @@ var targetPos : Vector3;
 var cannonTime : float = 5f;
 
 function OnTriggerEnter (other : Collider) {
-		if(other.transform.parent.parent.GetComponent(kartScript) != null){
+		if(other.transform.GetComponent(kartScript) != null){
 		Debug.Log("PUSH!");
-		other.transform.parent.parent.GetComponent(kartScript).locked = true;
-		Push(other.transform.parent.parent);
+		other.transform.GetComponent(kartScript).locked = true;
+		Push(other.transform);
 		}
 	}
 	

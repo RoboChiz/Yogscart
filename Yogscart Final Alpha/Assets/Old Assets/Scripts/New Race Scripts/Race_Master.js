@@ -49,10 +49,15 @@ private var minuteTimer : boolean;
 var currentSelection : int;
 private var keyLock : boolean;
 
+private var idealWidth : float = Screen.width/3f;
+
 function Start(){
 gd = transform.GetComponent(CurrentGameData);
 im = transform.GetComponent(InputManager);
 td = GameObject.Find("Track Manager").GetComponent(TrackData);
+
+idealWidth = Screen.width/3f;
+
 //This section of code is for debugging each part of the Race Script, remember to remove all of the code relating to the Debug Mode when the alpha is released.
 if(DebugMode){
 
@@ -160,7 +165,6 @@ GUI.color = new Color32(255, 255, 255, raceGUIAlpha);
 if(gd.currentTrack != -1){
 var previewTexture : Texture2D = gd.Tournaments[gd.currentCup].Tracks[gd.currentTrack].Preview;
 
-var idealWidth : float = Screen.width/3f;
 var previewRatio : float = idealWidth/previewTexture.width;
 
 var previewRect : Rect = Rect(Screen.width - idealWidth - 20,Screen.height - (previewTexture.height*previewRatio*2f),idealWidth,previewTexture.height*previewRatio);
@@ -919,6 +923,12 @@ SPRacers[i].timer.Minute = OverallTimer.Minute;
 SPRacers[i].timer.Second = OverallTimer.Second;
 SPRacers[i].timer.milliSecond = OverallTimer.milliSecond;
 
+var nLapis = SPRacers[i].rep.GetComponent(kartScript).lapisAmount;
+var cLapis = PlayerPrefs.GetInt("overallLapisCount",0);
+Debug.Log("New Lapis Amount : " + nLapis);
+
+PlayerPrefs.SetInt("overallLapisCount", cLapis + nLapis);
+
 SPRacers[i].rep.gameObject.AddComponent(Racer_AI);
 Destroy(SPRacers[i].rep.GetComponent(kartInput));
 SPRacers[i].rep.GetComponent(kartInfo).hidden = true;
@@ -995,6 +1005,9 @@ function FinishRace(){
 	
 	StopCoroutine("FinishPlayer");
 	
+	if(type != RaceStyle.TimeTrial)
+	CancelInvoke("SortArray");
+	
 	currentSelection = 0;
 	
 	if(type == RaceStyle.TimeTrial){
@@ -1015,6 +1028,9 @@ function FinishRace(){
 	StopCoroutine("BeginTick");	
 				
 	}
+	
+	//Locks the input if the player is holding down submit
+	var LockInput : int = im.c[0].GetInput("Submit");
 	
 	State = Testing.ScoreBoard;
 
@@ -1085,14 +1101,14 @@ function FinishNetworkRace(){
 	
 	function StartNextRace(){
 	
-	if(type != RaceStyle.TimeTrial)
-	CancelInvoke("SortArray");
-	
 	CancelInvoke("CheckPlayer");
 	StopCoroutine("BeginTick");
 	
 	for(var i : int = 0;i < SPRacers.Length;i++)
+	{
 	SPRacers[i].points += (15 - i);
+	
+	}
 	
 	var sps : SinglePlayer_Script = transform.GetComponent(SinglePlayer_Script);
 	
@@ -1115,8 +1131,6 @@ function FinishNetworkRace(){
 	Destroy(transform.GetComponent(Level_Select));
 	}
 	
-	
-	
 	gd.BlackOut = true;
 	yield WaitForSeconds(0.5);
 	
@@ -1130,9 +1144,9 @@ function FinishNetworkRace(){
 	if(type == RaceStyle.GrandPrix){
 	
 	for(i = 0; i < SPRacers.Length;i++){
+	
 	if(SPRacers[i].Human == true && SPRacers[i].HumanID == 0){
 	Player1 = i;
-	i = 13;
 	}
 	}
 	
@@ -1157,6 +1171,8 @@ function FinishNetworkRace(){
 	if(sps.Difficulty == 3)
 	PlayerPrefs.SetString(gd.Tournaments[sps.nextCup].Name+"[Insane]","Gold");
 	}	
+	
+	PlayerPrefs.SetFloat("NewCharacter?",1);
 	
 	}
 	
@@ -1188,28 +1204,6 @@ function FinishNetworkRace(){
 	
 	}
 	}
-	
-		//Unlock Character
-	var copy = new Array();
-	
-	for(var n = 0; n < gd.Characters.Length;n++){
-	if(gd.Characters[n].Unlocked == false)
-	copy.Push(n);	
-	}
-	
-	if(copy.length > 0){
-	var unlockedCharacter = Random.Range(0,copy.length);
-	PlayerPrefs.SetInt(gd.Characters[unlockedCharacter].Name,1);
-	
-	gameObject.AddComponent(NewCharacter);
-	gameObject.AddComponent(AudioSource);
-	transform.GetComponent(NewCharacter).test = Resources.Load("UI Textures/Pop Up/new character");
-	yield;
-	
-	while(transform.GetComponent(NewCharacter) != null){
-	yield;
-	}
-	}		
 	
 	gd.BlackOut = true;
 	yield WaitForSeconds(0.5);
