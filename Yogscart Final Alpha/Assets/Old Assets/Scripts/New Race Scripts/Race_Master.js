@@ -162,7 +162,10 @@ raceGUIAlpha = Mathf.Lerp(raceGUIAlpha,0,Time.deltaTime * 5f);
 if(State == Testing.CutScene){
 
 GUI.color = new Color32(255, 255, 255, raceGUIAlpha);
+idealWidth = Screen.width/3f;
+
 if(gd.currentTrack != -1){
+
 var previewTexture : Texture2D = gd.Tournaments[gd.currentCup].Tracks[gd.currentTrack].Preview;
 
 var previewRatio : float = idealWidth/previewTexture.width;
@@ -374,6 +377,9 @@ GUI.DrawTexture(optionRect,optionTextureSel,ScaleMode.ScaleToFit);
 else
 GUI.DrawTexture(optionRect,optionTexture,ScaleMode.ScaleToFit);
 
+if(im.WithinBounds(optionRect,true))
+currentSelection = k;
+
 }
 
 if(type != RaceStyle.Online){
@@ -448,6 +454,9 @@ if(currentSelection == k)
 GUI.DrawTexture(optionRect,optionTextureSel,ScaleMode.ScaleToFit);
 else
 GUI.DrawTexture(optionRect,optionTexture,ScaleMode.ScaleToFit);
+
+if(im.WithinBounds(optionRect,true))
+currentSelection = k;
 
 }
 

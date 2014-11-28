@@ -32,8 +32,16 @@ function Update () {
 
 if(ki.heldPowerUp != -1 && usedItem == false){
 
-if(Stupidity < 5 && gd.PowerUps[ki.heldPowerUp].type == ItemType.UsableAsShield){
+if(Stupidity < 5)
+{
+
+if(gd.PowerUps[ki.heldPowerUp].type == ItemType.UsableAsShield)
 useShield();
+else if(gd.PowerUps[ki.heldPowerUp].type == ItemType.Projectile)
+FireProjectile();
+else 
+useItemRandom();
+
 }else
 useItemRandom();
 
@@ -159,6 +167,26 @@ yield;
 Debug.Log("Done Iteming!");
 ki.input = false;
 usedItem = false;
+}
+
+function FireProjectile()
+{
+while(true)
+{
+var hit : RaycastHit;
+
+if(Physics.Raycast(transform.position,transform.forward,hit,25) && hit.transform.tag == "Kart")
+{
+ki.input = true;
+break;
+}
+
+yield;
+}
+
+ki.input = false;
+usedItem = false;
+
 }
 
 function NumClamp(val : int,min : int,max : int){

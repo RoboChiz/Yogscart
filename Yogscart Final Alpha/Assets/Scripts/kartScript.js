@@ -24,8 +24,6 @@ var Wheels : WheelCollider[];
 var MeshWheels : Transform[];
 var turnSpeed : float = 2;
 
-var forceAmount : float = 5;
-
 var lapisAmount : int = 0;
 
 @HideInInspector
@@ -53,6 +51,8 @@ var pushTime : float = 0.1f;
 private var Pushing : boolean;
 
 private var lastPosition : Vector3;
+
+var fallingcatchCollider : Collider;
 
 function Awake(){
 //Precalulcate intensive constants
@@ -143,6 +143,14 @@ Pushing = true;
 function FixedUpdate () {
 
 lapisAmount = Mathf.Clamp(lapisAmount,0,10);
+
+if(fallingcatchCollider != null)
+{
+if(isFalling)
+fallingcatchCollider.enabled = true;
+else
+fallingcatchCollider.enabled = false;
+}
 
 //Play engine Audio
 if(engineSound != null){
@@ -334,7 +342,7 @@ function CheckGravity(){
 Debug.DrawRay(transform.position,Physics.gravity.normalized*1);
 
 if((!Wheels[0].isGrounded && !Wheels[1].isGrounded && !Wheels[2].isGrounded && !Wheels[3].isGrounded)||
-!Physics.Raycast(transform.position,Physics.gravity.normalized,1))
+!Physics.Raycast(transform.position,Physics.gravity.normalized,3))
 isFalling = true;
 else
 isFalling = false;
@@ -342,10 +350,18 @@ isFalling = false;
 }
 
 private var isBoosting : boolean;
-var BoostAddition : int = 3;
+var BoostAddition : int = 5;
 
 function Boost(t : float){
+
 isBoosting = true;
+
+StopCoroutine("StartBoost");
+StartCoroutine("StartBoost",t);
+
+}
+
+function StartBoost(t : float){
 
 var BoostSound = Resources.Load("Music & Sounds/SFX/boost",AudioClip);
 
@@ -392,7 +408,11 @@ MeshWheels[i].Rotate(Vector3(Wheels[i].rpm/30f,0,0));
 }
 
 function SpinOut(){
+StartCoroutine("StartSpinOut");
+}
 
+
+function StartSpinOut(){
 if(!spinning)
 {
 

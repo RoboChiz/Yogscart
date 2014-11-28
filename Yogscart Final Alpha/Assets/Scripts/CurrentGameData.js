@@ -92,6 +92,15 @@ private var ColourAlpha : Color = Color.white;
 		}
 		
 		}
+		
+		function Start()
+		{
+		if(GameObject.Find("OldGameData") != null){
+		var oldGD = GameObject.Find("OldGameData").GetComponent(CurrentGameData);
+		im.c = oldGD.transform.GetComponent(InputManager).c;
+		Destroy(oldGD.gameObject);
+		}
+		}
 	
 		private var iconHeights : int[];
 		private var inputLock : boolean;
@@ -378,8 +387,8 @@ public class Character
     var CharacterModel_Standing : Transform;
     //Delete Later////
     
-    var StartRaceSound : AudioClip;
-	var EndRaceSound : AudioClip; 
+    var selectedSound : AudioClip;
+
 	var hitSounds : AudioClip[];
 	var tauntSounds : AudioClip[];
 	var Unlocked : boolean = false;
@@ -403,7 +412,7 @@ public class Track
     var SceneID : String;
  }
  
-enum ItemType{UsableAsShield,AffectsPlayer,AffectsOther,MultipleUses}; 
+enum ItemType{UsableAsShield,AffectsPlayer,AffectsOther,Projectile}; 
  
 public class PowerUp
  {
@@ -412,7 +421,7 @@ public class PowerUp
     var Model : Transform;
     
     var type : ItemType;
-    var DestroyAfterUse : boolean;
+    var MultipleUses : boolean;
     
 	var likelihood : int[];
 
@@ -474,7 +483,5 @@ yield WaitForSeconds(1);
 Application.LoadLevel(1);
 yield;
 
-GameObject.Find("GameData").GetComponent(InputManager).c = transform.GetComponent(InputManager).c;
-Destroy(this.gameObject);
 }
  

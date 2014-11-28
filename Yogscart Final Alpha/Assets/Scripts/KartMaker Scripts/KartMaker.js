@@ -27,7 +27,6 @@ holder.GetComponent(kartInput).InputName = im.c[0].inputName;
 var IngameCam = Instantiate(Resources.Load("Prefabs/Cameras",Transform),Vector3.zero,Quaternion.identity);
 IngameCam.name = "InGame Cams";
 
-holder.GetComponent(kartInput).camLocked = true;
 holder.GetComponent(kartInput).frontCamera = IngameCam.GetChild(1).camera;
 holder.GetComponent(kartInput).backCamera = IngameCam.GetChild(0).camera;
 
@@ -130,6 +129,9 @@ kb.AddComponent(kartScript);
 
 var ks = kb.GetComponent(kartScript);
 
+if(kb.transform.FindChild("Colliders").FindChild("FloorCatch") != null)
+ks.fallingcatchCollider = kb.transform.FindChild("Colliders").FindChild("FloorCatch").collider;
+
 ks.engineSound = kartSkel.engineSound;
 
 ks.Wheels = new WheelCollider[4];
@@ -179,7 +181,7 @@ var wheelCollider = collider.GetComponent(WheelCollider);
 
 //Setup Collider Settings
 wheelCollider.mass = 15;
-wheelCollider.suspensionDistance = 0.1;
+wheelCollider.suspensionDistance = 3;
 
 wheelCollider.suspensionSpring.spring = 2;
 wheelCollider.suspensionSpring.damper = 15;

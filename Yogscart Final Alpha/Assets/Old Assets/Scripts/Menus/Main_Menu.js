@@ -335,7 +335,7 @@ switch(State) {
 			ChangeState(Menu.MainMenu);
 			
 		var Credits : String[] = ["Ross - Project Manager / Developer","Robo_Chiz - Lead Programmer / Networking",
-		"Mysca - Level Design / UI","Beardbotnik - Character Design / Graphics Designer", "Tom - Animation", "Pico - Music",
+		"Mysca - Level Design / UI","Beardbotnik - Character Design / Graphics Designer", "Tom - Animation", "Pico - Music", "Puda (@ArgonianWTF) - Community Manager","HammerFishys - Community Manager",
 		"Yogscart is a non-profit fan game and is in no way affiliated with the Yogscast or the Youth Olympic Games", "We hope you enjoyed the alpha"];
 		
 		LogoWidth = Screen.width/2f;
@@ -424,9 +424,11 @@ switch(State) {
 		
 		var OptionsTexture : Texture2D = Resources.Load("UI Textures/New Main Menu/" + stateLocation + "/" + Options[i],Texture2D); 
 		var SelectedOptionsTexture : Texture2D = Resources.Load("UI Textures/New Main Menu/" + stateLocation + "/" + Options[i]+"_Sel",Texture2D); 
-		var ratio = (Screen.width/20f)/OptionsTexture.height;
 		
-		var drawRect : Rect = Rect(sideScroll + Screen.width/20f,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f);
+		var optionheight = (Screen.height/15f);
+		var ratio = optionheight/OptionsTexture.height;
+		
+		var drawRect : Rect = Rect(sideScroll + Screen.width/20f,(optionheight*(i+5)),OptionsTexture.width * ratio,optionheight);
 
 		if(currentSelection == i)
 			GUI.DrawTexture(drawRect,SelectedOptionsTexture,ScaleMode.ScaleToFit);
@@ -438,8 +440,6 @@ switch(State) {
 		
 		if(State == Menu.Options)
 		{
-			var IconHeight = Screen.width/20f;
-		
 			if(im.c[0].GetInput("Horizontal") != 0 && HorizontalLock == false){
 
 				HorizontalLock = true;
@@ -476,15 +476,15 @@ switch(State) {
 		
 		
 			if(i == 0){
-				var resRect : Rect = Rect(sideScroll + Screen.width/10f + OptionsTexture.width * ratio,(IconHeight*(i+5)),OptionsTexture.width * ratio,IconHeight);
+				var resRect : Rect = Rect(sideScroll + Screen.width/10f + OptionsTexture.width * ratio,(optionheight*(i+5)),OptionsTexture.width * ratio,optionheight);
 				
 				if(im.WithinBounds(resRect,true))
 					currentSelection = 0;
 					
 				OutLineLabel2(resRect,Screen.resolutions[ScreenR].width + " x " + Screen.resolutions[ScreenR].height,2,Color.black);
 				
-				var leftarrowResRect : Rect = Rect(sideScroll + Screen.width/10f + OptionsTexture.width * ratio - IconHeight,(IconHeight*(i+5)),IconHeight,IconHeight);
-				var rightarrowResRect : Rect = Rect(sideScroll + Screen.width/10f + (OptionsTexture.width * ratio)*2 - IconHeight,(IconHeight*(i+5)),IconHeight,IconHeight);
+				var leftarrowResRect : Rect = Rect(sideScroll + Screen.width/10f + OptionsTexture.width * ratio - optionheight,(optionheight*(i+5)),optionheight,optionheight);
+				var rightarrowResRect : Rect = Rect(sideScroll + Screen.width/10f + (OptionsTexture.width * ratio)*2.5 - optionheight,(optionheight*(i+5)),optionheight,optionheight);
 				
 				if(im.WithinBounds(leftarrowResRect,true) && submitBool)
 				{
@@ -513,7 +513,7 @@ switch(State) {
 
 				var YesTexture = Resources.Load("UI Textures/New Main Menu/State 5/Yes",Texture2D); 
 				var NoTexture = Resources.Load("UI Textures/New Main Menu/State 5/No",Texture2D); 
-				var yesnoRect : Rect = Rect(sideScroll + Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f);
+				var yesnoRect : Rect = Rect(sideScroll + Screen.width/10f + OptionsTexture.width * ratio,(optionheight*(i+5)),OptionsTexture.width * ratio,optionheight);
 
 				if(im.WithinBounds(yesnoRect,true))
 					currentSelection = 1;
@@ -528,15 +528,15 @@ switch(State) {
 			
 			if(i == 2){
 			
-				var qualityRect : Rect = Rect(sideScroll + Screen.width/10f + OptionsTexture.width * ratio,(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f);
+				var qualityRect : Rect = Rect(sideScroll + Screen.width/10f + OptionsTexture.width * ratio,(optionheight*(i+5)),OptionsTexture.width * ratio,optionheight);
 			
 				if(im.WithinBounds(qualityRect,true))
 					currentSelection = 2;
 			
 				OutLineLabel2(qualityRect,QualitySettings.names[Quality],2,Color.black);
 				
-				var leftarrowqualityRect : Rect = Rect(sideScroll + Screen.width/10f + OptionsTexture.width * ratio - IconHeight,(IconHeight*(i+5)),IconHeight,IconHeight);
-				var rightarrowqualityRect : Rect = Rect(sideScroll + Screen.width/10f + (OptionsTexture.width * ratio)*2 - IconHeight,(IconHeight*(i+5)),IconHeight,IconHeight);
+				var leftarrowqualityRect : Rect = Rect(sideScroll + Screen.width/10f + OptionsTexture.width * ratio - optionheight,(optionheight*(i+5)),optionheight,optionheight);
+				var rightarrowqualityRect : Rect = Rect(sideScroll + Screen.width/10f + (OptionsTexture.width * ratio)*2.5 - optionheight,(optionheight*(i+5)),optionheight,optionheight);
 				
 				if(im.WithinBounds(leftarrowqualityRect,true) && submitBool)
 				{
@@ -563,7 +563,7 @@ switch(State) {
 			
 			if(i == 3){
 			
-				var playerNameRect : Rect = Rect(sideScroll + Screen.width/10f + (OptionsTexture.width * ratio),(Screen.width/20f*(i+5)),OptionsTexture.width * ratio,Screen.width/20f);
+				var playerNameRect : Rect = Rect(sideScroll + Screen.width/10f + (OptionsTexture.width * ratio),(optionheight*(i+5)),OptionsTexture.width * ratio,optionheight);
 			
 				if(im.WithinBounds(playerNameRect,true))
 					currentSelection = 3;
@@ -590,7 +590,7 @@ switch(State) {
 
 }
 
-OutLineLabel(Rect(Screen.width/20f,(Screen.width/20f*(i+5)),100,Screen.width/20f),"[Locked]",2,LockedColourAlpha);
+OutLineLabel(Rect(optionheight,(optionheight*(i+5)),100,optionheight),"[Locked]",2,LockedColourAlpha);
 
 }
 

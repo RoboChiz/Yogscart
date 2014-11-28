@@ -1,7 +1,7 @@
 ﻿ #pragma strict
 
 var input : boolean;
-var CluckyInput : Vector3 = Vector3(0,0,1);
+var directionInput : Vector3 = Vector3(0,0,0);
 
 var inUse : boolean;
 var heldPowerUp : int = -1;
@@ -20,8 +20,6 @@ private var pf : Position_Finding;
 private var size : float;
 var spawnDistance : float;
 
-var loadedClucky : Transform;
-
 function Awake(){
 if(this.enabled == true){
 gd = GameObject.Find("GameData").GetComponent(CurrentGameData);
@@ -34,20 +32,6 @@ if(ki == null)
 ki = transform.GetComponent(kartInfo);
 if(pf == null)
 pf = transform.GetComponent(Position_Finding);
-}
-
-function FixedUpdate()
-{
-
-if(loadedClucky != null)
-{
-if(CluckyInput != Vector3.zero)
-{
-loadedClucky.position = transform.position + transform.TransformDirection(CluckyInput.normalized*spawnDistance);
-loadedClucky.rotation = Quaternion.LookRotation(loadedClucky.position-transform.position,Vector3.up);
-}
-}
-
 }
 
 function OnTriggerEnter (other : Collider) {
@@ -107,22 +91,20 @@ yield WaitForSeconds(2);
 
 heldPowerUp = nItem;
 
-if(heldPowerUp >= 5)
-{
-loadedClucky = Instantiate(Resources.Load("Prefabs/Power Ups/Clucky",Transform),transform.position - (transform.forward*spawnDistance),transform.rotation);
-loadedClucky.parent = transform;
-loadedClucky.name = "Clucky";
-}
-
 }
 
 function UsePowerUp()
 {
 var clone : Transform ;
-if(loadedClucky != null)
-clone = Instantiate(gd.PowerUps[heldPowerUp].Model,loadedClucky.position,transform.rotation);
-else
-clone = Instantiate(gd.PowerUps[heldPowerUp].Model,transform.position - (transform.forward*spawnDistance),transform.rotation);
+
+var spawnLocation : Vector3;
+
+spawnLocation = (transform.forward*spawnDistance);
+
+if(gd.PowerUps[heldPowerUp].type == ItemType.Projectile)
+spawnLocation = -(transform.forward*spawnDistance);
+
+clone = Instantiate(gd.PowerUps[heldPowerUp].Model,transform.position - spawnLocation,transform.rotation);
 
 clone.parent = transform;
 
@@ -131,7 +113,7 @@ if(gd.PowerUps[heldPowerUp].type == ItemType.UsableAsShield){
 clone.parent = transform.FindChild("Kart Body");
 clone.rigidbody.isKinematic = true;
 
-while(input == true && clone != null){
+while(input == true && clone.collider.enabled == true){
 yield;
 }
 
@@ -142,13 +124,9 @@ clone.parent = null;
 
 }
 
-if(gd.PowerUps[heldPowerUp].type != ItemType.MultipleUses){
+if(!gd.PowerUps[heldPowerUp].MultipleUses){
 heldPowerUp = -1;
 inUse = false;
-
-if(loadedClucky != null)
-Destroy(loadedClucky.gameObject);
-
 }
 else
 {

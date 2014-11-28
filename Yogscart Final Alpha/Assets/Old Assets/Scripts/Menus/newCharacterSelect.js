@@ -476,6 +476,10 @@ choice[c].character += (vinput*5);
 
 
 if(submitBool && gd.Characters[choice[c].character].Unlocked == true){
+
+if(gd.Characters[choice[c].character].selectedSound != null)
+audio.PlayOneShot(gd.Characters[choice[c].character].selectedSound,10f);
+
 ready[c] = true;
 }
 

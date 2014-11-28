@@ -3,7 +3,7 @@ private var ki : kartItem;
 
 var InputName : String;
 
-var camLocked : boolean;
+var camLocked : boolean = false;
 var frontCamera : Camera;
 var backCamera : Camera;
 
@@ -38,7 +38,7 @@ ki.input = true;
 else
 ki.input = false;
 
-ki.CluckyInput = Vector3(Input.GetAxis(InputName+ "Horizontal"),0,Input.GetAxis(InputName+ "Vertical"));
+ki.directionInput = Vector3(Input.GetAxis(InputName+ "Horizontal"),0,Input.GetAxis(InputName+ "Vertical"));
 
 }
 }

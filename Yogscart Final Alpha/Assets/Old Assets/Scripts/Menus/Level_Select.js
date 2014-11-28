@@ -116,6 +116,12 @@ GUI.DrawTexture(OverallRect,gd.Tournaments[currentCup].Tracks[j].Logo);
 if(TypeSelecion && currentTrack == j)
 GUI.DrawTexture(OverallRect,Selected);
 
+if(!hidden && !GrandPrixOnly && im.WithinBounds(OverallRect,true))
+{
+currentTrack = j;
+TypeSelecion = true;
+}
+
 }
 
 
@@ -132,6 +138,12 @@ else
 GUI.DrawTexture(TRect,Tab);
 
 GUI.DrawTexture(TRect,gd.Tournaments[i].Icon);
+
+if(!hidden && im.WithinBounds(TRect,true))
+{
+currentCup = i;
+TypeSelecion = false;
+}
 
 }
 

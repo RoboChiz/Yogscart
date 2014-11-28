@@ -19,7 +19,7 @@
 	<DebugType>full</DebugType>
 	<Optimize>false</Optimize>
 	<OutputPath>Temp\bin\Debug\</OutputPath>
-	<DefineConstants>DEBUG;TRACE;UNITY_4_5_5;UNITY_4_5;UNITY_64;UNITY_STANDALONE_WIN;ENABLE_MICROPHONE;ENABLE_TEXTUREID_MAP;ENABLE_UNITYEVENTS;ENABLE_NEW_HIERARCHY ;ENABLE_AUDIO_FMOD;UNITY_STANDALONE;ENABLE_MONO;ENABLE_TERRAIN;ENABLE_SUBSTANCE;ENABLE_GENERICS;INCLUDE_WP8SUPPORT;ENABLE_MOVIES;ENABLE_WWW;ENABLE_IMAGEEFFECTS;INCLUDE_WP_BLUE_SUPPORT;ENABLE_WEBCAM;INCLUDE_METROSUPPORT;RENDER_SOFTWARE_CURSOR;ENABLE_NETWORK;ENABLE_PHYSICS;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_2D_PHYSICS;ENABLE_SHADOWS;ENABLE_AUDIO;ENABLE_NAVMESH_CARVING;ENABLE_DUCK_TYPING;ENABLE_SINGLE_INSTANCE_BUILD_SETTING;ENABLE_PROFILER;UNITY_EDITOR;UNITY_EDITOR_WIN;UNITY_TEAM_LICENSE;UNITY_PRO_LICENSE</DefineConstants>
+	<DefineConstants>DEBUG;TRACE;UNITY_4_5_5;UNITY_4_5;UNITY_STANDALONE_WIN;ENABLE_MICROPHONE;ENABLE_TEXTUREID_MAP;ENABLE_UNITYEVENTS;ENABLE_NEW_HIERARCHY ;ENABLE_AUDIO_FMOD;UNITY_STANDALONE;ENABLE_MONO;ENABLE_TERRAIN;ENABLE_SUBSTANCE;ENABLE_GENERICS;INCLUDE_WP8SUPPORT;ENABLE_MOVIES;ENABLE_WWW;ENABLE_IMAGEEFFECTS;INCLUDE_WP_BLUE_SUPPORT;ENABLE_WEBCAM;INCLUDE_METROSUPPORT;RENDER_SOFTWARE_CURSOR;ENABLE_NETWORK;ENABLE_PHYSICS;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_2D_PHYSICS;ENABLE_SHADOWS;ENABLE_AUDIO;ENABLE_NAVMESH_CARVING;ENABLE_DUCK_TYPING;ENABLE_SINGLE_INSTANCE_BUILD_SETTING;ENABLE_PROFILER;UNITY_EDITOR;UNITY_EDITOR_WIN;UNITY_TEAM_LICENSE;UNITY_PRO_LICENSE</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
 	<NoWarn>0169</NoWarn>
@@ -58,10 +58,6 @@
      <Compile Include="Assets\Old Assets\ImageEffects\Scripts\Negative.js" />
      <Compile Include="Assets\Old Assets\ImageEffects\Scripts\VignetteBlur.js" />
      <Compile Include="Assets\Old Assets\Models\ParticleScale.js" />
-     <Compile Include="Assets\Old Assets\Scenes\Mario Kart\DK mountain\dkCannon Test.js" />
-     <Compile Include="Assets\Old Assets\Scenes\Menus\Intro\IntroScript.js" />
-     <Compile Include="Assets\Old Assets\Scenes\Tracks\Sipsco\AnimatedTextureUV.js" />
-     <Compile Include="Assets\Old Assets\Scenes\Tracks\Sipsco\Underwater.js" />
      <Compile Include="Assets\Old Assets\Scripts\Character Scripts\Blink_Script.js" />
      <Compile Include="Assets\Old Assets\Scripts\Character Scripts\QA.js" />
      <Compile Include="Assets\Old Assets\Scripts\Kart Scripts\Camera_Control.js" />
@@ -113,6 +109,10 @@
      <Compile Include="Assets\Old Assets\Scripts\Track Editor\TrackData.js" />
      <Compile Include="Assets\Resources\Karts\Dyne\Scripts\Pulse.js" />
      <Compile Include="Assets\Resources\Music &amp; Sounds\Event_Cannon.js" />
+     <Compile Include="Assets\Scenes\Mario Kart\DK mountain\dkCannon Test.js" />
+     <Compile Include="Assets\Scenes\Menus\Intro\IntroScript.js" />
+     <Compile Include="Assets\Scenes\Tracks\Sipsco\AnimatedTextureUV.js" />
+     <Compile Include="Assets\Scenes\Tracks\Sipsco\Underwater.js" />
      <Compile Include="Assets\Scripts\BoostPad.js" />
      <Compile Include="Assets\Scripts\CurrentGameData.js" />
      <Compile Include="Assets\Scripts\InputManager.js" />
@@ -120,6 +120,7 @@
      <Compile Include="Assets\Scripts\KartMaker Scripts\KartMaker.js" />
      <Compile Include="Assets\Scripts\KartMaker Scripts\KartSkeleton.js" />
      <Compile Include="Assets\Scripts\Powerups\Egg.js" />
+     <Compile Include="Assets\Scripts\Powerups\JR.js" />
      <Compile Include="Assets\Scripts\Scrolling_Texture.js" />
      <Compile Include="Assets\Scripts\kartScript.js" />
      <None Include="Assets\Old Assets\Standard Assets\Toon Shading\Sources\Shaders\Toony-Basic.shader" />
@@ -142,7 +143,7 @@
      <None Include="Assets\Old Assets\ImageEffects\AA Shaders\FXAAPreset2.shader" />
      <None Include="Assets\Old Assets\Standard Assets\Water (Basic)\Sources\Shaders\FX-Water Simple.shader" />
      <None Include="Assets\Beardbotnik&apos;s Shader\YogacartCharacterShader.shader" />
-     <None Include="Assets\Old Assets\Scenes\Tracks\ZoeysMushroomLan\to do to day.txt" />
+     <None Include="Assets\Scenes\Tracks\ZoeysMushroomLan\to do to day.txt" />
      <None Include="Assets\Old Assets\Standard Assets\Toon Shading\Sources\Shaders\Toony-LightedOutline.shader" />
      <None Include="Assets\Old Assets\Standard Assets\Toon Shading\Sources\Shaders\Toony-Lighted.shader" />
      <None Include="Assets\Old Assets\ImageEffects\ShaderDir\Vignette.shader" />
@@ -158,8 +159,8 @@
      <None Include="Assets\Old Assets\pw.txt" />
      <None Include="Assets\Old Assets\ImageEffects\ShaderDir\Shadow-ScreenBlur.shader" />
      <None Include="Assets\Old Assets\ImageEffects\ShaderDir\IndieRadialBlur.shader" />
-     <None Include="Assets\Old Assets\Scenes\Tracks\Sjin&apos;s Farm\Materials\Plants\Plant_Shader.shader" />
-     <None Include="Assets\Old Assets\Scenes\Tracks\IMPORTANT.txt" />
+     <None Include="Assets\Scenes\Tracks\Sjin&apos;s Farm\Materials\Plants\Plant_Shader.shader" />
+     <None Include="Assets\Scenes\Tracks\IMPORTANT.txt" />
      <None Include="Assets\Old Assets\Standard Assets\Water (Pro Only)\Water4\Sources\Shaders\WaterInclude.cginc" />
      <None Include="Assets\Old Assets\Standard Assets\Water (Pro Only)\Water4\Sources\Shaders\FX-Water4.shader" />
      <None Include="Assets\Old Assets\ImageEffects\ShaderDir\GodRays.shader" />
