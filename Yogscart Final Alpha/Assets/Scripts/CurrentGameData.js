@@ -211,10 +211,10 @@ private var ColourAlpha : Color = Color.white;
 		for(n = 1; n < Characters.Length; n++){
 		foo = PlayerPrefs.GetInt(Characters[n].Name,0);
 		if(foo == 1){
-		Characters[n].Unlocked = true;
+		//Characters[n].Unlocked = true;
 		Debug.Log(Characters[n].Name + " is unlocked!");
 		}else{
-		Characters[n].Unlocked = false;
+		//Characters[n].Unlocked = false;
 		Debug.Log(Characters[n].Name + " is not unlocked!");
 		}
 		}

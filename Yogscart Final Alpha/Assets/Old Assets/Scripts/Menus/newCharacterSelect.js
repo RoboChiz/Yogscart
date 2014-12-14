@@ -744,8 +744,8 @@ GUI.DrawTexture(kartDownRect,Resources.Load("UI Textures/New Main Menu/Down_Arro
 
 var wheelUpRect : Rect = Rect(areaRect.width/2f,areaRect.height/2f - idealheight/2f - idealheight/4f,idealWidth,idealheight/4f);
 var wheelDownRect : Rect = Rect(areaRect.width/2f,areaRect.height/2f + idealheight/2f,idealWidth,idealheight/4f);
-GUI.DrawTexture(wheelUpRect,Resources.Load("UI Textures/New Main Menu/Up_Arrow",Texture2D),ScaleMode.ScaleToFit);
-GUI.DrawTexture(wheelDownRect,Resources.Load("UI Textures/New Main Menu/Down_Arrow",Texture2D),ScaleMode.ScaleToFit);
+//GUI.DrawTexture(wheelUpRect,Resources.Load("UI Textures/New Main Menu/Up_Arrow",Texture2D),ScaleMode.ScaleToFit);
+//GUI.DrawTexture(wheelDownRect,Resources.Load("UI Textures/New Main Menu/Down_Arrow",Texture2D),ScaleMode.ScaleToFit);
 
 var kartUp = im.WithinBounds(Rect(areaRect.x+kartUpRect.x,areaRect.y+kartUpRect.y,kartUpRect.width,kartUpRect.height),false);
 var kartDown = im.WithinBounds(Rect(areaRect.x+kartDownRect.x,areaRect.y+kartDownRect.y,kartDownRect.width,kartDownRect.height),false);
@@ -759,10 +759,10 @@ if(kartDown && im.c[c].GetInput("Submit"))
 	choice[c].kart = NumClamp(choice[c].kart - 1,0,gd.Karts.Length);
 	
 if(wheelUp && im.c[c].GetInput("Submit"))
-	choice[c].wheel = NumClamp(choice[c].wheel + 1,0,gd.Karts.Length);
+	choice[c].wheel = NumClamp(choice[c].wheel + 1,0,gd.Wheels.Length);
 
 if(wheelDown && im.c[c].GetInput("Submit"))
-	choice[c].wheel = NumClamp(choice[c].wheel - 1,0,gd.Karts.Length);	
+	choice[c].wheel = NumClamp(choice[c].wheel - 1,0,gd.Wheels.Length);	
 
 //Render Cursor
 var CursorTexture : Texture2D = Resources.Load("UI Textures/Cursors/Cursor_"+c,Texture2D);

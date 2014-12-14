@@ -1,16 +1,30 @@
-Base path: D:/Unity/Editor/Data
-Pipe name: \\.\pipe\UnityShaderCompiler-5-4300
+Base path: C:/Program Files (x86)/Unity/Editor/Data
+Pipe name: \\.\pipe\UnityShaderCompiler-5-7140
 Cmd: getPlatforms
 Cmd: compileSnippet
-  api=1 type=1 insize=5435 outsize=111 kw= ok=1
+  api=1 type=0 insize=10628 outsize=156 kw= ok=1
 Cmd: compileSnippet
-  api=0 type=1 insize=5443 outsize=491 kw= ok=1
+  api=0 type=0 insize=10627 outsize=5890 kw= ok=1
 Cmd: compileSnippet
-  api=0 type=1 insize=5448 outsize=942 kw= ok=1
+  api=1 type=1 insize=5459 outsize=314 kw= ok=1
 Cmd: compileSnippet
-  api=1 type=1 insize=5452 outsize=662 kw= ok=1
+  api=1 type=1 insize=5463 outsize=824 kw= ok=1
 Cmd: compileSnippet
-  api=1 type=1 insize=5454 outsize=662 kw= ok=1
+  api=8 type=0 insize=5464 outsize=2088 kw= ok=1
+Cmd: compileSnippet
+  api=1 type=0 insize=5468 outsize=412 kw= ok=1
+Cmd: compileSnippet
+  api=8 type=1 insize=5470 outsize=2885 kw= ok=1
+Cmd: compileSnippet
+  api=0 type=1 insize=32668 outsize=6 kw= ok=1
+Cmd: compileSnippet
+  api=0 type=1 insize=1749 outsize=1369 kw= ok=1
+Cmd: compileSnippet
+  api=0 type=0 insize=3862 outsize=3861 kw= ok=1
+Cmd: compileSnippet
+  api=1 type=0 insize=6851 outsize=310 kw= ok=1
+Cmd: compileSnippet
+  api=1 type=0 insize=4192 outsize=458 kw= ok=1
 Unhandled exception: Readfile from pipe failed. GLE=The pipe has been ended.
 
 

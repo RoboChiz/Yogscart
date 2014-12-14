@@ -1,4 +1,5 @@
-﻿#pragma strict
+﻿
+#pragma strict
 
 private var gd : CurrentGameData;
 private var im : InputManager;
@@ -59,11 +60,19 @@ private var BackSound : AudioClip;
 
 private var vertiLock : boolean;
 
+private var serverScroll : Vector2;
+
 function Update(){
 var background = transform.GetChild(0).guiTexture;
-background.pixelInset = Rect(0,0,Screen.width,Screen.height);
+
+background.pixelInset = Rect(0,0,Screen.height*1.77951388889,Screen.height);
 
 }
+
+function Awake() {
+    MasterServer.RequestHostList("YogscartTournament");
+}
+
 
 function Start(){
 
@@ -96,6 +105,8 @@ Error = true;
 
 
 function OnGUI () {
+
+var data : HostData[] = MasterServer.PollHostList();
 
 GUI.skin = Resources.Load("GUISkins/Main Menu", GUISkin);
 
@@ -211,7 +222,8 @@ switch(State) {
 			ChangeState(Menu.LocalMenu);		
 			break;
 			case 1:
-			FlashRed();	
+			FlashRed();
+			//ChangeState(Menu.Multiplayer);		
 			break;
 			case 2:
 			ChangeState(Menu.Options);		
@@ -268,7 +280,7 @@ switch(State) {
 	break;
 	
 		case Menu.Multiplayer:
-		Options = ["Quick Race","Back"];
+		Options = ["Tournament","Host","Join","Back"];
 		stateLocation = "State 4";
 		
 		if(cancelBool)
@@ -278,11 +290,66 @@ switch(State) {
 		{
 			switch(currentSelection){
 			case 0:
-
+			ChangeState(Menu.TournamentMenu);
 			break;
 			case 1:
+			FlashRed();
+			break;
+			case 2:
+			FlashRed();
+			break;
+			case 3:
 			ChangeState(Menu.MainMenu);
 			break;	
+			}
+		}
+		
+	break;
+	
+	case Menu.TournamentMenu:
+		Options = ["Back"];
+		
+		stateLocation = "Tournament_Lobby";
+		
+		var ServerList : Texture2D = Resources.Load("UI Textures/New Main Menu/" + stateLocation + "/Server_List",Texture2D); 
+		
+		var serverWidth = Screen.width/4f;
+		var serverRatio = serverWidth/ServerList.width;
+		var serverHeight = ServerList.height*serverRatio;
+		
+		var boxRect : Rect = Rect(sideScroll + serverWidth/2f,Screen.height/2f - serverHeight/2f,serverWidth,serverHeight);
+		
+		GUI.DrawTexture(boxRect,ServerList);
+		
+		
+		
+		
+		if(cancelBool)
+			ChangeState(Menu.Multiplayer);
+		
+		boxRect = Rect(sideScroll + serverWidth/2f + 10,Screen.height/2f - serverHeight/2f + 60,serverWidth-20,serverHeight - 70);
+					
+		GUILayout.BeginArea(boxRect);	
+		serverScroll = GUILayout.BeginScrollView(serverScroll,false,true);	
+			
+		for (var element in data)
+		{
+			
+		var name = element.gameName + " " + element.connectedPlayers + " / " + element.playerLimit;
+		
+		GUILayout.Label(name);
+		
+		
+		}
+		
+		GUILayout.EndScrollView();
+		GUILayout.EndArea();	
+			
+		if(submitBool)
+		{
+			if(currentSelection == 0)
+			{	
+				ChangeState(Menu.Multiplayer);
 			}
 		}
 		
@@ -428,7 +495,12 @@ switch(State) {
 		var optionheight = (Screen.height/15f);
 		var ratio = optionheight/OptionsTexture.height;
 		
-		var drawRect : Rect = Rect(sideScroll + Screen.width/20f,(optionheight*(i+5)),OptionsTexture.width * ratio,optionheight);
+		var drawRect : Rect;
+		
+		if(State != Menu.TournamentMenu)
+		drawRect = Rect(sideScroll + Screen.width/20f,(optionheight*(i+5)),OptionsTexture.width * ratio,optionheight);
+		else
+		drawRect = Rect(sideScroll + serverWidth/2f,Screen.height/2f + serverHeight/2f,OptionsTexture.width * ratio,optionheight);
 
 		if(currentSelection == i)
 			GUI.DrawTexture(drawRect,SelectedOptionsTexture,ScaleMode.ScaleToFit);
@@ -437,6 +509,12 @@ switch(State) {
 			
 		if(im.WithinBounds(drawRect,true))
 		currentSelection = i;
+		
+		if(State == Menu.Multiplayer && i == 0)
+		if(data.Length > 0)
+		OutLineLabel(Rect(sideScroll + Screen.width/20f + OptionsTexture.width * ratio,(optionheight*(i+5)),GUI.skin.font.fontSize * 15,optionheight),"Servers Online",2,Color.green);
+		else
+		OutLineLabel(Rect(sideScroll + Screen.width/20f + OptionsTexture.width * ratio,(optionheight*(i+5)),GUI.skin.font.fontSize * 15,optionheight),"Servers Offline",2,Color.red);
 		
 		if(State == Menu.Options)
 		{

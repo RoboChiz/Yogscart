@@ -181,7 +181,7 @@ var wheelCollider = collider.GetComponent(WheelCollider);
 
 //Setup Collider Settings
 wheelCollider.mass = 15;
-wheelCollider.suspensionDistance = 3;
+wheelCollider.suspensionDistance = 0.2;
 
 wheelCollider.suspensionSpring.spring = 2;
 wheelCollider.suspensionSpring.damper = 15;
