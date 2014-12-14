@@ -59,7 +59,7 @@ nextChump = 0;
 
 var Target : Vector3 = td.PositionPoints[nextChump].rep.position;
 var lastTarget : Vector3 = td.PositionPoints[pf.currentPos].rep.position;
-var Adjuster = Vector3.Cross((Target-lastTarget).normalized,transform.up) * Random.Range(-1f,1f) * td.Scale;
+var Adjuster = Vector3.Cross((Target-lastTarget).normalized,transform.up) * Random.Range(-1f,1f) * 3f;
 
 nTarget = Target + Adjuster;
 

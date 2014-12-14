@@ -1,9 +1,14 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Old Assets\Scripts\New Race Scripts\Race_Master.js">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Kart Scripts\kartScript.js">
     <Files>
-      <File FileName="Assets\Scripts\KartMaker Scripts\KartMaker.js" Line="106" Column="43" />
-      <File FileName="Assets\Old Assets\Scripts\New Race Scripts\Race_Master.js" Line="381" Column="22" />
+      <File FileName="Assets\Old Assets\Scripts\Menus\Main_Menu.js" Line="225" Column="15" />
+      <File FileName="Assets\Old Assets\Scripts\Kart Scripts\Racer_AI.js" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Kart Scripts\kartScript.js" Line="216" Column="1" />
+      <File FileName="Assets\Scripts\KartMaker Scripts\KartMaker.js" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Particle_Destroy.js" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Networking\Tournament_Server.js" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Networking\Client_Tournament.js" Line="28" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
