@@ -5,11 +5,14 @@ private var gd : CurrentGameData;
 private var im : InputManager;
 private var sps : SinglePlayer_Script;
 
-var version : String;
+private var version : String;
 var Logo : Texture2D;
 
-enum Menu{StartScreen,MainMenu,LocalMenu,DifficultyMenu,Multiplayer,HostMenu,JoinMenu,TournamentMenu,Options,Credits,CharacterSelect};
+enum Menu{StartScreen,MainMenu,LocalMenu,DifficultyMenu,Multiplayer,HostMenu,JoinMenu,TournamentMenu,Options,Credits,CharacterSelect,Popup};
 var State : Menu = Menu.StartScreen;
+
+enum GameChosen{SinglePlayer,Host,Client};
+var GameState : GameChosen = GameChosen.SinglePlayer;
 
 var VerticalLock : boolean;
 var HorizontalLock : boolean;
@@ -33,11 +36,12 @@ var locked : boolean;
 //Network Holding
 var NetworkIP : String = "127.0.0.1";
 var NetworkPort : int = 25000;
-var NetworkPortText : String;
+var NetworkPortText : String = "25000";
 var NetworkPassword : String;
+var PopupText : String;
 
-var HostPort : int = 25000;
-var HostPortText : String;
+var HostPort : int;
+var HostPortText : String = "25000";
 var HostPassword : String;
 var WithBots : boolean;
 var Automatic : boolean;
@@ -79,6 +83,8 @@ function Start(){
 gd = GameObject.Find("GameData").GetComponent(CurrentGameData);
 im = GameObject.Find("GameData").GetComponent(InputManager);
 sps = gd.GetComponent(SinglePlayer_Script);
+
+version = gd.version;
 
 im.allowedToChange = false;
 gd.BlackOut = true;
@@ -139,15 +145,6 @@ animated = false;
 }
 }
 
-var specialLine : String;
-if(gd.gameTag == User.Backer)
-specialLine = "Jingle Jam Backer";
-if(gd.gameTag == User.VIP)
-specialLine = "VIP";
-
-if(specialLine != null)
-OutLineLabel2(Rect(Screen.width - 10 - (specialLine.Length*avg)/2f,Screen.height - Screen.height/20f - 10,(specialLine.Length*avg)/2f,Screen.height/20f),specialLine,2);
-
 var Options : String[];
 var stateLocation : String;
 
@@ -165,6 +162,28 @@ var submitBool = (submitInput != 0);
 
 var cancelInput : float = im.c[0].GetInput("Cancel");
 var cancelBool = (cancelInput != 0);
+}
+
+if(State != Menu.StartScreen && State != Menu.Popup && State != Menu.Credits)
+{
+var additionText : String;
+
+if(im.c[0].inputName != "Key_")
+additionText = "_Controller";
+
+var nextText = Resources.Load("UI Textures/New Main Menu/Next" + additionText,Texture2D);
+var backText = Resources.Load("UI Textures/New Main Menu/Back" + additionText,Texture2D);
+
+var ButtonWidth : float = Screen.width/7f;
+var ButtonRatio = ButtonWidth/nextText.width;
+var ButtonHeight : float = nextText.height*ButtonRatio;
+
+var nextRect : Rect = Rect(Screen.width - sideScroll - ButtonWidth,Screen.height - ButtonHeight,ButtonWidth,ButtonHeight);
+var backRect : Rect = Rect(sideScroll,Screen.height - ButtonHeight,ButtonWidth,ButtonHeight);
+
+GUI.DrawTexture(nextRect,nextText);
+GUI.DrawTexture(backRect,backText);
+
 }
 
 
@@ -219,11 +238,13 @@ switch(State) {
 		{
 			switch(currentSelection){
 			case 0:
+			GameState = GameChosen.SinglePlayer;
 			ChangeState(Menu.LocalMenu);		
 			break;
 			case 1:
-			FlashRed();
-			//ChangeState(Menu.Multiplayer);		
+			im.RemoveOtherControllers();
+			im.allowedToChange = false;
+			ChangeState(Menu.Multiplayer);		
 			break;
 			case 2:
 			ChangeState(Menu.Options);		
@@ -290,16 +311,109 @@ switch(State) {
 		{
 			switch(currentSelection){
 			case 0:
-			ChangeState(Menu.TournamentMenu);
+			FlashRed();
+			//ChangeState(Menu.TournamentMenu);
 			break;
 			case 1:
-			FlashRed();
+			GameState = GameChosen.Host;
+			ChangeState(Menu.HostMenu);
 			break;
 			case 2:
-			FlashRed();
+			GameState = GameChosen.Client;
+			ChangeState(Menu.JoinMenu);
 			break;
 			case 3:
 			ChangeState(Menu.MainMenu);
+			break;	
+			}
+		}
+		
+	break;
+	
+	case Menu.JoinMenu:
+		Options = ["IPAddress","Port","Password","Connect","Back"];
+		stateLocation = "State 6";
+		
+		if(cancelBool)
+			ChangeState(Menu.Multiplayer);
+			
+		if(submitBool)
+		{
+			switch(currentSelection){
+			case 3:
+			StartCoroutine("StartMultiPlayer",true);
+			break;
+			case 4:
+			ChangeState(Menu.Multiplayer);
+			break;	
+			}
+		}
+		
+	break;
+	
+	case Menu.Popup:
+	Options = ["Back"];
+	stateLocation = "State 6";
+	
+	var PopupWidth : float = Screen.width/4f;
+	
+	GUI.Box(Rect(Screen.width/2f - PopupWidth/2f,Screen.height/2f -  PopupWidth/2f,PopupWidth,PopupWidth),PopupText);
+	
+	if(cancelBool)
+	{
+		PopupText = "";
+		ChangeState(Menu.JoinMenu);
+	}
+			
+		if(submitBool)
+		{
+			switch(currentSelection){
+			case 0:
+			PopupText = "";
+			ChangeState(Menu.JoinMenu);
+			break;
+			}
+		}
+	break;
+	
+	case Menu.HostMenu:
+		
+		if(!Automatic)
+		Options = ["Port","Password","AutomaticServer","Start Server","Back"];
+		else
+		Options = ["Port","Password","AutomaticServer","MinPlayers","Start Server","Back"];
+		
+		stateLocation = "State 5";
+		
+		if(cancelBool)
+			ChangeState(Menu.Multiplayer);
+			
+		if(submitBool)
+		{
+			switch(currentSelection){
+			
+			case 2:
+			Automatic = !Automatic;
+			break;
+			
+			case 3:
+			if(!Automatic)
+			StartCoroutine("StartMultiPlayer",false);
+			
+			break;
+			
+			case 4:
+			if(!Automatic)
+			ChangeState(Menu.Multiplayer);
+			else
+			StartCoroutine("StartMultiPlayer",false);
+			break;
+			
+			case 5:
+			
+			if(Automatic)
+			ChangeState(Menu.Multiplayer);
+			
 			break;	
 			}
 		}
@@ -402,7 +516,7 @@ switch(State) {
 			ChangeState(Menu.MainMenu);
 			
 		var Credits : String[] = ["Ross - Project Manager / Developer","Robo_Chiz - Lead Programmer / Networking",
-		"Mysca - Level Design / UI","Beardbotnik - Character Design / Graphics Designer", "Tom - Animation", "Pico - Music", "Puda (@ArgonianWTF) - Community Manager","HammerFishys - Community Manager",
+		"Mysca - Level Design / UI","Beardbotnik - Character Design / Graphics Designer", "Tom - Animation", "Pico - Music","Hyper - Website Design", "Puda (@ArgonianWTF) - Community Manager","HammerFishys - Community Manager",
 		"Yogscart is a non-profit fan game and is in no way affiliated with the Yogscast or the Youth Olympic Games", "We hope you enjoyed the alpha"];
 		
 		LogoWidth = Screen.width/2f;
@@ -512,9 +626,104 @@ switch(State) {
 		
 		if(State == Menu.Multiplayer && i == 0)
 		if(data.Length > 0)
-		OutLineLabel(Rect(sideScroll + Screen.width/20f + OptionsTexture.width * ratio,(optionheight*(i+5)),GUI.skin.font.fontSize * 15,optionheight),"Servers Online",2,Color.green);
+		OutLineLabel(Rect(sideScroll + Screen.width/20f + OptionsTexture.width * ratio,(optionheight*(i+5)),GUI.skin.label.fontSize * 15,optionheight),"Servers Online",2,Color.green);
 		else
-		OutLineLabel(Rect(sideScroll + Screen.width/20f + OptionsTexture.width * ratio,(optionheight*(i+5)),GUI.skin.font.fontSize * 15,optionheight),"Servers Offline",2,Color.red);
+		OutLineLabel(Rect(sideScroll + Screen.width/20f + OptionsTexture.width * ratio,(optionheight*(i+5)),GUI.skin.label.fontSize * 15,optionheight),"Servers Offline",2,Color.red);
+		
+		var LabelRect : Rect = Rect(sideScroll + Screen.width/20f + OptionsTexture.width * ratio,(optionheight*(i+5)),OptionsTexture.width * ratio,optionheight);
+		
+		if(State == Menu.HostMenu)
+		{
+
+			switch(i)
+			{
+			
+			case(0):
+				if(currentSelection == i)
+				{
+					HostPortText = GUI.TextField(LabelRect,HostPortText);
+					int.TryParse(HostPortText,HostPort);
+				}
+				else
+					OutLineLabel(LabelRect,HostPort.ToString(),2);
+			break;
+			
+			case(1):
+				if(currentSelection == i)
+					HostPassword = GUI.TextField(LabelRect,HostPassword);
+				else
+					OutLineLabel(LabelRect,HostPassword,2);
+			break;
+			
+			case(2):
+				
+				var YesTexture = Resources.Load("UI Textures/New Main Menu/State 5/Yes",Texture2D); 
+				var NoTexture = Resources.Load("UI Textures/New Main Menu/State 5/No",Texture2D); 
+				
+				var toDraw : Texture;
+				if(Automatic)
+				toDraw = YesTexture;
+				else
+				toDraw = NoTexture;
+				
+				GUI.DrawTexture(LabelRect,toDraw,ScaleMode.ScaleToFit);
+				
+			break;
+			
+			case(3):
+				if(Automatic)
+				{
+				if(currentSelection == i)
+				{
+					MinPlayersText = GUI.TextField(LabelRect,MinPlayersText);
+					int.TryParse(MinPlayersText,MinPlayers);
+					MinPlayers = Mathf.Clamp(MinPlayers,2,12);
+				}
+				else
+					OutLineLabel(LabelRect,MinPlayers.ToString(),2);
+				}
+				
+			break;
+			
+			}
+
+
+		}
+
+		if(State == Menu.JoinMenu)
+		{
+
+			switch(i)
+			{
+			
+			case(0):
+				if(currentSelection == i)
+					NetworkIP = GUI.TextField(LabelRect,NetworkIP);
+				else
+					OutLineLabel(LabelRect,NetworkIP,2);
+			break;
+			
+			case(1):
+				if(currentSelection == i)
+				{
+					NetworkPortText = GUI.TextField(LabelRect,NetworkPortText);
+					int.TryParse(NetworkPortText,NetworkPort);
+				}
+				else
+					OutLineLabel(LabelRect,NetworkPort.ToString(),2);
+			break;
+			
+			case(2):
+				if(currentSelection == i)
+					NetworkPassword = GUI.TextField(LabelRect,NetworkPassword);
+				else
+					OutLineLabel(LabelRect,NetworkPassword,2);
+			break;
+			
+			}
+
+		}
+		
 		
 		if(State == Menu.Options)
 		{
@@ -589,8 +798,8 @@ switch(State) {
 			
 			if(i == 1){
 
-				var YesTexture = Resources.Load("UI Textures/New Main Menu/State 5/Yes",Texture2D); 
-				var NoTexture = Resources.Load("UI Textures/New Main Menu/State 5/No",Texture2D); 
+				YesTexture = Resources.Load("UI Textures/New Main Menu/State 5/Yes",Texture2D); 
+				NoTexture = Resources.Load("UI Textures/New Main Menu/State 5/No",Texture2D); 
 				var yesnoRect : Rect = Rect(sideScroll + Screen.width/10f + OptionsTexture.width * ratio,(optionheight*(i+5)),OptionsTexture.width * ratio,optionheight);
 
 				if(im.WithinBounds(yesnoRect,true))
@@ -657,18 +866,9 @@ switch(State) {
 
 	}
 
-
-//if(submitBool && controlLock == false)
-//audio.PlayOneShot(ConfirmSound);
-
-//if(State > 0)
-//if(cancelBool && controlLock == false)
-///audio.PlayOneShot(BackSound);
-
-
 }
 
-OutLineLabel(Rect(optionheight,(optionheight*(i+5)),100,optionheight),"[Locked]",2,LockedColourAlpha);
+OutLineLabel2(Rect(optionheight,(optionheight*(i+5)),avg*9,optionheight),"[Locked]",2,LockedColourAlpha);
 
 }
 
@@ -696,11 +896,26 @@ Flashing = false;
 function Return()
 {
 locked = false;
+
+if(GameState == GameChosen.SinglePlayer)
 StopCoroutine("StartSinglePlayer");
+
+if(GameState != GameChosen.SinglePlayer)
+StopCoroutine("StartMultiPlayer");
+
 im.allowedToChange = true;
 transform.GetComponent(newCharacterSelect).hidden = true;
 transform.GetComponent(Level_Select).hidden = true;
+
+if(GameState == GameChosen.SinglePlayer)
 ChangeState(Menu.LocalMenu);
+
+if(GameState == GameChosen.Host)
+ChangeState(Menu.HostMenu);
+
+if(GameState == GameChosen.Client)
+ChangeState(Menu.JoinMenu);
+
 }
 
 function StartSinglePlayer(){
@@ -722,6 +937,32 @@ sps.enabled = true;
 
 gd.BlackOut = true;	
 			
+}
+
+function StartMultiPlayer(client : boolean)
+{
+
+ChangeState(Menu.CharacterSelect);
+
+gd.CheckforNewStuff();
+
+if(client || conscious)
+while(gd.currentChoices.Length == 0){
+transform.GetComponent(newCharacterSelect).hidden = false;
+yield;
+}
+
+gd.BlackOut = true;	
+yield WaitForSeconds(0.5);
+
+if(client)
+{
+gd.transform.GetComponent(Client_Script).enabled = true;
+gd.transform.GetComponent(Client_Script).StartConnection();
+}
+else
+gd.transform.GetComponent(Host_Script).enabled = true;
+
 }
 	
 

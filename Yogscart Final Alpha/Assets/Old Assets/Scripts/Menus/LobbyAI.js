@@ -12,7 +12,7 @@ Random.seed = (System.DateTime.Today.Year*1505) + (System.DateTime.Today.DayOfYe
 }
 
 function Start () {
-ExplorableAreaPos = Vector2(-46,-27);
+ExplorableAreaPos = Vector2(1.5,-5);
 
 while(true){
 if(locked == false){
@@ -24,8 +24,8 @@ yield WaitForSeconds(Random.Range(5,20));
 }
 
 function newPos(){
-TraveltoPos.x = Random.Range(ExplorableAreaPos.x,ExplorableAreaPos.x+20);
-TraveltoPos.z = Random.Range(ExplorableAreaPos.y,ExplorableAreaPos.y+14);
+TraveltoPos.x = Random.Range(ExplorableAreaPos.x,ExplorableAreaPos.x+10);
+TraveltoPos.z = Random.Range(ExplorableAreaPos.y,ExplorableAreaPos.y+7);
 }
 
 function FixedUpdate(){

@@ -1,7 +1,7 @@
 ﻿#pragma strict
 
 var direction : Vector3;
-var flightSpeed : float = 10f;
+var flightSpeed : float = 25f;
 
 var nextHeight : float;
 
@@ -16,7 +16,7 @@ transform.parent = null;
 
 nextHeight = transform.position.y;
 
-yield WaitForSeconds(15);
+yield WaitForSeconds(45);
 Destroy(this.gameObject);
 
 }

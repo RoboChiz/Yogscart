@@ -78,7 +78,7 @@ Destroy(loadedModels[i].gameObject);
 }else
 oldRot0 = Quaternion.identity;
 
-if(gd.Characters[choice[i].character].Unlocked == true){
+if(gd.Characters[choice[i].character].Unlocked != UnlockedState.Locked){
 loadedModels[i] = Instantiate(gd.Characters[choice[i].character].CharacterModel_Standing,Platforms[i].FindChild("Spawn").position,oldRot0);
 loadedModels[i].rigidbody.isKinematic = true;
 }
@@ -316,6 +316,9 @@ function OnGUI () {
 
 var avg = ((Screen.height + Screen.width)/2f)/30f;
 
+var submitBool : boolean;
+var cancelBool : boolean;
+
 GUI.skin = Resources.Load("GUISkins/Main Menu", GUISkin);
 
 GUI.skin.label.fontSize = avg;
@@ -374,7 +377,7 @@ if((i*5) + j < gd.Characters.Length){
 var iconRect : Rect = Rect(hiddenFloat + 20 + (j*iconWidth),startHeight + (i*iconWidth),iconWidth,iconWidth);
 
 var icon : Texture2D;
-if(gd.Characters[characterCounter].Unlocked == true)
+if(gd.Characters[characterCounter].Unlocked != UnlockedState.Locked)
 icon = gd.Characters[characterCounter].Icon;
 else
 icon = Resources.Load("UI Textures/Character Icons/question_mark",Texture2D);
@@ -399,10 +402,10 @@ for(var c : int = 0; c < im.c.Length;c++){
 
 if(!hidden){
 var submitInput : float = im.c[c].GetInput("Submit");
-var submitBool = (submitInput != 0);
+submitBool = (submitInput != 0);
 
 var cancelInput : float = im.c[c].GetInput("Cancel");
-var cancelBool = (cancelInput != 0);
+cancelBool = (cancelInput != 0);
 }
 
 var selectedchar = choice[c].character;
@@ -475,7 +478,7 @@ choice[c].character += (vinput*5);
 }
 
 
-if(submitBool && gd.Characters[choice[c].character].Unlocked == true){
+if(submitBool && gd.Characters[choice[c].character].Unlocked != UnlockedState.Locked){
 
 if(gd.Characters[choice[c].character].selectedSound != null)
 audio.PlayOneShot(gd.Characters[choice[c].character].selectedSound,10f);
@@ -671,7 +674,7 @@ if(stateTexture != null){
 
 var ratio : float = (Screen.width/3f)/stateTexture.width;
 
-GUI.DrawTexture(Rect(10,10,Screen.width/3f,stateTexture.height*ratio),stateTexture,ScaleMode.ScaleToFit);
+GUI.DrawTexture(Rect(hiddenFloat + 10,10,Screen.width/3f,stateTexture.height*ratio),stateTexture,ScaleMode.ScaleToFit);
 
 }
 
@@ -688,6 +691,12 @@ state += 1;
 }
 }else
 Resetready();
+
+if(submitBool)
+transform.FindChild("Background").audio.PlayOneShot(Resources.Load("Music & Sounds/SFX/confirm",AudioClip));
+
+if(cancelBool)
+transform.FindChild("Background").audio.PlayOneShot(Resources.Load("Music & Sounds/SFX/back",AudioClip));
 
 }
 }
@@ -779,6 +788,12 @@ var submitBool = (submitInput != 0);
 
 var cancelInput : float = im.c[c].GetInput("Cancel");
 var cancelBool = (cancelInput != 0);
+
+if(submitBool)
+transform.FindChild("Background").audio.PlayOneShot(Resources.Load("Music & Sounds/SFX/confirm",AudioClip));
+
+if(cancelBool)
+transform.FindChild("Background").audio.PlayOneShot(Resources.Load("Music & Sounds/SFX/back",AudioClip));
 
 if(im.c[c].GetInput("Horizontal") == 0 && im.c[c].GetInput("Vertical") == 0)
 inputLock[c] = false;

@@ -104,7 +104,7 @@ gd = transform.GetComponent(CurrentGameData);
 td = GameObject.Find("Track Manager").GetComponent(TrackData);
 
 OverallTimer = new Timer();
-InvokeRepeating("SortArray",0,0.2);
+InvokeRepeating("SortArray",0,0.15);
 BeginRace();
 
 }
@@ -130,7 +130,7 @@ yield SetUpKarts();
 yield PlayCutscene();
 
 if(type != RaceStyle.TimeTrial)
-InvokeRepeating("SortArray",0,0.2);
+InvokeRepeating("SortArray",0,0.15);
 
 yield Countdown();
 BeginRace();
@@ -152,6 +152,11 @@ private var lastTime : float;
 function OnGUI () {
 
 GUI.skin = Resources.Load("GUISkins/Main Menu", GUISkin);
+
+var avg = ((Screen.height + Screen.width)/2f)/30f;
+GUI.skin.label.fontSize = avg;
+GUI.skin.customStyles[4].fontSize = avg;
+
 var sps : SinglePlayer_Script = transform.GetComponent(SinglePlayer_Script);
 
 if(activeraceAlpha)
@@ -763,7 +768,7 @@ SPRacers[i].timer = new Timer();
 StartCoroutine("BeginTick");
 
 if(Network.isServer == true || (!Network.isServer && !Network.isClient))
-InvokeRepeating("CheckPlayer",0.1,0.2);
+InvokeRepeating("CheckPlayer",0.1,0.5);
 
 }
 

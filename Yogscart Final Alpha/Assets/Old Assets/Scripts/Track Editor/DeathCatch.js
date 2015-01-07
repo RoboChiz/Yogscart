@@ -29,10 +29,11 @@ transform.rotation = Quaternion.Euler(0,0,0);
 transform.rotation = Quaternion.LookRotation(n1Pos-nPos,Vector3.up);
 }
 
-yield;
-
 rigidbody.isKinematic = false;
-rigidbody.velocity = Vector3(0,-0.1,0);
+
+yield WaitForSeconds(0.1);
+
+
 DeathParticles.Stop();
 
 }

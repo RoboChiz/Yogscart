@@ -3,9 +3,6 @@
 
 private var td : TrackData;
 
-//@HideInInspector
-var DebugMode : boolean;
-
 function Update () {
 
 if(GameObject.Find("Track Manager") != null && GameObject.Find("Track Manager").GetComponent(TrackData) != null){

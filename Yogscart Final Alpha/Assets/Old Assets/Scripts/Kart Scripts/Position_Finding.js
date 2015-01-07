@@ -2,7 +2,7 @@
 
 var position : int = -1;
 
-var Lap : int;
+var Lap : int = -1;
 var currentPos : int;
 var currentTotal : int;
 var currentDistance : float;
@@ -23,7 +23,14 @@ closestDistance = Vector3.Distance(transform.position,tm.PositionPoints[NumClamp
 CheckForward(closestDistance);
 CheckBackwards(closestDistance);
 
+if(Lap == -1)
+{
+currentPos = 0;
+currentTotal = 0;
+}
+else
 currentPos = NumClamp(currentPos,0,tm.PositionPoints.Length);
+
 currentTotal = Mathf.Clamp(currentTotal,Lap * tm.PositionPoints.Length,Mathf.Infinity);
 currentDistance = Vector3.Distance(transform.position,tm.PositionPoints[NumClamp(currentPos + 1,0,tm.PositionPoints.Length)].rep.position);
 

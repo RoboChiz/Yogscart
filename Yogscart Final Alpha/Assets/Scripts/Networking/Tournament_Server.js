@@ -7,7 +7,6 @@ var PotentialPlayers : NetworkPlayer[];
 var WaitingPlayers : NetworkPlayer[];
 
 var serverType : ServerState = ServerState.Lobby;
-enum ServerState{Lobby,LoadingRace,Racing};
 
 private var workingProcesses : int;
 
@@ -151,7 +150,7 @@ var copy = new Array();
 if(RacingPlayers != null)
 copy = RacingPlayers;
 
-var nNetworkRacer = new NetworkRacer(character,hat,kart,wheel,info.sender); 
+var nNetworkRacer = new NetworkRacer(character,hat,kart,wheel,info.sender,true); 
 copy.Push(nNetworkRacer);
 
 RacingPlayers = copy;
@@ -175,33 +174,3 @@ break;
 workingProcesses --;
 
 }
-
-class NetworkRacer {
-
-var Character : int;
-var Hat : int;
-var Kart : int;
-var Wheel : int;
-
-var rep : Transform;
-var cameras : Transform;
-
-var TotalDistance : int;
-var NextDistance : float;
-var timer : Timer;
-
-var points : int;
-
-//Networking Variables
-var networkRep : NetworkPlayer;
-
-function  NetworkRacer(c : int, h : int, k : int, w : int, nr : NetworkPlayer)
-{
-Character = c;
-Hat = h;
-Kart = k;
-Wheel = w;
-networkRep = nr;
-}
-
-}	

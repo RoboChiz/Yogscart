@@ -16,6 +16,8 @@ var Locked : boolean;
 
 function Update () {
 
+if(Target != null)
+{
 velocity = Target.rigidbody.velocity;
 
 var quat : Quaternion;
@@ -33,5 +35,5 @@ var lookDir : Vector3 = Target.position - (transform.position-(Vector3.up*Player
 transform.rotation = Quaternion.Lerp(transform.rotation,Quaternion.LookRotation(lookDir),Time.deltaTime*rotsmoothTime);
 
 camera.fieldOfView = Mathf.Lerp(camera.fieldOfView,60 + Target.rigidbody.velocity.magnitude/4,Time.deltaTime/50f);
-
+}
 }

@@ -1,7 +1,6 @@
 ﻿#pragma strict
 
-enum User{Player,Backer,VIP};
-var gameTag : User;
+var version : String;
 
 var overallLapisCount : int;
 var lastoverallLapisCount : int;
@@ -208,14 +207,17 @@ private var ColourAlpha : Color = Color.white;
 		
 		var foo : int = 0;
 		
-		for(n = 1; n < Characters.Length; n++){
+		for(n = 0; n < Characters.Length; n++){
+		if(Characters[n].Unlocked != UnlockedState.FromStart)
+		{
 		foo = PlayerPrefs.GetInt(Characters[n].Name,0);
 		if(foo == 1){
-		//Characters[n].Unlocked = true;
+		Characters[n].Unlocked = UnlockedState.Unlocked;
 		Debug.Log(Characters[n].Name + " is unlocked!");
 		}else{
-		//Characters[n].Unlocked = false;
+		Characters[n].Unlocked = UnlockedState.Locked;
 		Debug.Log(Characters[n].Name + " is not unlocked!");
+		}
 		}
 		}
 		
@@ -284,7 +286,7 @@ function UnlockNewCharacter()
 	var copy = new Array();
 	
 	for(var n = 0; n < Characters.Length;n++){
-	if(Characters[n].Unlocked == false)
+	if(Characters[n].Unlocked == UnlockedState.Locked)
 	copy.Push(n);	
 	}
 	
@@ -378,6 +380,9 @@ Time.timeScale = 1f;
 }
 
 //Classes
+
+enum UnlockedState{FromStart,Unlocked,Locked};
+
 public class Character
  {
     var Name : String;
@@ -391,7 +396,7 @@ public class Character
 
 	var hitSounds : AudioClip[];
 	var tauntSounds : AudioClip[];
-	var Unlocked : boolean = false;
+	var Unlocked : UnlockedState;
 	var Icon : Texture2D;
  }
 
