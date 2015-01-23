@@ -9,8 +9,6 @@ private var receivedInvite : boolean;
 private var gd : CurrentGameData;
 private var im : InputManager;
 
-var LoadedCharacters : clientPlayer[];
-
 function Awake()
 {
 	gd = transform.GetComponent(CurrentGameData);
@@ -74,92 +72,9 @@ function QuizNewRacer () {
 if(!receivedInvite)
 {
 networkView.RPC("RecievedNewRacer",RPCMode.Server,gd.currentChoices[0].character,gd.currentChoices[0].hat,gd.currentChoices[0].kart,gd.currentChoices[0].wheel);
-networkView.RPC("LoadMe",RPCMode.AllBuffered,gd.currentChoices[0].character,gd.currentChoices[0].hat,PlayerPrefs.GetString("playerName","Player"));
 receivedInvite = true;
 }
 
-}
-
-
-@RPC
-function LoadMe (character : int, hat : int, name : String, info : NetworkMessageInfo) {
-
-var loadedCharacter : boolean = false;
-
-if(LoadedCharacters != null)
-for(var i : int = 0; i < LoadedCharacters.Length;i++){
-if(LoadedCharacters[i].networkRep.guid == info.sender.guid)
-{
-loadedCharacter = true;
-break;
-}
-}
-
-if(loadedCharacter == false){
-
-while(Application.loadedLevelName != "Lobby")
-yield;
-
-var Char : Transform = Instantiate(gd.Characters[character].CharacterModel_Standing,Vector3(0,1,0),Quaternion.identity);
-Char.gameObject.AddComponent(LobbyAI);
-Char.gameObject.layer = 0;
-
-if(Char.FindChild("Canvas").FindChild("PlayerName") != null)
-{
-var pn = Char.FindChild("Canvas").FindChild("PlayerName");
-pn.GetComponent(UI.Text).text = name;
-}
-
-var copy = new Array();
-
-if(LoadedCharacters != null)
-copy = LoadedCharacters;
-
-var nclientPlayer = new clientPlayer(info.sender,Char);
-
-copy.Push(nclientPlayer);
-LoadedCharacters = copy;
-
-Char.name = "LoadedCharacter" + (LoadedCharacters.Length-1);
-
-if(gd.Hats[hat].Model != null){
-var CharHat = Instantiate(gd.Hats[hat].Model,Char.position,Quaternion.identity);
-Debug.Log("Hat:" + gd.Hats[hat].Model.name);
-CharHat.position = Char.GetComponent(QA).objects[0].position;
-CharHat.rotation = Char.GetComponent(QA).objects[0].rotation;
-CharHat.parent = Char.GetComponent(QA).objects[0];
-}
-}
-
-}
-
-@RPC
-function DeletePlayer(player : NetworkPlayer){
-
-if(LoadedCharacters != null){
-
-var toDelete : int;
-
-for(var i : int = 0; i < LoadedCharacters.Length; i++)
-{
-if(LoadedCharacters[i].networkRep.guid == player.guid)
-{
-toDelete = i;
-break;
-}
-}
-
-Destroy(LoadedCharacters[toDelete].lobbyRep);
-
-var copy = new Array();
-copy = LoadedCharacters;
-copy.RemoveAt(toDelete);
-LoadedCharacters = copy;
-
-//Add Animation HERE!
-
-Debug.Log("Deleted Lobby Player");
-}
 }
 
 @RPC
@@ -213,19 +128,4 @@ yield WaitForSeconds(0.6);
 gd.BlackOut = false;
 
 }
-
-class clientPlayer
-{
-
-var networkRep : NetworkPlayer;
-var lobbyRep : GameObject;
-
-function clientPlayer(rep : NetworkPlayer, lob : Transform){
-networkRep = rep;
-lobbyRep = lob.gameObject;
-}
-
-}
-
-
 			

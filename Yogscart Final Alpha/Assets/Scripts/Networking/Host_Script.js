@@ -84,7 +84,6 @@ function OnPlayerDisconnected(player: NetworkPlayer) {
 		{
 		if(RacingPlayers[i].networkRep == player)
 		{
-		networkView.RPC("DeletePlayer",RPCMode.All,RacingPlayers[i].networkRep);
 		RacingPlayers[i].disconnected = true;
 		break;
 		}

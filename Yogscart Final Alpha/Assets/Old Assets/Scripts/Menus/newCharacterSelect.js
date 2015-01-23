@@ -25,12 +25,20 @@ private var loadedModels : Transform[];
 
 private var gd : CurrentGameData;
 private var im : InputManager;
+private var sm : Sound_Manager;
 private var iconWidth : float;
+
+private var ConfirmSound : AudioClip;
+private var BackSound : AudioClip;
 
 function Start () {
 
 gd = GameObject.Find("GameData").GetComponent(CurrentGameData);
 im = GameObject.Find("GameData").GetComponent(InputManager);
+sm = GameObject.Find("Sound System").GetComponent(Sound_Manager); 
+
+ConfirmSound = Resources.Load("Music & Sounds/SFX/confirm",AudioClip);
+BackSound = Resources.Load("Music & Sounds/SFX/back",AudioClip);
 
 hiddenFloat = -(iconWidth*6f);
 iconWidth = (Screen.width/2f)/5;
@@ -481,7 +489,7 @@ choice[c].character += (vinput*5);
 if(submitBool && gd.Characters[choice[c].character].Unlocked != UnlockedState.Locked){
 
 if(gd.Characters[choice[c].character].selectedSound != null)
-audio.PlayOneShot(gd.Characters[choice[c].character].selectedSound,10f);
+sm.PlaySFX(gd.Characters[choice[c].character].selectedSound);
 
 ready[c] = true;
 }
@@ -693,10 +701,10 @@ state += 1;
 Resetready();
 
 if(submitBool)
-transform.FindChild("Background").audio.PlayOneShot(Resources.Load("Music & Sounds/SFX/confirm",AudioClip));
+sm.PlaySFX(ConfirmSound);
 
 if(cancelBool)
-transform.FindChild("Background").audio.PlayOneShot(Resources.Load("Music & Sounds/SFX/back",AudioClip));
+sm.PlaySFX(BackSound);
 
 }
 }
@@ -790,10 +798,10 @@ var cancelInput : float = im.c[c].GetInput("Cancel");
 var cancelBool = (cancelInput != 0);
 
 if(submitBool)
-transform.FindChild("Background").audio.PlayOneShot(Resources.Load("Music & Sounds/SFX/confirm",AudioClip));
+sm.PlaySFX(ConfirmSound);
 
 if(cancelBool)
-transform.FindChild("Background").audio.PlayOneShot(Resources.Load("Music & Sounds/SFX/back",AudioClip));
+sm.PlaySFX(BackSound);
 
 if(im.c[c].GetInput("Horizontal") == 0 && im.c[c].GetInput("Vertical") == 0)
 inputLock[c] = false;

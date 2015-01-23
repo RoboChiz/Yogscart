@@ -4,9 +4,11 @@
 private var gd : CurrentGameData;
 private var im : InputManager;
 private var sps : SinglePlayer_Script;
+private var sm : Sound_Manager;
 
 private var version : String;
 var Logo : Texture2D;
+var Theme : AudioClip;
 
 enum Menu{StartScreen,MainMenu,LocalMenu,DifficultyMenu,Multiplayer,HostMenu,JoinMenu,TournamentMenu,Options,Credits,CharacterSelect,Popup};
 var State : Menu = Menu.StartScreen;
@@ -39,6 +41,7 @@ var NetworkPort : int = 25000;
 var NetworkPortText : String = "25000";
 var NetworkPassword : String;
 var PopupText : String;
+private var connectedToServer : boolean;
 
 var HostPort : int;
 var HostPortText : String = "25000";
@@ -69,7 +72,7 @@ private var serverScroll : Vector2;
 function Update(){
 var background = transform.GetChild(0).guiTexture;
 
-background.pixelInset = Rect(0,0,Screen.height*1.77951388889,Screen.height);
+background.pixelInset = Rect(0,0,Screen.width,Screen.height);
 
 }
 
@@ -82,6 +85,7 @@ function Start(){
 
 gd = GameObject.Find("GameData").GetComponent(CurrentGameData);
 im = GameObject.Find("GameData").GetComponent(InputManager);
+sm = GameObject.Find("Sound System").GetComponent(Sound_Manager); 
 sps = gd.GetComponent(SinglePlayer_Script);
 
 version = gd.version;
@@ -95,6 +99,9 @@ GetOptionSettings();
 
 ConfirmSound = Resources.Load("Music & Sounds/SFX/confirm",AudioClip);
 BackSound = Resources.Load("Music & Sounds/SFX/back",AudioClip);
+
+if(Theme != null)
+sm.PlayMusic(Theme);
 
 yield WaitForSeconds(1);
 gd.BlackOut = false;
@@ -116,7 +123,7 @@ var data : HostData[] = MasterServer.PollHostList();
 
 GUI.skin = Resources.Load("GUISkins/Main Menu", GUISkin);
 
-var avg = ((Screen.height + Screen.width)/2f)/30f;
+var avg = ((Screen.height + Screen.width)/2f)/40f;
 
 GUI.skin.label.fontSize = avg;
 GUI.skin.customStyles[4].fontSize = avg;
@@ -188,10 +195,10 @@ GUI.DrawTexture(backRect,backText);
 
 
 if(submitBool)
-transform.FindChild("Background").audio.PlayOneShot(Resources.Load("Music & Sounds/SFX/confirm",AudioClip));
+sm.PlaySFX(ConfirmSound);
 
 if(cancelBool)
-transform.FindChild("Background").audio.PlayOneShot(Resources.Load("Music & Sounds/SFX/back",AudioClip));
+sm.PlaySFX(BackSound);
 
 switch(State) {
 	
@@ -533,7 +540,7 @@ switch(State) {
 	break;
 	
 	case Menu.Options:
-		Options = ["Resolution","FullScreen","Quality","PlayerName","ResetEverything","SaveChanges","Back"];
+		Options = ["Resolution","FullScreen","Quality","PlayerName","MasterVolume","MusicVolume","SFXVolume","ResetEverything","SaveChanges","Back"];
 		stateLocation = "State 8";
 		
 		if(cancelBool)
@@ -550,14 +557,14 @@ switch(State) {
 			else
 			FullScreen = true;
 			break;
-			case 4:
+			case 7:
 			gd.ResetEverything();
 			PlayerPrefs.SetString("playerName","Player");
 			GetOptionSettings();
 			gd.Popup("All Grand Prix, Time Trial, Character, Hat, Kart, Wheel and Player data has been reset.");
 			Debug.Log("Deleted!");
 			break;
-			case 5:
+			case 8:
 			Screen.SetResolution(Screen.resolutions[ScreenR].width,Screen.resolutions[ScreenR].height,FullScreen);
 			QualitySettings.SetQualityLevel(Quality);
 			PlayerPrefs.SetString("playerName",playerName);
@@ -567,7 +574,7 @@ switch(State) {
 			gd.Popup("Your changes have been saved!");
 			Debug.Log("Done!");
 			break;
-			case 6:
+			case 9:
 			GetOptionSettings();
 			ChangeState(Menu.MainMenu);
 			break;
@@ -606,7 +613,9 @@ switch(State) {
 		var OptionsTexture : Texture2D = Resources.Load("UI Textures/New Main Menu/" + stateLocation + "/" + Options[i],Texture2D); 
 		var SelectedOptionsTexture : Texture2D = Resources.Load("UI Textures/New Main Menu/" + stateLocation + "/" + Options[i]+"_Sel",Texture2D); 
 		
-		var optionheight = (Screen.height/15f);
+		var optionsLength : float = Mathf.Clamp(Options.Length + 8,15,Mathf.Infinity);
+		
+		var optionheight = (Screen.height/optionsLength);
 		var ratio = optionheight/OptionsTexture.height;
 		
 		var drawRect : Rect;
@@ -620,8 +629,11 @@ switch(State) {
 			GUI.DrawTexture(drawRect,SelectedOptionsTexture,ScaleMode.ScaleToFit);
 		else
 			GUI.DrawTexture(drawRect,OptionsTexture,ScaleMode.ScaleToFit);
+		
 			
-		if(im.WithinBounds(drawRect,true))
+		var testRect : Rect = Rect(sideScroll + Screen.width/20f,(optionheight*(i+5)),OptionsTexture.width * 2f,optionheight);	
+						
+		if(im.WithinBounds(testRect,true))
 		currentSelection = i;
 		
 		if(State == Menu.Multiplayer && i == 0)
@@ -770,8 +782,8 @@ switch(State) {
 					
 				OutLineLabel2(resRect,Screen.resolutions[ScreenR].width + " x " + Screen.resolutions[ScreenR].height,2,Color.black);
 				
-				var leftarrowResRect : Rect = Rect(sideScroll + Screen.width/10f + OptionsTexture.width * ratio - optionheight,(optionheight*(i+5)),optionheight,optionheight);
-				var rightarrowResRect : Rect = Rect(sideScroll + Screen.width/10f + (OptionsTexture.width * ratio)*2.5 - optionheight,(optionheight*(i+5)),optionheight,optionheight);
+				var leftarrowResRect : Rect = Rect(sideScroll + Screen.width/10f + OptionsTexture.width * ratio - optionheight,(optionheight*(i+5)),optionheight,optionheight*0.75f);
+				var rightarrowResRect : Rect = Rect(sideScroll + Screen.width/10f + (OptionsTexture.width * ratio)*2.5 - optionheight,(optionheight*(i+5)),optionheight,optionheight*0.75f);
 				
 				if(im.WithinBounds(leftarrowResRect,true) && submitBool)
 				{
@@ -791,8 +803,8 @@ switch(State) {
 					
 				}
 				
-				GUI.DrawTexture(leftarrowResRect,Resources.Load("UI Textures/New Main Menu/Left_Arrow",Texture2D));
-				GUI.DrawTexture(rightarrowResRect,Resources.Load("UI Textures/New Main Menu/Right_Arrow",Texture2D));
+				GUI.DrawTexture(leftarrowResRect,Resources.Load("UI Textures/New Main Menu/Left_Arrow",Texture2D),ScaleMode.ScaleToFit);
+				GUI.DrawTexture(rightarrowResRect,Resources.Load("UI Textures/New Main Menu/Right_Arrow",Texture2D),ScaleMode.ScaleToFit);
 				
 			}
 			
@@ -822,8 +834,8 @@ switch(State) {
 			
 				OutLineLabel2(qualityRect,QualitySettings.names[Quality],2,Color.black);
 				
-				var leftarrowqualityRect : Rect = Rect(sideScroll + Screen.width/10f + OptionsTexture.width * ratio - optionheight,(optionheight*(i+5)),optionheight,optionheight);
-				var rightarrowqualityRect : Rect = Rect(sideScroll + Screen.width/10f + (OptionsTexture.width * ratio)*2.5 - optionheight,(optionheight*(i+5)),optionheight,optionheight);
+				var leftarrowqualityRect : Rect = Rect(sideScroll + Screen.width/10f + OptionsTexture.width * ratio - optionheight,(optionheight*(i+5)),optionheight,optionheight*0.75f);
+				var rightarrowqualityRect : Rect = Rect(sideScroll + Screen.width/10f + (OptionsTexture.width * ratio)*2.5 - optionheight,(optionheight*(i+5)),optionheight,optionheight*0.75f);
 				
 				if(im.WithinBounds(leftarrowqualityRect,true) && submitBool)
 				{
@@ -843,8 +855,8 @@ switch(State) {
 					
 				}
 				
-				GUI.DrawTexture(leftarrowqualityRect,Resources.Load("UI Textures/New Main Menu/Left_Arrow",Texture2D));
-				GUI.DrawTexture(rightarrowqualityRect,Resources.Load("UI Textures/New Main Menu/Right_Arrow",Texture2D));
+				GUI.DrawTexture(leftarrowqualityRect,Resources.Load("UI Textures/New Main Menu/Left_Arrow",Texture2D),ScaleMode.ScaleToFit);
+				GUI.DrawTexture(rightarrowqualityRect,Resources.Load("UI Textures/New Main Menu/Right_Arrow",Texture2D),ScaleMode.ScaleToFit);
 				
 			}
 			
@@ -859,6 +871,44 @@ switch(State) {
 					playerName = GUI.TextField(playerNameRect,playerName.ToString());
 				else
 					GUI.Label(playerNameRect,playerName);
+			}
+			
+			var sm : Sound_Manager = GameObject.Find("Sound System").GetComponent(Sound_Manager);
+			
+			if(i == 4)
+			{
+			
+			var MaxSlider : Rect = Rect(sideScroll + Screen.width/10f + OptionsTexture.width * ratio,(optionheight*(i+5) + optionheight/3f),OptionsTexture.width * ratio,optionheight);
+			
+			sm.MasterVolume = GUI.HorizontalSlider(MaxSlider,sm.MasterVolume,0,100);
+
+			var MaxLabel : Rect = Rect(sideScroll + Screen.width/10f + OptionsTexture.width * ratio - optionheight,(optionheight*(i+5)) + optionheight/4f,optionheight,optionheight*0.75f);
+			OutLineLabel2(MaxLabel,sm.MasterVolume.ToString(),2);
+			
+			}
+			
+			if(i == 5)
+			{
+			
+			var MusicSlider : Rect = Rect(sideScroll + Screen.width/10f + OptionsTexture.width * ratio,(optionheight*(i+5) + optionheight/3f),OptionsTexture.width * ratio,optionheight);
+			
+			sm.MusicVolume = GUI.HorizontalSlider(MusicSlider,sm.MusicVolume,0,100);
+
+			var MusicLabel : Rect = Rect(sideScroll + Screen.width/10f + OptionsTexture.width * ratio - optionheight,(optionheight*(i+5)) + optionheight/4f,optionheight,optionheight*0.75f);
+			OutLineLabel2(MusicLabel,sm.MusicVolume.ToString(),2);
+			
+			}
+			
+			if(i == 6)
+			{
+			
+			var SFXSlider : Rect = Rect(sideScroll + Screen.width/10f + OptionsTexture.width * ratio,(optionheight*(i+5) + optionheight/3f),OptionsTexture.width * ratio,optionheight);
+			
+			sm.SFXVolume = GUI.HorizontalSlider(SFXSlider,sm.SFXVolume,0,100);
+
+			var SFXLabel : Rect = Rect(sideScroll + Screen.width/10f + OptionsTexture.width * ratio - optionheight,(optionheight*(i+5)) + optionheight/4f,optionheight,optionheight*0.75f);
+			OutLineLabel2(SFXLabel,sm.SFXVolume.ToString(),2);
+			
 			}
 
 		}
@@ -957,12 +1007,34 @@ yield WaitForSeconds(0.5);
 
 if(client)
 {
-gd.transform.GetComponent(Client_Script).enabled = true;
-gd.transform.GetComponent(Client_Script).StartConnection();
+
+connectedToServer = false;
+if(NetworkPassword != null || NetworkPassword.Length != 0)
+Network.Connect(NetworkIP,NetworkPort,NetworkPassword);
+else
+Network.Connect(NetworkIP,NetworkPort);
+
+while(!connectedToServer)
+{
+yield;
+}
+
+gd.transform.GetComponent(Client).enabled = true;
 }
 else
-gd.transform.GetComponent(Host_Script).enabled = true;
+{
+	
+	Network.incomingPassword = HostPassword;
+	var useNat = !Network.HavePublicAddress();
+	Network.InitializeServer(12, HostPort, useNat);
+	
+gd.transform.GetComponent(Host).enabled = true;
+gd.transform.GetComponent(Host).ResetServer();
+}
+}
 
+function OnConnectedToServer() {
+connectedToServer = true;
 }
 	
 
