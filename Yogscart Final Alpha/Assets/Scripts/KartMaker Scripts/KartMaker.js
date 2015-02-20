@@ -4,15 +4,22 @@
 enum KartType{Display,Local,Online,Spectator};
 
 private var gd : CurrentGameData;
+private var im : InputManager;
+
+var DebugMode : boolean;
 
 function Start()
 {
 
 gd = transform.GetComponent(CurrentGameData);
+im = transform.GetComponent(InputManager);
+
+if(DebugMode)
+SpawnKart(KartType.Local,Vector3.zero,Quaternion.identity,Random.Range(0,gd.Karts.Length),Random.Range(0,gd.Wheels.Length),Random.Range(0,gd.Characters.Length),Random.Range(0,gd.Hats.Length));
 
 }
 
-function SpawnKart(kartType : KartType, kart : int, wheel : int, character : int, hat : int)
+function SpawnKart(kartType : KartType, position : Vector3, rotation : Quaternion, kart : int, wheel : int, character : int, hat : int)
 {
 
 //Spawn Kart & Wheels
@@ -60,7 +67,7 @@ kb.AddComponent(Rigidbody);
 kb.rigidbody.mass = 10;
 kb.rigidbody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
 kb.rigidbody.interpolation = RigidbodyInterpolation.Interpolate;
-kb.rigidbody.angularDrag = 10;
+kb.rigidbody.angularDrag = 1000;
 
 kb.AddComponent(AudioSource);
 kartBody.FindChild("Kart Body").gameObject.AddComponent(AudioSource);
@@ -130,11 +137,25 @@ kb.AddComponent(kartItem);
 kb.GetComponent(kartItem).spawnDistance = kartSkel.ItemDrop;
 }
 
+if(kartType == KartType.Online)
+{
+
+//Add Script
+kb.AddComponent(kartInput);
+kb.AddComponent(kartInfo);
+//Adjust Scripts
+kb.GetComponent(kartInput).InputName = im.c[0].inputName;
+
+}
+
 }
 
 //Clear Up
 Destroy(kartSkel);
 Destroy(charSkel);
+
+kartBody.position = position;
+kartBody.rotation = rotation;
 
 return kartBody;
 

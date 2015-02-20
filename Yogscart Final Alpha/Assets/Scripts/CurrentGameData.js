@@ -6,10 +6,10 @@ var overallLapisCount : int;
 var lastoverallLapisCount : int;
 
 //Tracks 
-@HideInInspector
-var currentCup : int = -1;
-@HideInInspector
-var currentTrack : int = -1;
+
+var currentCup : int = 0;
+
+var currentTrack : int = 0;
 
 //Delete Later!
 var currentKart : int =-1;
@@ -474,6 +474,62 @@ public class Timer
 	return TimeString;
     }
   
+}
+
+//New Racer class which will be used in both Single Player and Multiplayer
+public class Racer
+{
+//Racer Information
+var name : String;
+var human : boolean;
+var aiStupidity : int = -1;
+
+//Race Loading Infomation
+var character : int;
+var hat : int;
+var kart : int;
+var wheel : int;
+
+//During Race Information
+var finished : boolean;
+var position : int;
+var ingameObj : Transform;
+var cameras : Transform;
+var timer : Timer;
+var TotalDistance : int;
+var NextDistance : float;
+
+//After Race Information
+var points : int;
+
+function Racer(Human : boolean, AiStupidity : int, Character : int, Hat : int, Kart : int, Wheel : int, Position : int)
+{
+human = Human;
+aiStupidity = AiStupidity;
+character = Character;
+hat = Hat;
+kart = Kart;
+wheel = Wheel;
+position = Position;
+timer = new Timer();
+}
+
+}
+
+//Used to store additional Racer information for Multiplayer only. 'Racer' is called by reference.
+public class NetworkedRacer
+{
+ var racer : Racer;
+ var networkplayer : NetworkPlayer;
+ var connected : boolean;
+ 
+ function NetworkedRacer(nracer : Racer, np : NetworkPlayer)
+ {
+ 	racer = nracer;
+ 	networkplayer = np;
+ 	connected = true;
+ }
+ 
 }
 
 function Exit(){

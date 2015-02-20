@@ -47,7 +47,7 @@ var engineSound : AudioClip;
 
 var checkDistance : float = 0.4f;
 var pushDistance : float = 0.25f;
-var pushTime : float = 0.1f;
+var pushTime : float = 0.3f;
 private var Pushing : boolean;
 
 private var lastPosition : Vector3;
@@ -137,8 +137,10 @@ audio.Play();
 audio.loop = true;
 }
 
+var sm : Sound_Manager = GameObject.Find("Sound System").GetComponent(Sound_Manager); 
+
 var es = ExpectedSpeed/4f;
-audio.volume = Mathf.Lerp(audio.volume,Mathf.Abs(ExpectedSpeed),Time.deltaTime);
+audio.volume = (sm.MasterVolume/100f) * (sm.SFXVolume/150f) * Mathf.Lerp(audio.volume,Mathf.Abs(ExpectedSpeed),Time.deltaTime);
 audio.pitch = Mathf.Lerp(audio.pitch,1 + Mathf.Abs(es),Time.deltaTime);
 
 }
@@ -201,18 +203,32 @@ if(Physics.Raycast(transform.position,Vector3.down,hit,10))
 if(Vector3.Angle(hit.normal,transform.up) > 45)
 SnapUp();
 
-}
+var rayHit : RaycastHit;
 
-function OnCollisionEnter(collision : Collision) {
+var checkDir : Vector3;
+if(rigidbody.velocity.magnitude > 5)
+checkDir = rigidbody.velocity.normalized;
+else
+checkDir = transform.forward;
 
-if(collision.other.tag == "Kart")
+if(Physics.SphereCast(transform.position,1f,checkDir,rayHit,checkDistance))
 {
 
-var dir = transform.TransformDirection(transform.position - collision.other.transform.position);
-var ndir = transform.InverseTransformDirection(Vector3(Mathf.Sign(dir.x),0,0)).normalized;
+if(rayHit.transform.tag == "Kart")
+{
 
-Push(ndir);
+var targetDir : Vector3 = rayHit.transform.position - transform.position;
+var ndir : Vector3;
 
+if(Vector3.Angle(targetDir,transform.right) < 90)
+ndir = -transform.right + transform.forward;
+else
+ndir = transform.right + transform.forward;
+
+Push(ndir,rayHit.distance);
+
+
+}
 }
 
 }
@@ -434,7 +450,9 @@ spinning = false;
 
 }
 
-function Push(dir : Vector3)
+var pushForce : float = 5000f;
+
+function Push(dir : Vector3,dist : float)
 {
 
 rigidbody.constraints = RigidbodyConstraints.FreezePositionY;

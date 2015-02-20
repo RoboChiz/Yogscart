@@ -16,6 +16,7 @@ var renderItemHeight : int;
 private var gd : CurrentGameData;
 private var ki : kartInfo;
 private var pf : Position_Finding;
+private var sm : Sound_Manager;
 
 private var size : float;
 var spawnDistance : float;
@@ -23,6 +24,7 @@ var spawnDistance : float;
 function Awake(){
 if(this.enabled == true){
 gd = GameObject.Find("GameData").GetComponent(CurrentGameData);
+sm = GameObject.Find("Sound System").GetComponent(Sound_Manager); 
 size = Screen.width/8f;
 }
 }
@@ -62,8 +64,7 @@ i = gd.PowerUps.Length;
 
 if(transform.GetComponent(kartInput) != null){
 
-transform.FindChild("Kart Body").audio.clip = Resources.Load("Music & Sounds/Powerup",AudioClip);
-transform.FindChild("Kart Body").audio.Play();
+sm.PlaySFX(Resources.Load("Music & Sounds/Powerup",AudioClip));
 
 renderItemHeight = -size ;
 
@@ -102,7 +103,7 @@ var spawnLocation : Vector3;
 spawnLocation = (transform.forward*spawnDistance);
 
 if(gd.PowerUps[heldPowerUp].type == ItemType.Projectile)
-spawnLocation = -(transform.forward*spawnDistance);
+spawnLocation = -(transform.FindChild("Kart Body").forward*spawnDistance);
 
 clone = Instantiate(gd.PowerUps[heldPowerUp].Model,transform.position - spawnLocation,transform.rotation);
 
@@ -152,8 +153,7 @@ yield;
 
 function Stop(){
 
-transform.FindChild("Kart Body").audio.clip = Resources.Load("Music & Sounds/Powerup2",AudioClip);
-transform.FindChild("Kart Body").audio.Play();
+sm.PlaySFX(Resources.Load("Music & Sounds/Powerup2",AudioClip));
 
 var nstartTime : float = Time.timeSinceLevelLoad;
 

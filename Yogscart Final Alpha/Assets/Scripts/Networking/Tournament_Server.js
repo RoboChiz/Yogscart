@@ -1,6 +1,6 @@
 ﻿#pragma strict
 
-var Version : String;
+/*var Version : String;
 
 var RacingPlayers : NetworkRacer[];
 var PotentialPlayers : NetworkPlayer[];
@@ -173,4 +173,4 @@ break;
 
 workingProcesses --;
 
-}
+}*/

@@ -77,6 +77,16 @@ receivedInvite = true;
 
 }
 
+/*@RPC
+
+DEAR FUTURE ME,
+ADD LOAD TRACK FUNCTION HERE WHICH USES "LoadNetworkLevel" BUT ALSO SETS THE CURRENT TRACK IN GD :D
+THANKS AGAIN.
+BEST WISHES,
+PAST ME
+
+*/
+
 @RPC
 function LoadNetworkLevel(level : String, levelPrefix : int){
 
@@ -119,8 +129,13 @@ yield;
 
 if(level == "Lobby"){
 
+	if(Network.isServer)
+		transform.GetComponent(Host_Script).serverType = ServerState.Lobby;
+
 }else{
 
+transform.GetComponent(RaceBase).enabled = true;
+transform.GetComponent(RaceBase).LoadLibaries();
 }
 
 yield WaitForSeconds(0.6);

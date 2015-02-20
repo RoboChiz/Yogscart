@@ -144,10 +144,7 @@ Destroy(loadedModels[i].gameObject);
 
 var km = gd.transform.GetComponent(KartMaker);
 
-loadedModels[i] = km.SpawnKart(KartType.Display,choice[i].kart,choice[i].wheel,choice[i].character,choice[i].hat);
-
-loadedModels[i].position = Platforms[i].FindChild("Spawn").position + Vector3.up;
-loadedModels[i].rotation = oldRot2;
+loadedModels[i] = km.SpawnKart(KartType.Display,Platforms[i].FindChild("Spawn").position + Vector3.up,oldRot2,choice[i].kart,choice[i].wheel,choice[i].character,choice[i].hat);
 
 loadedKart[i] = choice[i].kart;
 loadedWheel[i] = choice[i].wheel;

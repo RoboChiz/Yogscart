@@ -8,6 +8,10 @@ var nextHeight : float;
 function Start()
 {
 
+var sm : Sound_Manager = GameObject.Find("Sound System").GetComponent(Sound_Manager); 
+
+audio.volume = (sm.MasterVolume/100f) * (sm.SFXVolume/150f);
+
 direction = (transform.position - transform.parent.position);
 direction.y = 0;
 

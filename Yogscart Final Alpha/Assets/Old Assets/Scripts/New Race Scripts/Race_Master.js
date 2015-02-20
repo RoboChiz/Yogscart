@@ -5,7 +5,6 @@
 //I AM RACE MASTER, MASTER OF ALL... THE RACES....FEAR ME!!!
 
 enum Testing{Race,CharacterSpawning,CutScene,RaceInfo,Countdown,RaceGUI,ScoreBoard,NextMenu,Loading};
-enum RaceStyle{GrandPrix,TimeTrial,CustomRace,Online};
 
 var DebugMode : boolean;
 
@@ -15,6 +14,7 @@ var State = Testing.Race;
 private var td : TrackData;
 private var gd : CurrentGameData;
 private var im : InputManager;
+private var sm : Sound_Manager;
 
 private var CountdownText : int;
 private var CountdownRect : Rect;
@@ -55,6 +55,7 @@ function Start(){
 gd = transform.GetComponent(CurrentGameData);
 im = transform.GetComponent(InputManager);
 td = GameObject.Find("Track Manager").GetComponent(TrackData);
+sm = GameObject.Find("Sound System").GetComponent(Sound_Manager); 
 
 idealWidth = Screen.width/3f;
 
@@ -140,8 +141,6 @@ SPRacers[0].rep.GetComponent(kartItem).inUse = true;
 SPRacers[0].rep.GetComponent(kartItem).heldPowerUp = 3;
 }
 
-yield WaitForSeconds(1);
-Destroy(transform.GetComponent(AudioSource));
 }
 
 private var addBoost : float;
@@ -244,9 +243,6 @@ CountdownAlpha = Mathf.Lerp(CountdownAlpha,0,Time.deltaTime*10f);
 //}
 
 //}
-
-if(GameObject.Find("Music Holder") != null && GameObject.Find("Music Holder").GetComponent(AudioSource).volume < 0.25f)
-GameObject.Find("Music Holder").GetComponent(AudioSource).volume += Time.deltaTime/4f;
 
 }
 
@@ -556,8 +552,6 @@ SPRacers[i].timer = new Timer();
 
 var km = gd.transform.GetComponent(KartMaker);
 
-SPRacers[i].rep = km.SpawnKart(KartType.Local,SPRacers[i].Kart,SPRacers[i].Wheel,SPRacers[i].Character,SPRacers[i].Hat);
-
 //Find Spawn Position
 var SpawnPosition : Vector3;
 var rot : Quaternion = td.PositionPoints[0].rep.rotation;
@@ -575,8 +569,8 @@ var y2 : Vector3 = rot*(Vector3.right*(i + 1)* td.Scale);
 SpawnPosition = startPos + x2 + y2;  
 }
 
-SPRacers[i].rep.position = SpawnPosition;
-SPRacers[i].rep.rotation = td.PositionPoints[0].rep.rotation * Quaternion.Euler(0,-90,0);
+
+SPRacers[i].rep = km.SpawnKart(KartType.Local,SpawnPosition,td.PositionPoints[0].rep.rotation * Quaternion.Euler(0,-90,0),SPRacers[i].Kart,SPRacers[i].Wheel,SPRacers[i].Character,SPRacers[i].Hat);
 
 if(type != RaceStyle.TimeTrial)
 SPRacers[i].rep.GetComponent(Position_Finding).position = i;
@@ -668,10 +662,7 @@ gd = GameObject.Find("GameData").GetComponent(CurrentGameData);
 
 var CutsceneCam = new GameObject();
 CutsceneCam.AddComponent(Camera);
-CutsceneCam.AddComponent(AudioSource);
-CutsceneCam.AddComponent(AudioListener);
-CutsceneCam.GetComponent(AudioSource).audio.clip = Resources.Load("Music & Sounds/RaceStart",AudioClip);
-CutsceneCam.GetComponent(AudioSource).audio.Play ();
+sm.PlayMusic(Resources.Load("Music & Sounds/RaceStart",AudioClip));
 CutsceneCam.transform.position = td.IntroPans[0].StartPoint;
 CutsceneCam.transform.rotation = Quaternion.Euler(td.IntroPans[0].StartRotation);
 gd.BlackOut = false;
@@ -692,16 +683,14 @@ gd.BlackOut = false;
 State = Testing.RaceInfo;
 yield WaitForSeconds(2.5); //Wait for Gui to clear up
 activeraceAlpha = true;
+
 yield WaitForSeconds(0.5);
-while(CutsceneCam.GetComponent(AudioSource).audio.volume > 0){
-CutsceneCam.GetComponent(AudioSource).audio.volume -= Time.deltaTime;
-yield;
-}
 
 activeraceAlpha = false;
 yield WaitForSeconds(0.5);
 
 Destroy(CutsceneCam);
+sm.PlayMusic(td.backgroundMusic);
 State = Testing.Countdown;
 
 }
@@ -725,19 +714,8 @@ function Countdown(){
 State = Testing.Countdown;
 
 activeraceAlpha = true;
-//Create Background Music
-var obj = new GameObject();
-obj.name = "Music Holder";
-obj.AddComponent(AudioSource);
-obj.GetComponent(AudioSource).audio.clip = td.backgroundMusic;
-obj.GetComponent(AudioSource).audio.Play ();
-obj.GetComponent(AudioSource).volume = 0;
-obj.GetComponent(AudioSource).audio.loop = true;
 
-//Start CountDown
-gameObject.AddComponent(AudioSource);
-transform.GetComponent(AudioSource).audio.clip = Resources.Load("Music & Sounds/CountDown",AudioClip);
-transform.GetComponent(AudioSource).audio.Play ();
+sm.PlaySFX(Resources.Load("Music & Sounds/CountDown",AudioClip));
 
 for(var i : int = 3; i >= 0; i--){
 CountdownText = i;

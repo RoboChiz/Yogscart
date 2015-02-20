@@ -5,9 +5,9 @@ var MusicVolume : int = 100;
 var SFXVolume : int = 100;
 //var DialogueVolume : int = 100;
 
-var fadeSpeed : float = 10f;
+var fadeTime : float = 0.5f;
 
-private var lastMav : float;
+private var lastMav : float = -1;
 
 private var mSource : AudioSource;
 private var mbeingUsed : boolean;
@@ -28,6 +28,7 @@ sfxSource = transform.FindChild("SFX").audio;
 //dSource = transform.FindChild("Dialogue").audio;
 
 mSource.loop = true;
+
 }
 
 function Update ()
@@ -59,12 +60,39 @@ lastMav = mav;
 
 function PlaySFX(nMusic : AudioClip)
 {
-sfxSource.PlayOneShot(nMusic,1f);
+	if(sfxSource != null)
+	{
+		sfxSource.PlayOneShot(nMusic,1f);
+	}
 }
 
 function PlayMusic(nMusic : AudioClip)
 {
+	if(mSource != null)
+	{
+		//Wait for current track swap to finish
+		while(mbeingUsed)
+		yield;
 
+		mbeingUsed = true;
+
+		var finalVolume = mSource.volume;
+
+		if(mSource.isPlaying)
+		yield TransitionVolume(0);
+
+		mSource.Stop();
+		mSource.clip = nMusic;
+		mSource.Play();
+
+		yield TransitionVolume(finalVolume);
+
+		mbeingUsed = false;
+	}
+}
+
+function StopMusic()
+{
 //Wait for current track swap to finish
 while(mbeingUsed)
 yield;
@@ -72,22 +100,22 @@ yield;
 mbeingUsed = true;
 
 if(mSource.isPlaying)
-while(mSource.volume > 0)
-{
-mSource.volume -= Time.deltaTime * fadeSpeed;
-yield;
-}
+yield TransitionVolume(0);
 
 mSource.Stop();
-mSource.clip = nMusic;
-mSource.Play();
-
-while(mSource.volume < 1)
-{
-mSource.volume += Time.deltaTime * fadeSpeed;
-yield;
-}
 
 mbeingUsed = false;
+
+}
+
+function TransitionVolume(endVolume : float)
+{
+var startTime : float = Time.realtimeSinceStartup;
+var startVolume : float = mSource.volume;
+
+while((Time.realtimeSinceStartup-startTime) < fadeTime){
+mSource.volume = Mathf.Lerp(startVolume,endVolume,(Time.realtimeSinceStartup-startTime)/fadeTime);
+yield;
+}
 
 }

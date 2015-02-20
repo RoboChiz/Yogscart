@@ -120,6 +120,7 @@
      <Compile Include="Assets\Scripts\BoostPad.js" />
      <Compile Include="Assets\Scripts\CurrentGameData.js" />
      <Compile Include="Assets\Scripts\InputManager.js" />
+     <Compile Include="Assets\Scripts\Kart Scripts\KartBounce.js" />
      <Compile Include="Assets\Scripts\Kart Scripts\kartScript.js" />
      <Compile Include="Assets\Scripts\KartMaker Scripts\CharacterSkeleton.js" />
      <Compile Include="Assets\Scripts\KartMaker Scripts\KartMaker.js" />
@@ -131,7 +132,14 @@
      <Compile Include="Assets\Scripts\Particle_Destroy.js" />
      <Compile Include="Assets\Scripts\Powerups\Egg.js" />
      <Compile Include="Assets\Scripts\Powerups\JR.js" />
+     <Compile Include="Assets\Scripts\Race\NameRotate.js" />
+     <Compile Include="Assets\Scripts\Race\RaceBase.js" />
+     <Compile Include="Assets\Scripts\Race\RaceLeader.js" />
+     <Compile Include="Assets\Scripts\Race\RaceSpectator.js" />
+     <Compile Include="Assets\Scripts\Race\Race_Master(BROKEN).js" />
+     <Compile Include="Assets\Scripts\Race\SortingScript.js" />
      <Compile Include="Assets\Scripts\Scrolling_Texture.js" />
+     <Compile Include="Assets\Scripts\SortingTest.js" />
      <Compile Include="Assets\Scripts\Sound System\Sound_Manager.js" />
      <None Include="Assets\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\_BloomAndFlares\BlendOneOne.shader" />
      <None Include="Assets\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\NoiseEffectShaderRGB.shader" />
@@ -194,6 +202,7 @@
      <None Include="Assets\Old Assets\Standard Assets\Toon Shading\Sources\Shaders\Toony-Lighted.shader" />
      <None Include="Assets\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\ColorCorrectionSelective.shader" />
      <None Include="Assets\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\_DepthOfField\Bokeh34.shader" />
+     <None Include="Assets\Scenes\Tracks\Fantasy Skybox FREE\Readme\Readme.txt" />
      <None Include="Assets\Old Assets\ImageEffects\ShaderDir\Vignette.shader" />
      <None Include="Assets\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\CameraMotionBlurDX11.shader" />
      <None Include="Assets\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\_BloomAndFlares\SeparableBlurPlus.shader" />
@@ -205,6 +214,7 @@
      <None Include="Assets\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\CameraMotionBlur.shader" />
      <None Include="Assets\Old Assets\Standard Assets\Water (Pro Only)\Sources\Shaders\FX-Water.shader" />
      <None Include="Assets\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\_Antialiasing\DLAA.shader" />
+     <None Include="Assets\Scenes\Tracks\Sjin&apos;s Farm\Materials\Plants\Plant_Shader.shader" />
      <None Include="Assets\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\NoiseAndGrainDX11.shader" />
      <None Include="Assets\Old Assets\Scenes\Tracks\IMPORTANT.txt" />
      <None Include="Assets\Old Assets\ImageEffects\AA Shaders\FXAAPreset3.shader" />
@@ -229,7 +239,7 @@
      <None Include="Assets\Old Assets\ImageEffects\ShaderDir\Shadow-ScreenBlur.shader" />
      <None Include="Assets\Old Assets\ImageEffects\ShaderDir\IndieRadialBlur.shader" />
      <None Include="Assets\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\_Antialiasing\FXAA2.shader" />
-     <None Include="Assets\Scenes\Tracks\Sjin&apos;s Farm\Materials\Plants\Plant_Shader.shader" />
+     <None Include="Assets\Scenes\Tracks\Sjin&apos;s Farm_OLD\Materials\Plants\Plant_Shader.shader" />
      <None Include="Assets\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\ColorCorrection3DLut.shader" />
      <None Include="Assets\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\_BloomAndFlares\LensFlareCreate.shader" />
      <None Include="Assets\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\EdgeDetectNormals.shader" />

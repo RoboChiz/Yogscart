@@ -100,12 +100,12 @@ GetOptionSettings();
 ConfirmSound = Resources.Load("Music & Sounds/SFX/confirm",AudioClip);
 BackSound = Resources.Load("Music & Sounds/SFX/back",AudioClip);
 
-if(Theme != null)
-sm.PlayMusic(Theme);
-
 yield WaitForSeconds(1);
 gd.BlackOut = false;
 im.allowedToChange = true;
+
+if(Theme != null)
+sm.PlayMusic(Theme);
 
 var url = "https://db.tt/N51AaMhM";
 www1 = new WWW (url);
@@ -983,6 +983,8 @@ transform.GetComponent(Level_Select).hidden = false;
 yield;
 }
 
+sm.StopMusic();
+
 sps.enabled = true;
 
 gd.BlackOut = true;	
@@ -1002,6 +1004,14 @@ transform.GetComponent(newCharacterSelect).hidden = false;
 yield;
 }
 
+var rb = gd.transform.GetComponent(RaceBase);
+
+rb.myRacer.character = gd.currentChoices[0].character;
+rb.myRacer.hat = gd.currentChoices[0].hat;
+rb.myRacer.kart = gd.currentChoices[0].kart;
+rb.myRacer.wheel = gd.currentChoices[0].wheel;
+
+
 gd.BlackOut = true;	
 yield WaitForSeconds(0.5);
 
@@ -1019,7 +1029,7 @@ while(!connectedToServer)
 yield;
 }
 
-gd.transform.GetComponent(Client).enabled = true;
+gd.transform.GetComponent(Client_Script).enabled = true;
 }
 else
 {
@@ -1028,8 +1038,8 @@ else
 	var useNat = !Network.HavePublicAddress();
 	Network.InitializeServer(12, HostPort, useNat);
 	
-gd.transform.GetComponent(Host).enabled = true;
-gd.transform.GetComponent(Host).ResetServer();
+gd.transform.GetComponent(Host_Script).enabled = true;
+
 }
 }
 

@@ -1,15 +1,14 @@
 ﻿#pragma strict
 
 private var gd : CurrentGameData;
+private var im : InputManager;
 
-var Port : int;
-var Password : String;
 var WithBots : boolean;
 var Automatic : boolean;
 var conscious : boolean = true;
 var MinPlayers : int;
 
-var RacingPlayers : NetworkRacer[];
+var RacingPlayers : NetworkedRacer[];
 var PotentialPlayers : NetworkPlayer[];
 var WaitingPlayers : NetworkPlayer[];
 
@@ -21,22 +20,17 @@ private var workingProcesses : int;
 function Awake()
 {
 	gd = transform.GetComponent(CurrentGameData);
+	im = transform.GetComponent(InputManager);
 }
 
 function Start () {
 
 	var mm : Main_Menu = GameObject.Find("Menu Holder").GetComponent(Main_Menu);
 
-	Port = mm.HostPort;
-	Password = mm.HostPassword;
 	WithBots = mm.WithBots;
 	Automatic = mm.Automatic;
 	conscious = mm.conscious;
 	MinPlayers = mm.MinPlayers;
-	
-	Network.incomingPassword = Password;
-	var useNat = !Network.HavePublicAddress();
-	Network.InitializeServer(12, Port, useNat);
 	
 	var myStuff = gd.currentChoices[0];
 	
@@ -82,9 +76,9 @@ function OnPlayerDisconnected(player: NetworkPlayer) {
 		
 		for(var i : int = 0; i < RacingPlayers.Length; i++)
 		{
-		if(RacingPlayers[i].networkRep == player)
+		if(RacingPlayers[i].networkplayer == player)
 		{
-		RacingPlayers[i].disconnected = true;
+		RacingPlayers[i].connected = false;
 		break;
 		}
 		}
@@ -181,7 +175,7 @@ var copy = new Array();
 
 for(var i : int = 0; i < RacingPlayers.Length; i++)
 {
-if(!RacingPlayers[i].disconnected)
+if(RacingPlayers[i].connected)
 copy.Push(RacingPlayers[i]);
 }
 
@@ -212,7 +206,8 @@ var copy = new Array();
 if(RacingPlayers != null)
 copy = RacingPlayers;
 
-var nNetworkRacer = new NetworkRacer(character,hat,kart,wheel,info.sender,true); 
+var nRacer = new Racer(true,-1,character,hat,kart,wheel,copy.length); 
+var nNetworkRacer = new NetworkedRacer(nRacer,info.sender);
 
 copy.Push(nNetworkRacer);
 
@@ -249,72 +244,82 @@ var copy = new Array();
 if(RacingPlayers != null)
 copy = RacingPlayers;
 
-var nNetworkRacer = new NetworkRacer(character,hat,kart,wheel,networkView.owner,true); 
+var nRacer = new Racer(true,-1,character,hat,kart,wheel,0); 
+var nNetworkedRacer = new NetworkedRacer(nRacer,networkView.owner);
 
-copy.Push(nNetworkRacer);
+copy.Push(nNetworkedRacer);
 
 RacingPlayers = copy;
 
-networkView.RPC("LoadMe",RPCMode.AllBuffered,gd.currentChoices[0].character,gd.currentChoices[0].hat,PlayerPrefs.GetString("playerName","Player"));
+transform.GetComponent(RaceBase).myRacer = nRacer;
+
+//networkView.RPC("LoadMe",RPCMode.AllBuffered,gd.currentChoices[0].character,gd.currentChoices[0].hat,PlayerPrefs.GetString("playerName","Player"));
 
 workingProcesses --;
 
 }
 
-class NetworkRacer {
-
-var Human : boolean;
-var disconnected : boolean;
-
-var Character : int;
-var Hat : int;
-var Kart : int;
-var Wheel : int;
-
-var rep : Transform;
-var cameras : Transform;
-
-var TotalDistance : int;
-var NextDistance : float;
-var timer : Timer;
-
-var points : int;
-
-//Networking Variables
-var networkRep : NetworkPlayer;
-
-function  NetworkRacer(c : int, h : int, k : int, w : int, nr : NetworkPlayer,human : boolean)
-{
-Character = c;
-Hat = h;
-Kart = k;
-Wheel = w;
-networkRep = nr;
-Human = human;
-}
-
-}
-
 function OnGUI(){
 
-var playerString : String = "Total Players : ";
-playerString += (Network.connections.Length+1);
+	var playerString : String = "Total Players : ";
+	playerString += (Network.connections.Length+1);
 
-if(RacingPlayers != null)
-playerString += " Racing Players : " + RacingPlayers.Length;
+	if(RacingPlayers != null)
+		playerString += " Racing Players : " + RacingPlayers.Length;
 
-if(PotentialPlayers != null)
-playerString += " Potential Players: " + PotentialPlayers.Length;
+	if(PotentialPlayers != null)
+		playerString += " Potential Players: " + PotentialPlayers.Length;
 
-if(WaitingPlayers != null)
-playerString += " Waiting Players: " + WaitingPlayers.Length;
+	if(WaitingPlayers != null)
+		playerString += " Waiting Players: " + WaitingPlayers.Length;
 
-GUI.Label(Rect(10,10,Screen.width-20,25),playerString);
+	GUI.Label(Rect(10,10,Screen.width-20,25),playerString);
 
-for(var i : int = 0; i < RacingPlayers.Length; i++)
-if(RacingPlayers[i].Human == true)
-GUI.Label(Rect(10,10 + 25 + (25*i),250,25),"[CLIENT]");
-else
-GUI.Label(Rect(10,10 + 25 + (25*i),250,25),"[BOT]");
+	for(var i : int = 0; i < RacingPlayers.Length; i++)
+	{
+		//if(RacingPlayers[i].Human == true)
+		GUI.Label(Rect(10,10 + 25 + (25*i),250,25),"[CLIENT]");
+		//else
+		//GUI.Label(Rect(10,10 + 25 + (25*i),250,25),"[BOT]");
+	}
 
-}		
+	if(serverType == ServerState.Lobby)
+	{
+		if(im.c[0].GetInput("Submit"))
+		{
+			serverType = ServerState.LoadingRace;
+			LoadRace();
+		}
+	}
+
+}
+
+function LoadRace()
+{
+	
+	for(var i : int = 0; i < RacingPlayers.Length; i++)
+	{
+		if(RacingPlayers[i].networkplayer.guid != networkView.owner.guid)
+			networkView.RPC("YourID",RacingPlayers[i].networkplayer,i);
+		else
+			transform.GetComponent(RaceBase).networkID = i;
+	}
+
+	networkView.RPC("LoadNetworkLevel",RPCMode.AllBuffered,"Sjin's Farm",0);
+	
+	while(Application.loadedLevelName == "Lobby")
+		yield;
+	
+	serverType = ServerState.Racing;
+	transform.GetComponent(RaceLeader).NetworkRacers = RacingPlayers;
+	transform.GetComponent(RaceLeader).type = RaceStyle.Online;
+	transform.GetComponent(RaceLeader).OverallTimer = new Timer();
+	transform.GetComponent(RaceLeader).enabled = true;
+	transform.GetComponent(RaceLeader).LoadLibaries();
+	
+	yield;
+	yield;
+	
+	transform.GetComponent(RaceLeader).StartRace();
+}	
+	

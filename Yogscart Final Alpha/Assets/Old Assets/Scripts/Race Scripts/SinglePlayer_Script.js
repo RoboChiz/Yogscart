@@ -43,7 +43,6 @@ if(transform.GetComponent(Race_Master) == null){
 gameObject.AddComponent(Race_Master);
 
 var rm = transform.GetComponent(Race_Master);
-rm.DebugMode = false;
 rm.type = type;
 
 var copy = new Array();

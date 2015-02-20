@@ -453,7 +453,6 @@ for(var i : int = 0; i < SPRacers.Length;i++){
 SPRacers[i].timer = new Timer();
 
 var km = gd.transform.GetComponent(KartMaker);
-SPRacers[i].rep = km.SpawnKart(KartType.Local,SPRacers[i].Kart,SPRacers[i].Wheel,SPRacers[i].Character,SPRacers[i].Hat);
 
 //Find Spawn Position
 var SpawnPosition : Vector3;
@@ -472,8 +471,7 @@ var y2 : Vector3 = rot*(Vector3.right*(i + 1)* td.Scale);
 SpawnPosition = startPos + x2 + y2;  
 }
 
-SPRacers[i].rep.position = SpawnPosition;
-SPRacers[i].rep.rotation = td.PositionPoints[0].rep.rotation * Quaternion.Euler(0,-90,0);
+SPRacers[i].rep = km.SpawnKart(KartType.Local,SpawnPosition,td.PositionPoints[0].rep.rotation * Quaternion.Euler(0,-90,0),SPRacers[i].Kart,SPRacers[i].Wheel,SPRacers[i].Character,SPRacers[i].Hat);
 
 if(type != RaceStyle.TimeTrial)
 SPRacers[i].rep.GetComponent(Position_Finding).position = i;
